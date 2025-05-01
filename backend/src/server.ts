@@ -1,16 +1,9 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import userRoutes from './routes/user.routes';
 
 const app = express();
-const prisma = new PrismaClient();
-
 app.use(express.json());
+app.use('/api', userRoutes);
 
-app.get('/users', async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
-
-app.listen(4000, () => {
-  console.log('Servidor rodando em http://localhost:4000');
-});
+const port = process.env.PORT || 4000;
+app.listen(port, () => console.log(`🚀 Server em http://localhost:${port}/api`));
