@@ -11,7 +11,8 @@
     "generate": "prisma generate",
     "studio": "prisma studio",
     "seed": "prisma db seed",
-    "build": "tsc",
+    "seed:prod": "node dist/prisma/seed.js",
+    "build": "tsc --project tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "prisma": {
