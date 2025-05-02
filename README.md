@@ -93,6 +93,25 @@ cd desenrola-app
 
 **Importante:** Todas as alterações na branch principal devem ser feitas via Pull Request
 
+
+## 📜 Convenções de Commits
+
+| Tipo       | Descrição                                                                 | Exemplo do Projeto                          |
+|------------|---------------------------------------------------------------------------|---------------------------------------------|
+| **FEAT**   | Introduz uma nova funcionalidade                                         | `[FEAT] - Adiciona login social com Google` |
+| **FIX**    | Corrige um bug ou comportamento indesejado                               | `[FIX] - Corrige loop infinito na paginação`|
+| **DOCS**   | Alterações na documentação                                               | `[DOCS] - Atualiza guia de instalação`      |
+| **CHORE**  | Mudanças em configurações, scripts ou dependências                       | `[CHORE] - Atualiza versão do Docker Compose` |
+| **REFACTOR**| Refatoração de código sem mudar funcionalidades                         | `[REFACTOR] - Simplifica lógica de validação` |
+| **BUILD**  | Modificações no sistema de build ou dependências externas                | `[BUILD] - Adiciona pacote de internacionalização` |
+| **TEST**   | Adiciona/atualiza testes                                                 | `[TEST] - Cobre cenários de autenticação`   |
+| **STYLE**  | Formatação de código, linting ou melhorias de legibilidade               | `[STYLE] - Aplica Prettier nos componentes` |
+| **PERF**   | Melhorias de performance                                                 | `[PERF] - Otimiza queries do Prisma`        |
+| **CI**     | Mudanças na configuração de CI/CD                                        | `[CI] - Adiciona workflow de deploy na Vercel` |
+| **CLEANUP**| Remoção de código morto ou comentários                                   | `[CLEANUP] - Remove componentes obsoletos`  |
+| **REMOVE** | Exclusão de arquivos ou funcionalidades                                  | `[REMOVE] - Exclui endpoint não utilizado`  |
+| **RAW**    | Mudanças em dados brutos ou configurações específicas                    | `[RAW] - Atualiza dataset de cidades`       |
+
 ## 📄 Licença
 
 Distribuído sob a licença MIT. Veja [LICENSE](./LICENSE) para mais informações.
