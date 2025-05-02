@@ -22,7 +22,7 @@ done
 
 echo ""
 echo "📦 Iniciando containers..."
-COMPOSE_BAKE=true docker compose up -d
+docker compose up -d
 
 echo ""
 echo "☕ Ambiente iniciado com sucesso!"
