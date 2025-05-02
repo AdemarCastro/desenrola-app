@@ -1,0 +1,44 @@
+# Use Node 18 LTS (versão estável)
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Instale dependências de compilação
+RUN apk add --no-cache python3 g++ make
+
+# Copie apenas o necessário para o estágio de build
+COPY package*.json ./
+COPY prisma ./prisma
+COPY tsconfig.json ./
+
+# Instale dependências e gere o Prisma Client
+RUN npm ci
+RUN npx prisma generate
+
+# Copie o restante do código e faça o build
+COPY src ./src
+RUN npm run build
+
+# Transpile os arquivos de seed separadamente
+# RUN npx tsc dist/prisma/seed.ts dist/prisma/seeders/seedUsers.ts \
+#     --outDir dist/prisma \
+#     --target ES2022 \
+#     --module CommonJS \
+#     --esModuleInterop true \
+#     --skipLibCheck true
+
+# Estágio de produção
+FROM node:18-alpine
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copie apenas o necessário para produção
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/prisma ./prisma
+COPY .env .
+
+EXPOSE 4000
+CMD ["sh", "-c", "npm run migrate:deploy && npm run seed:prod && node dist/src/server.js"]
