@@ -3,12 +3,16 @@ services:
     build:
       context: ./backend
       dockerfile: dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV}
+        PORT: ${PORT_BACKEND}
+        SALT_ROUNDS: ${SALT_ROUNDS}
     volumes:
       - backend-db-data:/app/database
     env_file:
-      - ./backend/.env
+      - ./.env
     ports:
-      - '4000:4000'
+      - '${PORT_BACKEND}:${PORT_BACKEND}'
     networks:
       - app-network
 
@@ -16,10 +20,14 @@ services:
     build:
       context: ./frontend
       dockerfile: dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV}
+        PORT: ${PORT_FRONTEND}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     env_file:
-      - ./frontend/.env
+      - ./.env
     ports:
-      - '3000:3000'
+      - '${PORT_FRONTEND}:${PORT_FRONTEND}'
     depends_on:
       - backend
     networks:
@@ -29,14 +37,16 @@ services:
     build:
       context: ./backend
       dockerfile: dockerfile
+      args:
+        PRISMA_STUDIO_PORT: ${PRISMA_STUDIO_PORT}
     env_file:
-      - ./backend/.env
+      - ./.env
     volumes:
       - backend-db-data:/app/database
     command: >
       sh -c "npx prisma studio --schema=prisma/schema.prisma --port=5555 --hostname=0.0.0.0"
     ports:
-      - "5555:5555"
+      - "${PRISMA_STUDIO_PORT}:${PRISMA_STUDIO_PORT}"
     depends_on:
       - backend
     networks:
