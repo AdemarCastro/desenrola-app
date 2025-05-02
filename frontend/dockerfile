@@ -1,0 +1,18 @@
+# Build
+FROM node:18-alpine AS builder
+WORKDIR /src/app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Production image
+FROM node:18-alpine
+WORKDIR /src/app
+ENV NODE_ENV=production
+COPY --from=builder /src/app/package*.json ./
+COPY --from=builder /src/app/node_modules ./node_modules
+COPY --from=builder /src/app/.next ./.next
+COPY --from=builder /src/app/public ./public
+EXPOSE 3000
+CMD ["npm", "start"]
