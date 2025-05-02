@@ -1,6 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
+if (process.env.SALT_ROUNDS === undefined) {
+  console.error('🔴 Erro: SALT_ROUNDS não definido no ambiente. Verifique o arquivo .env.');
+  process.exit(1);
+}
+
+const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || '10', 10);
+
 const prisma = new PrismaClient();
 
 const usersToSeed = [
@@ -41,7 +48,7 @@ export async function seedUsers() {
         usersToInsert.map(async user => ({
           name: user.name,
           email: user.email,
-          password: await bcrypt.hash(user.password, 10),
+          password: await bcrypt.hash(user.password, SALT_ROUNDS),
         }))
       ),
     });
