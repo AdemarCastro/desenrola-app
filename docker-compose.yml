@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    volumes:
+      - backend-db-data:/app/database
+    env_file:
+      - ./backend/.env
+    ports:
+      - '4000:4000'
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    env_file:
+      - ./frontend/.env
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  prisma-studio:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    env_file:
+      - ./backend/.env
+    volumes:
+      - backend-db-data:/app/database
+    command: >
+      sh -c "npx prisma studio --schema=prisma/schema.prisma --port=5555 --hostname=0.0.0.0"
+    ports:
+      - "5555:5555"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  backend-db-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
