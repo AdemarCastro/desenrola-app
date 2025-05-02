@@ -1,135 +1,107 @@
-# desenrola-app
+# Desenrola 🧶
 
-Aplicação full-stack **desenrola-app** composta por:
+![Banner do Projeto](assets/logo_horizontal_o_novelo_de_la_white.png)
 
-- **Frontend**: interface construída com Next.js  
-- **Backend**: API REST com Node.js, Express e TypeScript  
-- **Banco de Dados**: SQLite/PostgreSQL gerenciado pelo Prisma ORM  
+> Plataforma web moderna para gestão integrada de projetos, focada em otimizar processos, tecnologias e recursos, promovendo maior eficiência, alinhamento estratégico e bem-estar das equipes.
 
----
+[![Licença MIT](https://img.shields.io/badge/Licença-MIT-green.svg)](./LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-blue)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
 
-## 📂 Estrutura dos Diretórios
+## 📌 Tabela de Conteúdos
+
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Tecnologias](#-tecnologias)
+- [Primeiros Passos](#-primeiros-passos)
+- [Executando a Aplicação](#-executando-a-aplicação)
+- [Contribuição](#-contribuição)
+- [Licença](#-licença)
+
+## 🗂️ Estrutura do Projeto
 
 ```text
 desenrola-app/
-├─ backend/
-│  ├─ prisma/
-│  │  ├─ data/
-│  │  │  ├─ dev.db
-│  │  │  └─ dev.db-journal
-│  │  ├─ migrations/
-│  │  │  ├─ 20250430003106_init/
-│  │  │  │  └─ migration.sql
-│  │  │  └─ migration_lock.toml
-│  │  └─ schema.prisma
-│  ├─ src/
-│  │  └─ server.ts
-│  ├─ .env
-│  ├─ .gitignore
-│  ├─ package-lock.json
-│  ├─ package.json
-│  └─ tsconfig.json
-├─ frontend/
-│  ├─ .next/
-│  ├─ public/
-│  ├─ src/
-│  │  └─ app/
-│  │     ├─ favicon.ico
-│  │     ├─ globals.css
-│  │     ├─ layout.tsx
-│  │     └─ page.tsx
-│  ├─ .gitignore
-│  ├─ eslint.config.mjs
-│  ├─ next-env.d.ts
-│  ├─ next.config.ts
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ postcss.config.mjs
-│  ├─ README.md
-│  └─ tsconfig.json
-├─ LICENSE
-└─ README.md
+├─ backend/               # Backend Node.js/Express
+│  ├─ database/          # Configurações do banco de dados
+│  ├─ prisma/            # ORM Prisma (schemas/migrations)
+│  ├─ src/               # Código fonte TypeScript
+│  └─ ...                # Configurações do projeto
+├─ frontend/             # Frontend Next.js
+│  ├─ public/            # Assets estáticos
+│  ├─ src/               # Código fonte da aplicação
+│  └─ ...                # Configurações do projeto
+├─ docker-compose.yml    # Configuração de containers Docker
+└─ ...                   # Outros arquivos de configuração
 ```
 
----
+## 🛠️ Tecnologias
 
-## ✨ Tecnologias
+### **Frontend**
+![Next.js](https://img.shields.io/badge/Next.js-14.x-000000?logo=next.js)
+![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-06B6D4?logo=tailwind-css)
 
-- **Frontend**  
-  - Next.js  
-  - React  
-  - TypeScript  
-  - Tailwind CSS
-  - ESLint
-- **Backend**  
-  - Node.js  
-  - Express  
-  - TypeScript  
-  - Prisma ORM  
-- **Banco de Dados**  
-  - SQLite (ambiente de desenvolvimento)
-  - PostgreSQL (ambiente de produção)
+### **Backend**
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js)
+![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express)
+![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748?logo=prisma)
 
----
+### **Banco de Dados**
+![SQLite](https://img.shields.io/badge/SQLite-Dev-003B57?logo=sqlite)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Prod-4169E1?logo=postgresql)
 
-## 🚀 Como Rodar a Aplicação
+### **Ferramentas**
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
+![Docker](https://img.shields.io/badge/Docker-24.x-2496ED?logo=docker)
 
-### 1. Pré-requisitos
+## 🚀 Primeiros Passos
 
-- Node.js ≥ 16  
-- npm ≥ 8  
+### Pré-requisitos
+- Node.js ≥ 18.x
+- npm ≥ 9.x
+- Docker ≥ 24.x
+- Git
 
----
-
-### 2. Clonar o repositório
-
+### Configuração Inicial
 ```bash
-git clone https://github.com/ademarcastro/desenrola-app.git
+# Clonar repositório
+git clone git@github.com:AdemarCastro/desenrola-app.git
 cd desenrola-app
+
+# Instalar dependências
+./install-deps.bash
 ```
 
----
+## ▶️ Executando a Aplicação
 
-### 3. Backend
-
+### Ambiente de Desenvolvimento
 ```bash
-cd backend
-npm install
+# Iniciar containers Docker (requer Docker Desktop em execução)
+./init-env.bash
+
+# Acessar aplicação:
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:4000
+# Prisma Studio: http://localhost:5555
 ```
 
-1. Configure as variáveis em `.env`:
-   ```env
-   DATABASE_URL="file:./prisma/data/dev.db"
-   ```
-2. Gere o banco e o client do Prisma:
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
-   ```
-3. Inicie o servidor:
-   ```bash
-   npm run dev
-   ```
-   A API estará disponível em `http://localhost:4000`.
-
----
-
-### 4. Frontend
-
+### Parar Ambiente
 ```bash
-cd ../frontend
-npm install
+# Finalizar containers e limpar recursos
+./stop-env.bash
 ```
 
-1. (Opcional) crie um `.env` se precisar de variáveis de ambiente para API ou chaves.
-2. Inicie o Next.js:
-   ```bash
-   npm run dev
-   ```
-   A interface estará em `http://localhost:3000`.
-
----
+**Importante:** Todas as alterações na branch principal devem ser feitas via Pull Request
 
 ## 📄 Licença
 
-Este projeto está sob a licença [MIT](./LICENSE).
+Distribuído sob a licença MIT. Veja [LICENSE](./LICENSE) para mais informações.
+
+---
+
+**Desenvolvido por:**
+- **[Ademar Castro](https://github.com/AdemarCastro)**
+- **[Alice Karolyne]()**
+- **[Carlos Alexandre]()**
+- **[Jorge Luiz]()**
+- **[Lucas Eduardo]()**
