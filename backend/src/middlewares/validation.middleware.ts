@@ -1,11 +1,11 @@
-import { plainToInstance } from 'class-transformer';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response, NextFunction } from 'express';
 
-export function validateDto(dtoClass: any) {
+export function validateDto<T>(dtoClass: ClassConstructor<T>) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const dtoObj = plainToInstance(dtoClass, req.body);
-        const errors = await validate(dtoObj, {
+        const errors = await validate(dtoObj as object, {
             whitelist: true,
             forbidNonWhitelisted: true,
         });
