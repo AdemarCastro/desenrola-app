@@ -91,6 +91,12 @@ cd desenrola-app
 ./stop-env.bash
 ```
 
+### Criar Migrations
+```bash
+# Atualiza o banco de dados com o que foi inserido no schema.prisma
+./update-db.sh
+```
+
 **Importante:** Todas as alterações na branch principal devem ser feitas via Pull Request
 
 
