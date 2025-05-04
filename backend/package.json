@@ -7,7 +7,7 @@
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:reset": "prisma migrate reset",
-    "migrate:create": "prisma migrate dev --create-only",
+    "migrate:create": "prisma migrate dev --create-only --name",
     "generate": "prisma generate",
     "studio": "prisma studio",
     "seed": "prisma db seed",
