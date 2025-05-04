@@ -6,7 +6,7 @@ PORTS=(3000 4000 5555)
 
 echo ""
 echo "🔄 Atualizando repositório..."
-git pull
+git pull origin main
 echo ""
 
 echo "🔍 Validando portas livres..."
