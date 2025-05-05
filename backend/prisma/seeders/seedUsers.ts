@@ -1,63 +1,38 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
-
-if (process.env.SALT_ROUNDS === undefined) {
-  console.error('🔴 Erro: SALT_ROUNDS não definido no ambiente. Verifique o arquivo .env.');
-  process.exit(1);
-}
-
-const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || '10', 10);
 
 const prisma = new PrismaClient();
 
-const usersToSeed = [
-  { name: 'Ademar', email: 'ademar@email.com', password: '2022002444' },
-  { name: 'Alice', email: 'alice@email.com', password: '2022002453' },
-  { name: 'Carlos', email: 'carlos@email.com', password: '2022004322' },
-  { name: 'Jorge', email: 'jorge@email.com', password: '2022005160' },
-  { name: 'Lucas', email: 'lucas@email.com', password: '2022006229' },
-];
+async function seedUsers() {
+  const existingUsers = await prisma.usuario.findMany({
+    select: { email: true },
+  });
 
-export async function seedUsers() {
-  try {
-    console.log('🔎 Verificando usuários existentes no banco...');
+  const existingEmails = new Set(existingUsers.map((u) => u.email));
 
-    const existingUsers = await prisma.user.findMany({
-      where: {
-        email: {
-          in: usersToSeed.map(user => user.email),
-        },
-      },
-      select: {
-        email: true,
-      },
+  const usersToSeed = [
+    { email: 'user1@example.com', primeiro_nome: 'Ze', sobrenome: 'One', senha: 'password1', data_nascimento: new Date('1990-01-01') },
+    { email: 'user2@example.com', primeiro_nome: 'Zezinho', sobrenome: 'Two', senha: 'password2', data_nascimento: new Date('1992-02-02') },
+  ];
+
+  const newUsers = usersToSeed.filter((u) => !existingEmails.has(u.email));
+
+  if (newUsers.length > 0) {
+    await prisma.usuario.createMany({
+      data: newUsers,
     });
-
-    const existingEmails = new Set(existingUsers.map(u => u.email));
-    const usersToInsert = usersToSeed.filter(user => !existingEmails.has(user.email));
-
-    if (usersToInsert.length === 0) {
-      console.log('⚠️ Todos os usuários do seed já existem.');
-      return;
-    }
-
-    console.log(`📥 Inserindo ${usersToInsert.length} usuário(s)...`);
-
-    await prisma.user.createMany({
-      data: await Promise.all(
-        usersToInsert.map(async user => ({
-          name: user.name,
-          email: user.email,
-          password: await bcrypt.hash(user.password, SALT_ROUNDS),
-        }))
-      ),
-    });
-
-    console.log('🟢 Inserção de usuários concluída com sucesso!');
-  } catch (error) {
-    console.error('🔴 Erro no seed users:', error);
-    process.exit(1);
-  } finally {
-    await prisma.$disconnect();
+    console.log(`${newUsers.length} usuários criados.`);
+  } else {
+    console.log('Nenhum novo usuário para criar.');
   }
 }
+
+seedUsers()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+export { seedUsers };

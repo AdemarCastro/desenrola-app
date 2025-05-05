@@ -1,21 +1,17 @@
-import { PrismaClient } from '@prisma/client';
 import { seedUsers } from './seeders/seedUsers';
-
-const prisma = new PrismaClient();
+import { seedPapeis } from './seeders/seedPapeis';
+import { seedPermissoes } from './seeders/seedPermissoes';
 
 async function main() {
   console.log('🌱 Iniciando seeding...');
-
+  await seedPapeis();
+  await seedPermissoes();
   await seedUsers();
-
-  console.log('✅ Seeding concluído.');
+  console.log('✅ Seeding concluído!');
 }
 
 main()
   .catch((e) => {
     console.error(e);
     process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
   });
