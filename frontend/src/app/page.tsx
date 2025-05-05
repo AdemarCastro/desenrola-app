@@ -1,27 +1,24 @@
-import { User } from '../types/user';
+import { Usuario } from '../types/usuario';
 
-async function fetchUsers(): Promise<User[]> {
+async function fetchUsuarios(): Promise<Usuario[]> {
   const base = process.env.NEXT_PUBLIC_API_URL;
-  if (!base) throw new Error('API URL is not defined');
-  const res = await fetch(`${base}/users`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Falha ao buscar usuários');
-  return res.json();
+  const res = await fetch(`${base}/usuarios`, { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error('Falha ao buscar usuários');
+  }
+  const data: Usuario[] = await res.json();
+  return data;
 }
 
 export default async function Page() {
-  const users = await fetchUsers();
+  const usuarios = await fetchUsuarios();
   return (
-    <main className="p-8">
-      <h1 className="text-2xl mb-4">Usuários</h1>
-      <ul className="space-y-4">
-        {users.map(u => (
-          <li key={u.id} className="border p-4 rounded">
-            <p><strong>{u.name}</strong> ({u.email})</p>
-            <p>Criado em: {new Date(u.createdAt).toLocaleString()}</p>
-            <p>Atualizado em: {new Date(u.updatedAt).toLocaleString()}</p>
-          </li>
-        ))}
-      </ul>
-    </main>
+    <ul>
+      {usuarios.map((u) => (
+        <li key={u.id}>
+          <strong>{u.primeiro_nome} {u.sobrenome}</strong>
+        </li>
+      ))}
+    </ul>
   );
 }

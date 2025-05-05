@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,11 +7,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum StatusUsuario {
+  ATIVO
+  INATIVO
+  BLOQUEADO
+}
+
+enum PrioridadeTarefa {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
+model Usuario {
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  primeiro_nome    String
+  sobrenome        String
+  senha            String
+  data_nascimento  DateTime
+  idade            Int?
+  status           StatusUsuario     @default(ATIVO)
+  logout_em        DateTime?
+  criado_em        DateTime          @default(now())
+  atualizado_em    DateTime          @updatedAt
+  apagado_em       DateTime?
+
+  papeis           UsuarioPapel[]
+  projetos         ProjetoUsuario[]
+  comentarios      Comentario[]
+}
+
+model UsuarioPapel {
+  id       Int      @id @default(autoincrement())
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+}
+
+model ProjetoUsuario {
+  id       Int      @id @default(autoincrement())
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+}
+
+model Comentario {
+  id       Int      @id @default(autoincrement())
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
 }
