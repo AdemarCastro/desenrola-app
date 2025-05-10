@@ -114,6 +114,7 @@ cd desenrola-app
 | **STYLE**  | Formatação de código, linting ou melhorias de legibilidade               | `[STYLE] - Aplica Prettier nos componentes` |
 | **PERF**   | Melhorias de performance                                                 | `[PERF] - Otimiza queries do Prisma`        |
 | **CI**     | Mudanças na configuração de CI/CD                                        | `[CI] - Adiciona workflow de deploy na Vercel` |
+| **CD**     | Configurações de entrega contínua e deploys automatizados                | `[CD] - Automatiza deploy no Render após merge` |
 | **CLEANUP**| Remoção de código morto ou comentários                                   | `[CLEANUP] - Remove componentes obsoletos`  |
 | **REMOVE** | Exclusão de arquivos ou funcionalidades                                  | `[REMOVE] - Exclui endpoint não utilizado`  |
 | **RAW**    | Mudanças em dados brutos ou configurações específicas                    | `[RAW] - Atualiza dataset de cidades`       |
