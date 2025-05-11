@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "deploy": "npm run build && npm run generate:prod && npm run migrate:create:deploy && npm run migrate:deploy && npm run seed:prod && node dist/server.js",
+    "deploy": "npm run build && npm run debug:structure && npm run generate:prod && npm run migrate:create:deploy && npm run migrate:deploy && npm run seed:prod && node dist/server.js",
     "migrate:dev": "prisma migrate dev --schema=prisma/sqlite/schema.prisma",
     "migrate:deploy": "prisma migrate deploy --schema=prisma/postgres/schema.prisma",
     "migrate:reset": "prisma migrate reset",
@@ -14,6 +14,7 @@
     "seed:prod": "prisma db seed --schema=prisma/postgres/schema.prisma",
     "generate:dev": "prisma generate --schema=prisma/sqlite/schema.prisma",
     "generate:prod": "prisma generate --schema=prisma/postgres/schema.prisma",
+    "debug:structure": "echo '=== Estrutura após o build ===' && ls -R && echo '=== Pasta dist/ ===' && ls -R dist",
     "studio": "prisma studio",
     "build": "tsc --project tsconfig.json",
     "lint": "eslint \"src/**/*.{ts,js}\" --fix",
