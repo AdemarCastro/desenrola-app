@@ -14,7 +14,7 @@
     "seed:prod": "prisma db seed --schema=prisma/postgres/schema.prisma",
     "generate:dev": "prisma generate --schema=prisma/sqlite/schema.prisma",
     "generate:prod": "prisma generate --schema=prisma/postgres/schema.prisma",
-    "debug:structure": "echo '=== Estrutura após o build ===' && ls -R && echo '=== Pasta dist/ ===' && ls -R dist",
+    "debug:structure": "echo '=== Pasta dist/ ===' && ls -R dist && echo '=== Conteúdo de src/ ===' && ls -R src",
     "studio": "prisma studio",
     "build": "tsc --project tsconfig.json",
     "lint": "eslint \"src/**/*.{ts,js}\" --fix",
