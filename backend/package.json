@@ -6,6 +6,7 @@
     "dev": "ts-node src/server.ts",
     "deploy": "npm run build && npm run debug:structure && npm run generate:prod && npm run migrate:create:deploy && npm run migrate:deploy && npm run seed:prod && node dist/src/server.js",
     "migrate:dev": "prisma migrate dev --schema=prisma/sqlite/schema.prisma",
+    "migrate:deploy:dev": "prisma migrate deploy --schema=prisma/sqlite/schema.prisma",
     "migrate:deploy": "prisma migrate deploy --schema=prisma/postgres/schema.prisma",
     "migrate:reset": "prisma migrate reset",
     "migrate:create:dev": "prisma migrate dev --schema=prisma/sqlite/schema.prisma --name",
