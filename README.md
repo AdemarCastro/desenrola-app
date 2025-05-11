@@ -77,7 +77,7 @@ cd desenrola-app
 ### Ambiente de Desenvolvimento
 ```bash
 # Iniciar containers Docker (requer Docker Desktop em execução)
-./init-env.bash
+./init-env.sh
 
 # Acessar aplicação:
 # Frontend: http://localhost:3000
@@ -88,7 +88,7 @@ cd desenrola-app
 ### Parar Ambiente
 ```bash
 # Finalizar containers e limpar recursos
-./stop-env.bash
+./stop-env.sh
 ```
 
 ### Criar Migrations
