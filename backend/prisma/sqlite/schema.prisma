@@ -15,64 +15,34 @@ datasource db {
 
 
 model Usuario {
-  id              Int      @id @default(autoincrement())
-  email           String   @unique
+  id              Int        @id @default(autoincrement())
+  email           String     @unique
   primeiro_nome   String
   sobrenome       String
   senha           String
   data_nascimento DateTime
-  idade           Int?     @default(0)
+  idade           Int?       @default(0)
   status_id       Int
+  nivel_acesso_id Int        @default(1)
   logout_em       DateTime?
-  criado_em       DateTime @default(now())
-  atualizado_em   DateTime @updatedAt
+  criado_em       DateTime   @default(now())
+  atualizado_em   DateTime   @updatedAt
   apagado_em      DateTime?
 
-  status      StatusUsuario @relation(fields: [status_id], references: [id])
-  papeis      UsuarioPapel[]
+  status       StatusUsuario  @relation(fields: [status_id], references: [id])
+  nivel_acesso NivelAcesso    @relation(fields: [nivel_acesso_id], references: [id])
+  projetos     ProjetoUsuario[]
+  comentarios  Comentario[]
+}
+
+model NivelAcesso {
+  id          Int       @id @default(autoincrement())
+  nome        String    @unique
+
+  usuarios    Usuario[]
   projetos    ProjetoUsuario[]
-  comentarios Comentario[]
-}
 
-model Papel {
-  id        Int     @id @default(autoincrement())
-  nome      String  @unique
-  descricao String?
-
-  usuarios   UsuarioPapel[]
-  permissoes PapelPermissao[]
-  projetos   ProjetoUsuario[]
-}
-
-model UsuarioPapel {
-  id_usuario     Int
-  id_papel       Int
-  cargo          String
-  limite_projeto Int?   @default(5)
-  atribuido_em   DateTime @default(now())
-
-  usuario Usuario @relation(fields: [id_usuario], references: [id])
-  papel   Papel   @relation(fields: [id_papel], references: [id])
-
-  @@id([id_usuario, id_papel])
-}
-
-model Permissao {
-  id        Int     @id @default(autoincrement())
-  acao      String  @unique
-  descricao String?
-
-  papeis PapelPermissao[]
-}
-
-model PapelPermissao {
-  id_papel     Int
-  id_permissao Int
-
-  papel     Papel     @relation(fields: [id_papel], references: [id])
-  permissao Permissao @relation(fields: [id_permissao], references: [id])
-
-  @@id([id_papel, id_permissao])
+  @@map("niveis_acesso")
 }
 
 model Projeto {
@@ -89,16 +59,18 @@ model Projeto {
 }
 
 model ProjetoUsuario {
-  id_projeto   Int
-  id_usuario   Int
-  id_papel     Int
-  vinculado_em DateTime @default(now())
+  id          Int       @id @default(autoincrement())
+  usuario_id  Int
+  projeto_id  Int
+  nivel_acesso_id Int
+  criado_em   DateTime  @default(now())
+  atualizado_em DateTime @updatedAt
+  apagado_em  DateTime?
 
-  projeto Projeto @relation(fields: [id_projeto], references: [id])
-  usuario Usuario @relation(fields: [id_usuario], references: [id])
-  papel   Papel   @relation(fields: [id_papel], references: [id])
+  usuario     Usuario   @relation(fields: [usuario_id], references: [id])
+  projeto     Projeto   @relation(fields: [projeto_id], references: [id])
+  nivel_acesso NivelAcesso? @relation(fields: [nivel_acesso_id], references: [id])
 
-  @@id([id_projeto, id_usuario, id_papel])
 }
 
 model StatusTarefa {
