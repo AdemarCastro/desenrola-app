@@ -9,7 +9,7 @@ read -rp "🛠️  Nome da migration (ex: add-user-field): " MIGRATION_NAME
 
 echo ""
 echo "🔨  Criando migration \"$MIGRATION_NAME\"..."
-npm run migrate:create -- "$MIGRATION_NAME"  >/dev/null
+npm run migrate:create:dev -- "$MIGRATION_NAME"  >/dev/null
 
 echo ""
 echo "🔄  Criando migration no dev..."
