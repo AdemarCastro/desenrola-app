@@ -17,7 +17,7 @@ npm run migrate:dev                         >/dev/null
 
 echo ""
 echo "⚙️  Gerando Prisma Client..."
-npm run generate                            >/dev/null
+npm run generate:dev                            >/dev/null
 
 echo ""
 echo "🚀  Deploy de migrations em produção..."
