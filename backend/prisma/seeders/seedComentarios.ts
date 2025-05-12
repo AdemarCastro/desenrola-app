@@ -46,7 +46,7 @@ export async function seedComentarios() {
         });
 
         const existsSet = new Set(
-            existing.map(e => `${e.conteudo}#${e.id_usuario}#${e.id_tarefa}`)
+            existing.map((e: CommentSeed) => `${e.conteudo}#${e.id_usuario}#${e.id_tarefa}`)
         );
 
         const toInsert = commentsToSeed.filter(
