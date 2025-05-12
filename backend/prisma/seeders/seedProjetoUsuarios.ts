@@ -40,7 +40,7 @@ export async function seedProjetoUsuarios() {
     }
 
     console.log('🔎 Verificando vínculos existentes em ProjetoUsuario...');
-    const existing = await prisma.projetoUsuario.findMany({
+    const existing: { usuario_id: number; projeto_id: number }[] = await prisma.projetoUsuario.findMany({
       where: {
         OR: projectUsersToSeed.map(pu => ({
           usuario_id: pu.usuario_id,
