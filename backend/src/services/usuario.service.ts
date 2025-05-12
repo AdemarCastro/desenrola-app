@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
-import { CreateUsuarioInputDTO } from "../dtos/CreateUsuarioInput.dto";
-import { UpdateUsuarioInputDTO } from "../dtos/UpdateUsuarioInput.dto";
-import { UsuarioOutputDTO } from "../dtos/UsuarioOutput.dto";
+import { CreateUsuarioInputDTO } from "../dtos/usuario/CreateUsuarioInput.dto";
+import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
+import { UsuarioOutputDTO } from "../dtos/usuario/UsuarioOutput.dto";
 
 const prisma = new PrismaClient();
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);

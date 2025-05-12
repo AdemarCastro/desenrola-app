@@ -4,7 +4,7 @@ import {
   deleteUsuario,
   updateUsuario
 } from "../services/usuario.service";
-import { UpdateUsuarioInputDTO } from "../dtos/UpdateUsuarioInput.dto";
+import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
 
 export async function createUsuarioController(req: Request, res: Response) {
   try {

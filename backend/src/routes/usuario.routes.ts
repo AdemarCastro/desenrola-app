@@ -1,7 +1,7 @@
 import express from "express";
 import { validateDto } from "../middlewares/validation.middleware";
-import { CreateUsuarioInputDTO } from "../dtos/CreateUsuarioInput.dto";
-import { UpdateUsuarioInputDTO } from "../dtos/UpdateUsuarioInput.dto";
+import { CreateUsuarioInputDTO } from "../dtos/usuario/CreateUsuarioInput.dto";
+import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
 import {
   createUsuarioController,
   deleteUsuarioController,
