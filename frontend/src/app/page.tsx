@@ -3,7 +3,7 @@ import { User } from '../types/user';
 async function fetchUsers(): Promise<User[]> {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base) throw new Error('API URL is not defined');
-  const res = await fetch(`${base}/users`, { cache: 'no-store' });
+  const res = await fetch(`${base}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Falha ao buscar usuários');
   return res.json();
 }

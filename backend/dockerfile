@@ -30,7 +30,7 @@ ARG NODE_ENV
 ARG PORT_BACKEND
 
 ENV NODE_ENV=${NODE_ENV}
-ENV PORPORT_BACKENDT=${PORT_BACKEND}
+ENV PORT_BACKEND=${PORT_BACKEND}
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
@@ -39,4 +39,4 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE ${PORT_BACKEND}
 
-CMD ["sh", "-c", "npm run migrate:deploy && npm run seed:prod && node dist/src/server.js"]
+CMD ["sh", "-c", "npm run migrate:deploy:dev && npm run seed:prod && node dist/src/server.js"]
