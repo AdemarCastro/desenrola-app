@@ -7,20 +7,22 @@ import { seedProjetos } from './seeders/seedProjetos';
 import { seedStatusTarefa } from './seeders/seedStatusTarefa';
 import { seedStatusUsuario } from './seeders/seedStatusUsuario';
 import { seedPrioridadeTarefa } from './seeders/seedPrioridadeTarefa';
+import { seedNiveisAcesso } from './seeders/seedNiveisAcesso';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Iniciando seeding...');
 
-  await seedComentarios();
-  await seedTarefas();
-  await seedProjetoUsuarios();
+  await seedStatusUsuario();
+  await seedNiveisAcesso();
+  await seedStatusTarefa();
+  await seedPrioridadeTarefa();
   await seedUsuarios();
   await seedProjetos();
-  await seedStatusTarefa();
-  await seedStatusUsuario();
-  await seedPrioridadeTarefa();
+  await seedProjetoUsuarios();
+  await seedTarefas();
+  await seedComentarios();
 
   console.log('✅ Seeding concluído.');
 }
