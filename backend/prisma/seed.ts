@@ -6,6 +6,7 @@ import { seedUsuarios } from './seeders/seedUsuarios';
 import { seedProjetos } from './seeders/seedProjetos';
 import { seedStatusTarefa } from './seeders/seedStatusTarefa';
 import { seedStatusUsuario } from './seeders/seedStatusUsuario';
+import { seedPrioridadeTarefa } from './seeders/seedPrioridadeTarefa';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +20,7 @@ async function main() {
   await seedProjetos();
   await seedStatusTarefa();
   await seedStatusUsuario();
+  await seedPrioridadeTarefa();
 
   console.log('✅ Seeding concluído.');
 }
