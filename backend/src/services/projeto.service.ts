@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Projeto } from '@prisma/client';
 import { ProjetoOutputDto } from '../dtos/projeto/ProjetoOutput.dto';
 
 const prisma = new PrismaClient();
@@ -13,7 +13,7 @@ export class ProjetoService {
       orderBy: { criado_em: 'desc' },
     });
 
-    return projetos.map(projeto => ({
+    return projetos.map((projeto: Projeto) => ({
       ...projeto,
       descricao: projeto.descricao ?? undefined,
     }));
