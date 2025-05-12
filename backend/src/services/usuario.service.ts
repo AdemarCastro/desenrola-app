@@ -41,7 +41,7 @@ export async function updateUsuario(
   }
 
   if (updateData.data_nascimento) {
-    updateData.data_nascimento = new Date(updateData.data_nascimento) as any;
+    updateData.data_nascimento = new Date(updateData.data_nascimento);
   }
 
   const usuario = await prisma.usuario.update({

@@ -25,7 +25,7 @@ export class UpdateUsuarioInputDTO {
 
   @IsDateString({}, { message: "Data de nascimento inválida" })
   @IsOptional()
-  data_nascimento?: string;
+  data_nascimento?: string | Date;
 
   @IsInt({ message: "Status inválido" })
   @IsOptional()
