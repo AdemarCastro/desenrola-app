@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { CreateUsuarioInputDTO } from "../dtos/CreateUsuarioInput.dto";
 import { UpdateUsuarioInputDTO } from "../dtos/UpdateUsuarioInput.dto";
 import { UsuarioOutputDTO } from "../dtos/UsuarioOutput.dto";
-import { Usuario as PrismaUsuario } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
@@ -24,11 +23,6 @@ export async function createUsuario(
     },
   });
   return new UsuarioOutputDTO(usuario);
-}
-
-export async function getAllUsuarios(): Promise<UsuarioOutputDTO[]> {
-    const usuarios = await prisma.usuario.findMany();
-    return usuarios.map((u: PrismaUsuario) => new UsuarioOutputDTO(u));
 }
 
 export async function updateUsuario(

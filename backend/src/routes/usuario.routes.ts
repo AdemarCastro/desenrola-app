@@ -5,8 +5,7 @@ import { UpdateUsuarioInputDTO } from "../dtos/UpdateUsuarioInput.dto";
 import {
   createUsuarioController,
   deleteUsuarioController,
-  listUsuariosController,
-  updateUsuarioController,
+  updateUsuarioController
 } from "../controllers/usuario.controller";
 
 const router = express.Router();
@@ -16,7 +15,6 @@ router.post(
   validateDto(CreateUsuarioInputDTO),
   createUsuarioController
 );
-router.get("/usuarios", listUsuariosController);
 router.put(
   "/usuarios/:id",
   validateDto(UpdateUsuarioInputDTO),
