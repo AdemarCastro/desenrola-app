@@ -39,4 +39,4 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE ${PORT_BACKEND}
 
-CMD ["sh", "-c", "npm run migrate:deploy:dev && npm run seed:prod && node dist/src/server.js"]
+CMD ["sh", "-c", "npm run migrate:deploy:dev && npm run seed:dev && node dist/src/server.js"]
