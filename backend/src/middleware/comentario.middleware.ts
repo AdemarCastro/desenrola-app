@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { CreateComentarioInputDto, UpdateComentarioInputDto } from '../dtos/comentario/Comentario.input.dto';
+import { CreateComentarioInputDto, UpdateComentarioInputDto } from '../dtos/comentario/comentario.input.dto';
 
 const prisma = new PrismaClient();
 
