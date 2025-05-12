@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ComentarioOutputDto } from '../dtos/comentario/Comentario.output.dto';
+import { ComentarioOutputDto } from '../dtos/comentario/ComentarioOutput.dto';
 
 const prisma = new PrismaClient();
 
