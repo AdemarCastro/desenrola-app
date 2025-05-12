@@ -87,7 +87,7 @@ export async function seedComentarios() {
 
 
         console.log('🟢 Seed de comentários concluído com sucesso!');
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('🔴 Erro no seed de comentários:', error);
         process.exit(1);
     } finally {
