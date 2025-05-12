@@ -4,6 +4,8 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { CreateComentarioInputDto, UpdateComentarioInputDto } from '../dtos/comentario/comentario.input.dto';
 
+
+
 const prisma = new PrismaClient();
 
 export async function validateComentarioCreate(req: Request, res: Response, next: NextFunction): Promise<void> {
