@@ -11,8 +11,8 @@
     "migrate:reset": "prisma migrate reset",
     "migrate:create:dev": "prisma migrate dev --schema=prisma/sqlite/schema.prisma --name",
     "migrate:create:deploy": "prisma migrate deploy --schema=prisma/postgres/schema.prisma",
-    "seed:dev": "prisma db dev --schema=prisma/sqlite/schema.prisma",
-    "seed:prod": "prisma db prod --schema=prisma/postgres/schema.prisma",
+    "seed:dev": "prisma db seed --schema=prisma/sqlite/schema.prisma",
+    "seed:prod": "prisma db seed --schema=prisma/postgres/schema.prisma",
     "generate:dev": "prisma generate --schema=prisma/sqlite/schema.prisma",
     "generate:prod": "prisma generate --schema=prisma/postgres/schema.prisma",
     "debug:structure": "echo '=== Pasta dist/ ===' && ls -R dist && echo '=== Conteúdo de src/ ===' && ls -R src",
@@ -22,8 +22,7 @@
     "test": "jest"
   },
   "prisma": {
-    "dev": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
-    "prod": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
