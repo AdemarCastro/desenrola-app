@@ -49,7 +49,7 @@ export class AuthController {
       process.env.JWT_SECRET as string,
       jwtOptions
     );
-
+// 
     // 4. Responder com o token
     res.json({ token });
   }
