@@ -25,6 +25,11 @@ export async function createUsuario(
   return new UsuarioOutputDTO(usuario);
 }
 
+export async function getAllUsuarios(): Promise<UsuarioOutputDTO[]> {
+  const usuarios = await prisma.usuario.findMany();
+  return usuarios.map((u) => new UsuarioOutputDTO(u));
+}
+
 export async function updateUsuario(
   id: number,
   data: UpdateUsuarioInputDTO

@@ -1,10 +1,14 @@
 import express from 'express';
 import tarefaRoutes from './routes/tarefa.routes';
 import comentarioRoutes from './routes/comentario.routes';
+import usuarioRoutes from "./routes/usuario.routes";
+
+
 
 const app = express();
 app.use(express.json());
 
+app.use("/api/usuarios", usuarioRoutes);
 app.use('/api/tarefas', tarefaRoutes);
 app.use('/comentarios', comentarioRoutes);
 
