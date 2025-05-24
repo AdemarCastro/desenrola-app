@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import {
   createUsuario,
+  getAllUsuarios,
   deleteUsuario,
-  updateUsuario
+  updateUsuario,
 } from "../services/usuario.service";
 import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
 
@@ -12,6 +13,15 @@ export async function createUsuarioController(req: Request, res: Response) {
     res.status(201).json(dto);
   } catch {
     res.status(500).json({ message: "Erro ao criar usuário" });
+  }
+}
+
+export async function getUsuariosController(req: Request, res: Response) {
+  try {
+    const usuarios = await getAllUsuarios();
+    res.json(usuarios);
+  } catch {
+    res.status(500).json({ message: "Erro ao buscar usuários" });
   }
 }
 
