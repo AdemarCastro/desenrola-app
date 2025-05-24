@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import jwt, { SignOptions } from 'jsonwebtoken';
-import type { StringValue } from 'ms';  // adicionado
 import bcrypt from 'bcrypt';
 import prisma from '../client';
 
@@ -36,8 +35,8 @@ export class AuthController {
       nivelAcessoId: usuario.nivel_acesso_id,
     };
 
-    // garante tipo compatível para expiresIn
-    const expiresIn: StringValue = (process.env.JWT_EXPIRES_IN as StringValue) ?? '1h';
+    // Simplifica expiresIn para string
+    const expiresIn: string = process.env.JWT_EXPIRES_IN || '1h';
 
     const jwtOptions: SignOptions = {
       algorithm: 'HS256',
@@ -49,7 +48,7 @@ export class AuthController {
       process.env.JWT_SECRET as string,
       jwtOptions
     );
-// 
+
     // 4. Responder com o token
     res.json({ token });
   }
