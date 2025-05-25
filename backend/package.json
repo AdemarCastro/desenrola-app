@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/server.ts",
+    "dev": "nodemon -L --watch src --ext ts,js,json --exec \"ts-node --project tsconfig.json src/server.ts\"",
+    "start:dev": "npm run migrate:deploy:dev && npm run seed:dev && npm run dev",
     "deploy": "npm run generate:prod && npm run build && npm run debug:structure && npm run migrate:create:deploy && npm run migrate:deploy && npm run seed:prod && node dist/src/server.js",
     "migrate:dev": "prisma migrate dev --schema=prisma/sqlite/schema.prisma",
     "migrate:deploy:dev": "prisma migrate deploy --schema=prisma/sqlite/schema.prisma",
@@ -38,6 +39,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "ms": "^2.1.3",
+    "nodemon": "^3.1.10",
     "prisma": "^6.7.0"
   },
   "devDependencies": {

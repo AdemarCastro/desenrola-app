@@ -1,12 +1,6 @@
-# ────────────────────────────────────────────────────────────────────────────────
-# Stage 1: Builder
-# ────────────────────────────────────────────────────────────────────────────────
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
-
-ARG SALT_ROUNDS
-ENV SALT_ROUNDS=${SALT_ROUNDS}
 
 RUN apk add --no-cache python3 g++ make
 
@@ -16,27 +10,6 @@ COPY prisma ./prisma
 RUN npm ci
 RUN npm run generate:dev
 
-COPY src ./src
-RUN npm run build
-
-# ────────────────────────────────────────────────────────────────────────────────
-# Stage 2: Runtime (Produção)
-# ────────────────────────────────────────────────────────────────────────────────
-FROM node:18-alpine
-
-WORKDIR /app
-
-ARG NODE_ENV
-ARG PORT_BACKEND
-
-ENV NODE_ENV=${NODE_ENV}
-ENV PORT_BACKEND=${PORT_BACKEND}
-
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
+RUN npm install -g nodemon ts-node
 
 EXPOSE ${PORT_BACKEND}
-
-CMD ["sh", "-c", "npm run migrate:deploy:dev && npm run seed:dev && node dist/src/server.js"]

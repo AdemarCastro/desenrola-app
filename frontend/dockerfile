@@ -1,35 +1,13 @@
-# ────────────────────────────────────────────────────────────────────────────────
-# Stage 1: Builder
-# ────────────────────────────────────────────────────────────────────────────────
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
-WORKDIR /src/app
+WORKDIR /app
 
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+RUN apk add --no-cache libc6-compat
 
 COPY package*.json ./
+
 RUN npm ci
 
 COPY . .
 
-RUN npm run build
-
-# ────────────────────────────────────────────────────────────────────────────────
-# Stage 2: Runtime (Produção)
-# ────────────────────────────────────────────────────────────────────────────────
-FROM node:18-alpine
-WORKDIR /src/app
-
-ARG NODE_ENV
-ARG PORT_FRONTEND
-
-ENV NODE_ENV=${NODE_ENV}
-
-COPY --from=builder /src/app/package*.json ./
-COPY --from=builder /src/app/node_modules ./node_modules
-COPY --from=builder /src/app/.next ./.next
-COPY --from=builder /src/app/public ./public
-
-EXPOSE ${PORT_FRONTEND}
-CMD ["npm", "start"]
+EXPOSE 3000
