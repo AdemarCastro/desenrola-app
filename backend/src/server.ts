@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 
 import tarefaRoutes from './routes/tarefa.routes';
 import comentarioRoutes from './routes/comentario.routes';
@@ -9,7 +11,13 @@ import { errorHandler } from './middleware/errorhandler';
 
 const app = express();
 
+// 1) Carrega seu spec (ajuste o caminho se necessário)
+const swaggerDocument = YAML.load('swagger.yaml');
+
 app.use(express.json());
+
+// 2) Monta o Swagger UI em /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rotas públicas
 app.use('/api/auth', authRoutes);
@@ -20,7 +28,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/comentarios', comentarioRoutes);
 
 // Rota health check
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString()
@@ -30,7 +38,6 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
-
 app.listen(port, () =>
-  console.log(`🚀 Server em http://localhost:${port}/api`)
+  console.log(`🚀 Server em http://localhost:${port}/api`, `📄 Swagger UI em http://localhost:${port}/api-docs`)
 );
