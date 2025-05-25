@@ -1,4 +1,4 @@
-import 'dotenv/config'; // Carrega variáveis de ambiente primeiro
+import 'dotenv/config';
 import express from 'express';
 
 import tarefaRoutes from './routes/tarefa.routes';
@@ -9,7 +9,7 @@ import { errorHandler } from './middleware/errorhandler';
 
 const app = express();
 
-app.use(express.json()); // Parser de JSON
+app.use(express.json());
 
 // Rotas públicas
 app.use('/api/auth', authRoutes);
@@ -30,4 +30,7 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`🚀 Server running at http://localhost:${port}`));
+
+app.listen(port, () =>
+  console.log(`🚀 Server em http://localhost:${port}/api`)
+);
