@@ -8,13 +8,19 @@ services:
         PORT: ${PORT_BACKEND}
         SALT_ROUNDS: ${SALT_ROUNDS}
     volumes:
-      - backend-db-data:/app/database
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - ./backend/package.json:/app/package.json
+      - ./backend/package-lock.json:/app/package-lock.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
     env_file:
       - ./.env
     ports:
       - '${PORT_BACKEND}:${PORT_BACKEND}'
     networks:
       - app-network
+    command: >
+      npm run start:dev
 
   frontend:
     build:
