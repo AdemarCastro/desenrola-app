@@ -80,10 +80,27 @@ cd desenrola-app
 ./init-env.sh
 
 # Acessar aplicação:
-# Frontend: http://localhost:3000
-# Backend:  http://localhost:4000
-# Prisma Studio: http://localhost:5555
+# - Frontend:       http://localhost:3000
+# - Backend API:    http://localhost:4000/api
+# - Swagger Docs:   http://localhost:4000/api-docs
+# - Prisma Studio:  http://localhost:5555
 ```
+
+## 📘 Documentação da API
+
+A documentação da API REST é gerada com **Swagger** e está disponível no ambiente de desenvolvimento.
+
+Após iniciar o backend, acesse:
+
+http://localhost:4000/api-docs
+
+Essa interface fornece:
+
+- Lista de endpoints disponíveis
+- Exemplos de requisições e respostas
+- Possibilidade de testar chamadas diretamente pelo navegador
+
+A especificação está definida no arquivo `swagger.yaml`, localizado na raiz do backend.
 
 ### Parar Ambiente
 ```bash
