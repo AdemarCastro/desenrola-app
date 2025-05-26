@@ -40,6 +40,10 @@ app.get('/', (_req, res) => {
 app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
-app.listen(port, () =>
-  console.log(`🚀 Server em http://localhost:${port}/api`, `📄 Swagger UI em http://localhost:${port}/api-docs`)
-);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () =>
+    console.log(`🚀 Server em http://localhost:${port}/api`, `📄 Swagger UI em http://localhost:${port}/api-docs`)
+  );
+}
+
+export default app;

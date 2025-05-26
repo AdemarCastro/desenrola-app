@@ -5,9 +5,13 @@ import {
   validateComentarioUpdate,
   validateComentarioExists,
 } from '../middleware/comentario.middleware';
+import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
 const controller = new ComentarioController();
+
+// todas as rotas de comentário requerem JWT
+router.use(authenticateJWT);
 
 router.get('/', controller.getComentarios);
 router.get('/:comentarioId', validateComentarioExists, controller.getComentarioById);
