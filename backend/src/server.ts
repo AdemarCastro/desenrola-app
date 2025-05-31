@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from "cors"; 
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
@@ -16,6 +17,13 @@ const app = express();
 const swaggerDocument = YAML.load('swagger.yaml');
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", // provavelmente trocar futuramente
+    credentials: true, // se precisar usar cookies/sessões no futuro
+  })
+);
 
 // 2) Monta o Swagger UI em /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

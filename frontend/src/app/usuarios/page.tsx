@@ -1,17 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; 
 import { Usuario } from "@/types/Usuario";
 import UserTable from "../../components/UserTable";
 
 export default function UsuariosPage() {
+  const router = useRouter(); 
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     async function fetchUsuarios() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error("Erro ao buscar usuários");
         const data = await res.json();
         setUsuarios(data);
@@ -21,7 +31,7 @@ export default function UsuariosPage() {
     }
 
     fetchUsuarios();
-  }, []);
+  }, [router]); 
 
   return (
     <>
