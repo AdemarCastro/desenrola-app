@@ -52,4 +52,13 @@ export class AuthController {
     // 4. Responder com o token
     res.json({ token });
   }
+
+  /**
+   * POST /api/auth/logout
+   */
+  static async logout(req: Request, res: Response): Promise<void> {
+    const userId = req.user?.userId;
+    console.log(`Usuário ${userId} deslogou em ${new Date().toISOString()}`);
+    res.status(204).send();
+  }
 }
