@@ -18,7 +18,6 @@ export async function createUsuario(
       sobrenome: data.sobrenome,
       senha: hashed,
       data_nascimento: new Date(data.data_nascimento),
-      idade: data.idade, // ⚠️ Remover futuramente
       status_id: data.status_id,
     },
   });

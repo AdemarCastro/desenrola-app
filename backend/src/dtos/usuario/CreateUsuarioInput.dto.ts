@@ -29,6 +29,6 @@ export class CreateUsuarioInputDTO {
   status_id: number;
 
   // ⚠️ Remover em versões futuras
-  @IsInt()
-  idade: number;
+  //@IsInt()
+  //idade: number;
 }
