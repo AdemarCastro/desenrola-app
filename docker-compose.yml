@@ -8,13 +8,20 @@ services:
         PORT: ${PORT_BACKEND}
         SALT_ROUNDS: ${SALT_ROUNDS}
     volumes:
-      - backend-db-data:/app/database
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - ./backend/swagger.yaml:/app/swagger.yaml:ro
+      - ./backend/package.json:/app/package.json
+      - ./backend/package-lock.json:/app/package-lock.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
     env_file:
       - ./.env
     ports:
       - '${PORT_BACKEND}:${PORT_BACKEND}'
     networks:
       - app-network
+    command: >
+      npm run start:dev
 
   frontend:
     build:
@@ -24,6 +31,12 @@ services:
         NODE_ENV: ${NODE_ENV}
         PORT: ${PORT_FRONTEND}
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/package-lock.json:/app/package-lock.json
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/postcss.config.mjs:/app/postcss.config.mjs
     env_file:
       - ./.env
     ports:
@@ -32,6 +45,8 @@ services:
       - backend
     networks:
       - app-network
+    command: >
+      npm run dev
 
   prisma-studio:
     build:
@@ -49,6 +64,20 @@ services:
       - "${PRISMA_STUDIO_PORT}:${PRISMA_STUDIO_PORT}"
     depends_on:
       - backend
+    networks:
+      - app-network
+  
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    depends_on:
+      - backend
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./backend/swagger.yaml:/swagger.yaml:ro
+    environment:
+      - SWAGGER_JSON=/swagger.yaml
     networks:
       - app-network
 

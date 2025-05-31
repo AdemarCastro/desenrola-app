@@ -1,0 +1,207 @@
+openapi: 3.0.1
+info:
+  title: Desenrola App API
+  version: 1.0.0
+  description: |
+    API do Desenrola App – autenticação, usuários, projetos, tarefas e comentários.
+
+servers:
+  - url: '{baseUrl}'
+    variables:
+      baseUrl:
+        default: http://localhost:4000
+        description: URL base da API
+
+paths:
+  /:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: API online
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+  /api/auth/register:
+    post:
+      summary: Registrar novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: Usuário criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Dados inválidos
+  /api/auth/login:
+    post:
+      summary: Login de usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Token de autenticação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Credenciais inválidas
+
+  /api/tarefas:
+    get:
+      summary: Listar todas as tarefas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de tarefas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tarefa'
+    post:
+      summary: Criar nova tarefa
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TarefaInput'
+      responses:
+        '201':
+          description: Tarefa criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarefa'
+
+  /api/tarefas/{id}:
+    put:
+      summary: Atualizar tarefa
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TarefaInput'
+      responses:
+        '200':
+          description: Tarefa atualizada
+    delete:
+      summary: Excluir tarefa
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tarefa excluída
+
+  /api/usuarios:
+    get:
+      summary: Listar usuários
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuários
+    # ... e assim por diante para POST, PUT, DELETE em /api/usuarios ...
+
+  /comentarios:
+    get:
+      summary: Listar comentários
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de comentários
+    # ... e rotas de POST, PUT, DELETE em /comentarios ...
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserRegister:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    UserLogin:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    AuthToken:
+      type: object
+      properties:
+        token:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+    TarefaInput:
+      type: object
+      required: [titulo, descricao]
+      properties:
+        titulo:
+          type: string
+        descricao:
+          type: string
+    Tarefa:
+      allOf:
+        - $ref: '#/components/schemas/TarefaInput'
+        - type: object
+          properties:
+            id:
+              type: string
+    # Defina schemas para Usuário e Comentário conforme seu modelo de dados

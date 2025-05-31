@@ -5,8 +5,12 @@ import {
   validateProjetoUpdate,
   validateProjetoExists,
 } from '../middleware/projeto.middleware';
+import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
+
+// todas as rotas de projeto requerem JWT
+router.use(authenticateJWT);
 
 router.get('/', ProjetoController.getProjetos);
 router.get('/:projetoId', validateProjetoExists, ProjetoController.getProjetoById);
