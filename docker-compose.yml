@@ -31,12 +31,10 @@ services:
         NODE_ENV: ${NODE_ENV}
         PORT: ${PORT_FRONTEND}
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        WATCHPACK_POLLING: ${WATCHPACK_POLLING}
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/package.json:/app/package.json
-      - ./frontend/package-lock.json:/app/package-lock.json
-      - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./frontend/postcss.config.mjs:/app/postcss.config.mjs
+      - ./frontend:/app
+      - /app/node_modules
     env_file:
       - ./.env
     ports:
