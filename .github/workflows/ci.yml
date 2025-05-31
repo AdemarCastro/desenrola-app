@@ -37,6 +37,7 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
+      - run: npm run generate:dev
       - name: Build
         run: npm run build
 
@@ -53,6 +54,7 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
+      - run: npm run generate:dev
       - name: Test
         run: npm test
 
