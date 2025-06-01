@@ -17,14 +17,20 @@ const swaggerDocument = YAML.load('swagger.yaml');
 
 app.use(express.json());
 
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://desenrola-app.vercel.app"]
+    : ["http://localhost:3000"];
+
 app.use(
   cors({
-    origin: "http://localhost:3000", // provavelmente trocar futuramente
-    credentials: true, // se precisar usar cookies/sessões no futuro
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
-// 2) Monta o Swagger UI em /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/api/auth', authRoutes);
