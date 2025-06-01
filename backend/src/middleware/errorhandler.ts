@@ -1,14 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 
-// Silencia warning de unused para o parâmetro `_next`
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorHandler(
   err: Error,
   req: Request,
   res: Response,
   _next: NextFunction
 ): void {
-  // silencia TS warning de parâmetro não utilizado
   void _next;
   console.error('[Error Handler]', err.stack);
   if (typeof res.status === 'function') {

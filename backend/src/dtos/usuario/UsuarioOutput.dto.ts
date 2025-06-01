@@ -1,5 +1,4 @@
 import { Exclude, Expose } from "class-transformer";
-import { Usuario as PrismaUsuario } from "@prisma/client";
 
 @Exclude()
 export class UsuarioOutputDTO {
@@ -12,7 +11,7 @@ export class UsuarioOutputDTO {
   @Expose() criado_em: Date;
   @Expose() atualizado_em: Date;
 
-  constructor(usuario: PrismaUsuario) {
+  constructor(usuario: UsuarioOutputDTO) {
     Object.assign(this, usuario);
   }
 }
