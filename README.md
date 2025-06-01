@@ -125,7 +125,7 @@ A especificação está definida no arquivo `swagger.yaml`, localizado na raiz d
 | **FIX**    | Corrige um bug ou comportamento indesejado                               | `[FIX] - Corrige loop infinito na paginação`|
 | **DOCS**   | Alterações na documentação                                               | `[DOCS] - Atualiza guia de instalação`      |
 | **CHORE**  | Mudanças em configurações, scripts ou dependências                       | `[CHORE] - Atualiza versão do Docker Compose` |
-| **REFACTOR**| Refatoração de código sem mudar funcionalidades                         | `[REFACTOR] - Simplifica lógica de validação` |
+| **REFAC**| Refatoração de código sem mudar funcionalidades                         | `[REFAC] - Simplifica lógica de validação` |
 | **BUILD**  | Modificações no sistema de build ou dependências externas                | `[BUILD] - Adiciona pacote de internacionalização` |
 | **TEST**   | Adiciona/atualiza testes                                                 | `[TEST] - Cobre cenários de autenticação`   |
 | **STYLE**  | Formatação de código, linting ou melhorias de legibilidade               | `[STYLE] - Aplica Prettier nos componentes` |
