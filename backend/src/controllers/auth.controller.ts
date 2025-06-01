@@ -31,10 +31,4 @@ export class AuthController {
       res.status(400).json({ error: 'Erro ao registrar usuário', message });
     }
   }
-
-  static async logout(req: Request, res: Response): Promise<void> {
-    const userId = req.user?.userId;
-    console.log(`Usuário ${userId} deslogou em ${new Date().toISOString()}`);
-    res.status(204).send();
-  }
 }

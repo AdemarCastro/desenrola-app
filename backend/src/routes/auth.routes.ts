@@ -3,7 +3,6 @@ import { AuthController } from '../controllers/auth.controller';
 import { validateDto } from '../middleware/validation.middleware';
 import { LoginInputDto } from '../dtos/auth/LoginInput.dto';
 import { RegisterInputDto } from '../dtos/auth/RegisterInput.dto';
-import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -26,20 +25,6 @@ router.post(
   async (req, res, next) => {
     try {
       await AuthController.register(req, res);
-      next();
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-
-router.post(
-  '/logout',
-  authenticateJWT,
-  async (req, res, next) => {
-    try {
-      await AuthController.logout(req, res);
       next();
     } catch (error) {
       next(error);
