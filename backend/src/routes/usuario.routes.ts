@@ -12,9 +12,10 @@ import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
 
 const router = Router();
 
-router.post("/", validateDto(CreateUsuarioInputDTO), createUsuarioController);
 router.get("/", getUsuariosController);
-router.put("/:id", validateDto(UpdateUsuarioInputDTO), updateUsuarioController);
-router.delete("/:id", deleteUsuarioController);
+router.get("/:usuarioId", getUsuariosController);
+router.post("/", validateDto(CreateUsuarioInputDTO), createUsuarioController);
+router.put("/:usuarioId", validateDto(UpdateUsuarioInputDTO), updateUsuarioController);
+router.delete("/:usuarioId", deleteUsuarioController);
 
 export default router;
