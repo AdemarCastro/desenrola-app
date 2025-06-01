@@ -31,7 +31,7 @@ export default function LoginPage() {
       router.push("/usuarios");
     } catch {
       setErro("Erro ao conectar com o servidor.");
-    }    
+    }
   }
 
   return (
@@ -46,27 +46,25 @@ export default function LoginPage() {
             height={64}
             className="mx-auto mb-2"
           />
-          <h1 className="text-2xl font-bold">Bem Vindo de Volta!</h1>
-          <p className="text-sm text-gray-500">
-            Seus projetos estão te esperando
-          </p>
+          <h1 className="text-2xl font-bold text-black">Bem Vindo de Volta!</h1>
+          <p className="text-sm text-black">Seus projetos estão te esperando</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-black">
               Email address
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-black focus:border-black"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-black focus:border-black text-black placeholder-black/50"
               placeholder="Enter your email"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 flex justify-between">
+            <label className="block text-sm font-medium text-black flex justify-between">
               <span>Password</span>
               <a href="#" className="text-xs text-blue-600 hover:underline">
                 forgot password
@@ -76,14 +74,14 @@ export default function LoginPage() {
               type="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-black focus:border-black"
-              placeholder="Name"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-black focus:border-black text-black placeholder-black/50"
+              placeholder="Enter your password"
               required
             />
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="remember" className="rounded" />
-            <label htmlFor="remember" className="text-sm text-gray-600">
+            <label htmlFor="remember" className="text-sm text-black">
               Remember for 30 days
             </label>
           </div>
@@ -98,14 +96,14 @@ export default function LoginPage() {
         <div className="mt-6 flex flex-col gap-3">
           <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
             <Image src="/google-icon.png" alt="Google" width={20} height={20} />
-            Sign in with Google
+            <span className="text-black">Sign in with Google</span>
           </button>
           <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
             <Image src="/apple-icon.png" alt="Apple" width={20} height={20} />
-            Sign in with Apple
+            <span className="text-black">Sign in with Apple</span>
           </button>
         </div>
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-black">
           Don’t have an account?{" "}
           <a href="#" className="text-blue-600 hover:underline">
             Sign Up

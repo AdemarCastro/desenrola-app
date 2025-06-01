@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { Usuario } from "@/types/Usuario";
 import UserTable from "../../components/UserTable";
 
 export default function UsuariosPage() {
-  const router = useRouter(); 
+  const router = useRouter();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -31,16 +31,16 @@ export default function UsuariosPage() {
     }
 
     fetchUsuarios();
-  }, [router]); 
+  }, [router]);
 
   return (
-    <>
+    <div className="p-4 bg-white text-black min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Gerenciamento de Usuário</h1>
       {erro ? (
-        <p className="text-red-500">Erro: {erro}</p>
+        <p className="text-red-500 text-sm">Erro: {erro}</p>
       ) : (
         <UserTable usuarios={usuarios} />
       )}
-    </>
+    </div>
   );
 }
