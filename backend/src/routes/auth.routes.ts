@@ -16,6 +16,19 @@ router.post(
     } catch (error) {
       next(error);
     }
+  },
+);
+
+router.post(
+  '/register',
+  validateDto(RegisterInputDto),
+  async (req, res, next) => {
+    try {
+      await AuthController.register(req, res);
+      next();
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
