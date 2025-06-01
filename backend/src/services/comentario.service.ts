@@ -1,48 +1,42 @@
-import { PrismaClient } from '@prisma/client';
-import { ComentarioOutputDto } from '../dtos/comentario/ComentarioOutput.dto';
-
-const prisma = new PrismaClient();
+import { ComentarioRepository } from "../repository/comentario.repository";
+import { ComentarioOutputDto } from "../dtos/comentario/ComentarioOutput.dto";
+import { plainToInstance } from "class-transformer";
 
 export class ComentarioService {
-  async findAll(page: number = 1, limit: number = 10): Promise<ComentarioOutputDto[]> {
+  static async findAll(page: number = 1, limit: number = 10): Promise<ComentarioOutputDto[]> {
     const skip = (page - 1) * limit;
-    return prisma.comentario.findMany({
-      where: { apagado_em: null },
-      skip,
-      take: limit,
+    const comentarios = await ComentarioRepository.findAll(skip, limit);
+
+    return plainToInstance(ComentarioOutputDto, comentarios, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async findById(id: number): Promise<ComentarioOutputDto | null> {
-    return prisma.comentario.findFirst({
-      where: { id, apagado_em: null },
+  static async findById(id: number): Promise<ComentarioOutputDto | null> {
+    const comentario = await ComentarioRepository.findById(id);
+
+    return plainToInstance(ComentarioOutputDto, comentario, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async create(data: {
-    conteudo: string;
-    id_tarefa: number;
-    id_usuario: number;
-  }): Promise<ComentarioOutputDto> {
-    return prisma.comentario.create({ data });
-  }
+  static async create(data: { conteudo: string; id_tarefa: number; id_usuario: number }): Promise<ComentarioOutputDto> {
+    const comentario = await ComentarioRepository.create(data);
 
-  async update(
-    id: number,
-    data: {
-      conteudo: string;
-    }
-  ): Promise<ComentarioOutputDto> {
-    return prisma.comentario.update({
-      where: { id },
-      data,
+    return plainToInstance(ComentarioOutputDto, comentario, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async delete(id: number): Promise<void> {
-    await prisma.comentario.update({
-      where: { id },
-      data: { apagado_em: new Date() },
+  static async update(id: number, data: { conteudo: string }): Promise<ComentarioOutputDto> {
+    const comentario = await ComentarioRepository.update(id, data);
+
+    return plainToInstance(ComentarioOutputDto, comentario, {
+      excludeExtraneousValues: true,
     });
+  }
+
+  static async delete(id: number): Promise<void> {
+    await ComentarioRepository.delete(id);
   }
 }
