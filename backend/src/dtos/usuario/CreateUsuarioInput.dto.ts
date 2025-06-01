@@ -28,6 +28,9 @@ export class CreateUsuarioInputDTO {
   @IsInt({ message: "Status inválido" })
   status_id: number;
 
+  @IsInt({ message: "Nível de acesso inválido" })
+  nivel_acesso_id: number;
+
   // ⚠️ Remover em versões futuras
   //@IsInt()
   //idade: number;

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET /tarefas
 export async function getTarefas(req: Request, res: Response) {
   const { page = 1, limit = 10 } = req.query;
   const skip = (Number(page) - 1) * Number(limit);
@@ -17,7 +16,6 @@ export async function getTarefas(req: Request, res: Response) {
   res.json(tarefas);
 }
 
-// GET /tarefas/:tarefaId
 export async function getTarefaById(req: Request, res: Response): Promise<void> {
   const { tarefaId } = req.params;
 
@@ -33,7 +31,6 @@ export async function getTarefaById(req: Request, res: Response): Promise<void> 
   res.json(tarefa);
 }
 
-// POST /tarefas
 export async function createTarefa(req: Request, res: Response): Promise<void> {
   const { descricao, status_id, prioridade_id, id_projeto } = req.body;
 
@@ -42,7 +39,6 @@ export async function createTarefa(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  // Lógica de criação da tarefa
   const tarefa = await prisma.tarefa.create({
     data: { descricao, status_id, prioridade_id, id_projeto },
   });
@@ -50,7 +46,6 @@ export async function createTarefa(req: Request, res: Response): Promise<void> {
   res.status(201).json(tarefa);
 }
 
-// PUT /tarefas/:tarefaId
 export async function updateTarefa(req: Request, res: Response): Promise<void> {
   const { tarefaId } = req.params;
   const { descricao, status_id, prioridade_id } = req.body;

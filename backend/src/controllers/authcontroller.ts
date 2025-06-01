@@ -1,61 +1,37 @@
 import { Request, Response } from 'express';
-import jwt, { SignOptions } from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import prisma from '../client';
+import { AuthService } from '../services/auth.service';
+
+const authService = new AuthService();
 
 export class AuthController {
-  /**
-   * POST /api/auth/login
-   * body: { email: string; senha: string }
-   */
   static async login(req: Request, res: Response): Promise<void> {
-    const { email, senha } = req.body;
-
-    // 1. Buscar usuário ativo pelo e-mail
-    const usuario = await prisma.usuario.findFirst({
-      where: { email, apagado_em: null },
-      select: { id: true, email: true, senha: true, nivel_acesso_id: true },
-    });
-    if (!usuario) {
-      res.status(401).json({ error: 'Email ou senha incorretos' });
-      return;
+    try {
+      const { email, senha } = req.body;
+      const { token } = await authService.login({ email, senha });
+      res.json({ token });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      res.status(401).json({ error: 'Email ou senha incorretos', message });
     }
-
-    // 2. Verificar senha
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
-    if (!senhaValida) {
-      res.status(401).json({ error: 'Email ou senha incorretos' });
-      return;
-    }
-
-    // 3. Gerar JWT
-    const payload = {
-      userId: usuario.id,
-      email: usuario.email,
-      nivelAcessoId: usuario.nivel_acesso_id,
-    };
-
-    // Simplifica expiresIn para string
-    const expiresIn: string = process.env.JWT_EXPIRES_IN || '1h';
-
-    const jwtOptions: SignOptions = {
-      algorithm: 'HS256',
-      expiresIn,
-    };
-
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET as string,
-      jwtOptions
-    );
-
-    // 4. Responder com o token
-    res.json({ token });
   }
 
-  /**
-   * POST /api/auth/logout
-   */
+  static async register(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, senha, primeiro_nome, sobrenome, data_nascimento } = req.body;
+      const { id, email: userEmail } = await authService.register({
+        email,
+        senha,
+        primeiro_nome,
+        sobrenome,
+        data_nascimento,
+      });
+      res.status(201).json({ id, email: userEmail });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      res.status(400).json({ error: 'Erro ao registrar usuário', message });
+    }
+  }
+
   static async logout(req: Request, res: Response): Promise<void> {
     const userId = req.user?.userId;
     console.log(`Usuário ${userId} deslogou em ${new Date().toISOString()}`);

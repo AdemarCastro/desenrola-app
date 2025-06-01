@@ -29,6 +29,20 @@ export async function getAllUsuarios(): Promise<UsuarioOutputDTO[]> {
   return usuarios.map((u) => new UsuarioOutputDTO(u));
 }
 
+export async function findUsuarioByEmailForAuth(
+  email: string
+): Promise<{ id: number; email: string; senha: string; nivel_acesso_id: number | null } | null> {
+  return prisma.usuario.findFirst({
+    where: { email, apagado_em: null },
+    select: {
+      id: true,
+      email: true,
+      senha: true,
+      nivel_acesso_id: true,
+    },
+  });
+}
+
 export async function updateUsuario(
   id: number,
   data: UpdateUsuarioInputDTO
