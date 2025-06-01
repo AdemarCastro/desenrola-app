@@ -20,6 +20,7 @@ router.get('/:tarefaId', authenticateJWT, validateTarefaExists, getTarefaById);
 router.post('/', authenticateJWT, validateDto(CreateTarefaInputDto), createTarefa);
 router.put('/:tarefaId', authenticateJWT, validateTarefaExists, validateDto(UpdateTarefaInputDto), updateTarefa);
 router.delete('/:tarefaId', authenticateJWT, validateTarefaExists, deleteTarefa);
+
 router.get('/:tarefaId/comentarios', authenticateJWT, validateTarefaExists, getComentariosByTarefa);
 
 export default router;

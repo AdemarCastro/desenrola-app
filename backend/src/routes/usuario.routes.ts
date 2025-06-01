@@ -15,9 +15,9 @@ const router = Router();
 
 
 router.use(authenticateJWT);
-router.post("/", validateDto(CreateUsuarioInputDTO), createUsuarioController);
 router.get("/", getUsuariosController);
-router.put("/:id", validateDto(UpdateUsuarioInputDTO), updateUsuarioController);
-router.delete("/:id", deleteUsuarioController);
+router.post("/", validateDto(CreateUsuarioInputDTO), createUsuarioController);
+router.put("/:usuarioId", validateDto(UpdateUsuarioInputDTO), updateUsuarioController);
+router.delete("/:usuarioId", deleteUsuarioController);
 
 export default router;
