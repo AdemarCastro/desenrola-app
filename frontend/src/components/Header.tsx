@@ -1,18 +1,22 @@
+import Image from "next/image";
+
 export default function Header() {
   return (
     <header className="bg-black text-white flex justify-end items-center px-6 h-16">
       <div className="flex items-center gap-4">
         <button>
-          <img src="/notion-icon.png" alt="Notion" className="w-6 h-6" />
+          <Image src="/notion-icon.png" alt="Notion" width={24} height={24} />
         </button>
         <button>
-          <img src="/github-icon.png" alt="GitHub" className="w-6 h-6" />
+          <Image src="/github-icon.png" alt="GitHub" width={24} height={24} />
         </button>
         <button>
-          <img
+          <Image
             src="/avatar.png"
             alt="Avatar"
-            className="w-8 h-8 rounded-full"
+            width={32}
+            height={32}
+            className="rounded-full"
           />
         </button>
       </div>
