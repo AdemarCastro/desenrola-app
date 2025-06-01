@@ -6,7 +6,7 @@ const authService = new AuthService();
 export class AuthController {
   static async login(req: Request, res: Response): Promise<void> {
     try {
-    const { email, senha } = req.body;
+      const { email, senha } = req.body;
       const { token } = await authService.login({ email, senha });
       res.json({ token });
     } catch (error: unknown) {
