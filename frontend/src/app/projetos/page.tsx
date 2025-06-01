@@ -35,12 +35,8 @@ export default function ProjetosPage() {
         const response = await res.json();
         setProjetos(response.data);
       } catch (e) {
-        if (e instanceof Error) {
-          setErro(e.message);
-        } else {
-          setErro("Erro ao carregar");
-        }
-      }      
+        setErro(e instanceof Error ? e.message : "Erro ao carregar");
+      }
     }
 
     fetchProjetos();
@@ -59,11 +55,11 @@ export default function ProjetosPage() {
   };
 
   return (
-    <div className="p-4 relative">
+    <div className="p-4 bg-white text-black min-h-screen">
       <h1 className="text-2xl font-bold mb-6">Projetos</h1>
 
       {erro ? (
-        <p className="text-red-500">Erro: {erro}</p>
+        <p className="text-red-500 text-sm">Erro: {erro}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {projetos.map((projeto) => (
@@ -72,11 +68,15 @@ export default function ProjetosPage() {
               className="bg-white p-6 rounded-xl border shadow hover:shadow-lg transform hover:scale-[1.02] transition cursor-pointer"
               onClick={() => setModalProjeto(projeto)}
             >
-              <p className="text-sm text-gray-500 mb-2">
+              <p className="text-sm text-black/60 mb-2">
                 {getStatus(projeto.progresso)}
               </p>
-              <h2 className="font-semibold text-lg">{projeto.nome}</h2>
-              <p className="text-sm mt-2 mb-1">{projeto.progresso}% Completo</p>
+              <h2 className="font-semibold text-lg text-black">
+                {projeto.nome}
+              </h2>
+              <p className="text-sm mt-2 mb-1 text-black/80">
+                {projeto.progresso}% Completo
+              </p>
               <div className="w-full h-2 bg-gray-200 rounded-full mb-4">
                 <div
                   className={`${getBarColor(
@@ -85,7 +85,7 @@ export default function ProjetosPage() {
                   style={{ width: `${projeto.progresso}%` }}
                 />
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-black/70">
                 <p>
                   <strong>Criado em:</strong>{" "}
                   {new Date(projeto.criado_em).toLocaleDateString()}
@@ -102,18 +102,17 @@ export default function ProjetosPage() {
         </div>
       )}
 
-      {/* Modal de Detalhes */}
       {modalProjeto && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-xl relative text-black">
             <button
-              className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"
+              className="absolute top-2 right-3 text-black/60 hover:text-black text-xl"
               onClick={() => setModalProjeto(null)}
             >
               ×
             </button>
             <h2 className="text-xl font-bold mb-2">{modalProjeto.nome}</h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-black/60 mb-4">
               {getStatus(modalProjeto.progresso)}
             </p>
             <p className="mb-2">
@@ -129,7 +128,7 @@ export default function ProjetosPage() {
                 ? new Date(modalProjeto.data_entrega).toLocaleDateString()
                 : "Não definida"}
             </p>
-            <p className="text-sm text-gray-400 mt-4">
+            <p className="text-sm text-black/50 mt-4">
               Última atualização em{" "}
               {new Date(modalProjeto.atualizado_em).toLocaleDateString()}
             </p>
