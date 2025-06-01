@@ -29,9 +29,9 @@ export default function LoginPage() {
       const { token } = await res.json();
       localStorage.setItem("token", token);
       router.push("/usuarios");
-    } catch (_error) {
+    } catch {
       setErro("Erro ao conectar com o servidor.");
-    }
+    }    
   }
 
   return (
