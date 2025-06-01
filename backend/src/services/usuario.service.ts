@@ -4,6 +4,7 @@ import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
 import { UsuarioOutputDTO } from "../dtos/usuario/UsuarioOutput.dto";
 import { UsuarioRepository } from "../repository/usuario.repository";
 import { AuthOutput } from "../dtos/auth/AuthOutput.dto";
+import { plainToInstance } from "class-transformer";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
 
@@ -11,17 +12,25 @@ export class UsuarioService {
   
   static async findAll(): Promise<UsuarioOutputDTO[]> {
     const usuarios = await UsuarioRepository.findAll();
-    return usuarios.map((u) => new UsuarioOutputDTO(u));
+    return plainToInstance(UsuarioOutputDTO, usuarios, {
+      excludeExtraneousValues: true,
+    });
   }
 
   static async findById(id: number): Promise<UsuarioOutputDTO | null> {
     const usuario = await UsuarioRepository.findById(id);
-    return usuario ? new UsuarioOutputDTO(usuario) : null;
+    if (!usuario) return null;
+    return plainToInstance(UsuarioOutputDTO, usuario, {
+      excludeExtraneousValues: true,
+    });
   }
 
   static async findUsuarioByEmailForAuth(email: string): Promise<AuthOutput | null> {
     const usuario = await UsuarioRepository.findByEmailForAuth(email);
-    return usuario ? new AuthOutput(usuario) : null;
+    if (!usuario) return null;
+    return plainToInstance(AuthOutput, usuario, {
+      excludeExtraneousValues: true,
+    });
   }
 
   static async createUsuario(data: CreateUsuarioInputDTO): Promise<UsuarioOutputDTO> {
@@ -32,7 +41,9 @@ export class UsuarioService {
       data_nascimento: new Date(data.data_nascimento),
     });
     if (!usuario) throw new Error("Usuário não retornado após a criação no Banco de Dados");
-    return new UsuarioOutputDTO(usuario);
+    return plainToInstance(UsuarioOutputDTO, usuario, {
+      excludeExtraneousValues: true,
+    });
   }
 
   static async updateUsuario(id: number, data: UpdateUsuarioInputDTO): Promise<UsuarioOutputDTO> {
@@ -41,7 +52,9 @@ export class UsuarioService {
     }
     const usuario = await UsuarioRepository.update(id, data);
     if (!usuario) throw new Error("Usuário não retornado após a atualização no Banco de Dados");
-    return new UsuarioOutputDTO(usuario);
+    return plainToInstance(UsuarioOutputDTO, usuario, {
+      excludeExtraneousValues: true,
+    });
   }
 
   static async deleteUsuario(id: number): Promise<void> {
