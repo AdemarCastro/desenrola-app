@@ -76,8 +76,4 @@ export class AuthService {
 
     return { id: novoUsuario.id, email: novoUsuario.email };
   }
-
-  public async logout(): Promise<{ message: string }> {
-    return { message: 'Logout realizado com sucesso.' };
-  }
 }
