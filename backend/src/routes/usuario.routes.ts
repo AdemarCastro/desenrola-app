@@ -1,22 +1,16 @@
 import { Router } from "express";
-import {
-  getUsuariosController,
-  createUsuarioController,
-  updateUsuarioController,
-  deleteUsuarioController,
-} from "../controllers/usuario.controller";
-
-import { validateDto } from "../middleware/validation.middleware";
+import { UsuarioController } from "../controllers/usuario.controller";
 import { authenticateJWT } from "../middleware/auth.middleware";
-import { CreateUsuarioInputDTO } from "../dtos/usuario/CreateUsuarioInput.dto";
-import { UpdateUsuarioInputDTO } from "../dtos/usuario/UpdateUsuarioInput.dto";
+import { UsuarioMiddleware } from "../middleware/usuario.middleware";
 
 const router = Router();
 
-router.get("/", getUsuariosController);
-router.get("/:usuarioId", getUsuariosController);
-router.post("/", validateDto(CreateUsuarioInputDTO), createUsuarioController);
-router.put("/:usuarioId", validateDto(UpdateUsuarioInputDTO), updateUsuarioController);
-router.delete("/:usuarioId", deleteUsuarioController);
+router.use(authenticateJWT);
+
+router.get("/", UsuarioController.getUsuarios);
+router.get("/:usuarioId", UsuarioMiddleware.validateUsuarioExists, UsuarioController.getUsuarioById);
+router.post("/", UsuarioMiddleware.validateUsuarioCreate, UsuarioController.createUsuario);
+router.put("/:usuarioId", UsuarioMiddleware.validateUsuarioExists, UsuarioMiddleware.validateUsuarioUpdate, UsuarioController.updateUsuario);
+router.delete("/:usuarioId", UsuarioMiddleware.validateUsuarioExists, UsuarioController.deleteUsuario);
 
 export default router;
