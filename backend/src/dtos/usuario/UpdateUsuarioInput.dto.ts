@@ -31,6 +31,10 @@ export class UpdateUsuarioInputDTO {
   @IsOptional()
   status_id?: number;
 
+  @IsInt({ message: "Nível de acesso inválido" })
+  @IsOptional()
+  nivel_acesso_id?: number;
+
   // ⚠️ Remover futuramente
   @IsInt()
   @IsOptional()

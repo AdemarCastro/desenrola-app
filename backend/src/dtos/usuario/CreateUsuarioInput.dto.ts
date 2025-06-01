@@ -22,13 +22,13 @@ export class CreateUsuarioInputDTO {
   @Length(6, 20)
   senha: string;
 
-  @IsDateString({}, { message: "Data de nascimento inválida" })
-  data_nascimento: string;
+  @IsNotEmpty({ message: "Data de nascimento é obrigatória" })
+  @IsDateString({}, { message: "Data de nascimento deve estar no formato ISO-8601" })
+  data_nascimento: string | Date;
 
   @IsInt({ message: "Status inválido" })
   status_id: number;
 
-  // ⚠️ Remover em versões futuras
-  @IsInt()
-  idade: number;
+  @IsInt({ message: "Nível de acesso inválido" })
+  nivel_acesso_id: number;
 }

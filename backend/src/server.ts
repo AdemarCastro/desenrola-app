@@ -13,7 +13,6 @@ import { errorHandler } from './middleware/errorhandler';
 
 const app = express();
 
-// 1) Carrega seu spec (ajuste o caminho se necessário)
 const swaggerDocument = YAML.load('swagger.yaml');
 
 app.use(express.json());
@@ -28,16 +27,13 @@ app.use(
 // 2) Monta o Swagger UI em /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Rotas públicas
 app.use('/api/auth', authRoutes);
 
-// Rotas protegidas
 app.use('/api/tarefas', tarefaRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/projetos', projetoRoutes);
 app.use('/comentarios', comentarioRoutes);
 
-// Rota health check
 app.get('/', (_req, res) => {
   res.status(200).json({
     status: 'online',

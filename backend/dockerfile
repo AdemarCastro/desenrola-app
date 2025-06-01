@@ -13,3 +13,5 @@ RUN npm run generate:dev
 RUN npm install -g nodemon ts-node
 
 EXPOSE ${PORT_BACKEND}
+
+CMD ["npm", "run", "dev"]
