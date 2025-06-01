@@ -32,7 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tarefas', tarefaRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/projetos', projetoRoutes);
-app.use('/comentarios', comentarioRoutes);
+app.use('/api/comentarios', comentarioRoutes);
 
 app.get('/', (_req, res) => {
   res.status(200).json({
