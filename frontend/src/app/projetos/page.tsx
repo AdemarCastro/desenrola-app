@@ -34,9 +34,13 @@ export default function ProjetosPage() {
         if (!res.ok) throw new Error("Erro ao buscar projetos");
         const response = await res.json();
         setProjetos(response.data);
-      } catch (e: any) {
-        setErro(e.message || "Erro ao carregar");
-      }
+      } catch (e) {
+        if (e instanceof Error) {
+          setErro(e.message);
+        } else {
+          setErro("Erro ao carregar");
+        }
+      }      
     }
 
     fetchProjetos();
