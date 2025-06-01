@@ -33,13 +33,6 @@ export class AuthController {
   }
 
   static async logout(req: Request, res: Response): Promise<void> {
-    res.status(200).json({ message: 'Logout successful' });
-  }
-
-  /**
-   * POST /api/auth/logout
-   */
-  static async logout(req: Request, res: Response): Promise<void> {
     const userId = req.user?.userId;
     console.log(`Usuário ${userId} deslogou em ${new Date().toISOString()}`);
     res.status(204).send();
