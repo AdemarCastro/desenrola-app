@@ -1,57 +1,52 @@
-import { PrismaClient } from '@prisma/client';
-import { TarefaOutputDto } from '../dtos/tarefa/TarefaOutput.dto';
-
-const prisma = new PrismaClient();
+import { TarefaRepository } from "../repository/tarefa.repository";
+import { TarefaOutputDto } from "../dtos/tarefa/TarefaOutput.dto";
+import { plainToInstance } from "class-transformer";
 
 export class TarefaService {
-  async findAll(page: number = 1, limit: number = 10): Promise<TarefaOutputDto[]> {
+  static async findAll(page: number = 1, limit: number = 10): Promise<TarefaOutputDto[]> {
     const skip = (page - 1) * limit;
-    return prisma.tarefa.findMany({
-      where: { apagado_em: null },
-      skip,
-      take: limit,
+    const tarefas = await TarefaRepository.findAll(skip, limit);
+
+    return plainToInstance(TarefaOutputDto, tarefas, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async findById(id: number): Promise<TarefaOutputDto | null> {
-    return prisma.tarefa.findFirst({
-      where: { id, apagado_em: null },
-    });
-  }
+  static async findById(id: number): Promise<TarefaOutputDto | null> {
+    const tarefa = await TarefaRepository.findById(id);
 
-  async create(data: {
-    descricao: string;
-    status_id: number;
-    prioridade_id: number;
-    id_projeto: number;
-  }): Promise<TarefaOutputDto> {
-    return prisma.tarefa.create({ data });
-  }
-
-  async update(
-    id: number,
-    data: {
-      descricao?: string;
-      status_id?: number;
-      prioridade_id?: number;
+    if (!tarefa) {
+      return null;
     }
-  ): Promise<TarefaOutputDto> {
-    return prisma.tarefa.update({
-      where: { id },
-      data,
+
+    return plainToInstance(TarefaOutputDto, tarefa, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async delete(id: number): Promise<void> {
-    await prisma.tarefa.update({
-      where: { id },
-      data: { apagado_em: new Date() },
+  static async create(data: { descricao: string; status_id: number; prioridade_id: number; id_projeto: number }): Promise<TarefaOutputDto> {
+    const tarefa = await TarefaRepository.create(data);
+
+    return plainToInstance(TarefaOutputDto, tarefa, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async getComentariosByTarefa(tarefaId: number) {
-    return prisma.comentario.findMany({
-      where: { id_tarefa: tarefaId, apagado_em: null },
+  static async update(id: number, data: Partial<{ descricao: string; status_id: number; prioridade_id: number }>): Promise<TarefaOutputDto> {
+    const tarefa = await TarefaRepository.update(id, data);
+
+    return plainToInstance(TarefaOutputDto, tarefa, {
+      excludeExtraneousValues: true,
     });
+  }
+
+  static async delete(id: number): Promise<void> {
+    await TarefaRepository.delete(id);
+  }
+
+  static async getComentariosByTarefa(tarefaId: number) {
+    const comentarios = await TarefaRepository.getComentariosByTarefa(tarefaId);
+
+    return comentarios;
   }
 }
