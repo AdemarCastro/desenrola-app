@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { TarefaOutputDto } from '../dtos/tarefa/Tarefaoutput.dto';
+import { TarefaOutputDto } from '../dtos/tarefa/TarefaOutput.dto';
 
 const prisma = new PrismaClient();
 

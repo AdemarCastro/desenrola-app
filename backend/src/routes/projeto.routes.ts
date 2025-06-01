@@ -9,7 +9,6 @@ import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
 
-// todas as rotas de projeto requerem JWT
 router.use(authenticateJWT);
 
 router.get('/', ProjetoController.getProjetos);

@@ -9,14 +9,12 @@ export interface JwtPayload {
   exp?: number;
 }
 
-// Augment Express Request para incluir user
 declare module 'express-serve-static-core' {
   interface Request {
     user?: JwtPayload;
   }
 }
 
-// Middleware de autenticação JWT
 export function authenticateJWT(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
