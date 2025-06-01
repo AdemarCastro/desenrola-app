@@ -5,8 +5,8 @@ import {
   findUsuarioByEmailForAuth,
 } from './usuario.service';
 import { CreateUsuarioInputDTO } from '../dtos/usuario/CreateUsuarioInput.dto';
-import { LoginInputDto } from '../dtos/auth/logininput.dto';
-import { RegisterInputDto } from '../dtos/auth/registerinput.dto'; // Usaremos para tipar a entrada do register
+import { LoginInputDto } from '../dtos/auth/LoginInput.dto';
+import { RegisterInputDto } from '../dtos/auth/RegisterInput.dto';
 
 export class AuthService {
   public async login(

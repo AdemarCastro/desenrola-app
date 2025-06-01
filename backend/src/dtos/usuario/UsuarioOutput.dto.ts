@@ -11,7 +11,6 @@ export class UsuarioOutputDTO {
   @Expose() status_id: number;
   @Expose() criado_em: Date;
   @Expose() atualizado_em: Date;
-  @Expose() nivel_acesso_id: number;
 
   constructor(usuario: PrismaUsuario) {
     Object.assign(this, usuario);

@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/authcontroller';
 import { validateDto } from '../middleware/validation.middleware';
-import { LoginInputDto } from '../dtos/auth/logininput.dto';
-import { RegisterInputDto } from '../dtos/auth/registerinput.dto';
+import { LoginInputDto } from '../dtos/auth/LoginInput.dto';
+import { RegisterInputDto } from '../dtos/auth/RegisterInput.dto';
 import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
