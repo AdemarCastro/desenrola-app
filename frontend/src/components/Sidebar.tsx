@@ -26,10 +26,18 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 bg-black text-white p-6 space-y-4 hidden lg:block">
-      <div className="text-2xl font-bold mb-6">Desenrola</div>
       <div className="flex items-center gap-2 mb-6">
         <Image
-          src={usuario?.avatar_url || "/avatar.png"}
+          src="/desenrola-white.png"
+          alt="Logo Desenrola"
+          width={50}
+          height={50}
+        />
+        <span className="text-2xl font-bold">Desenrola</span>
+      </div>
+      <div className="flex items-center gap-2 mb-6">
+        <Image
+          src={usuario?.avatar_url || "/icone-usuario.png"}
           alt="Avatar"
           width={40}
           height={40}

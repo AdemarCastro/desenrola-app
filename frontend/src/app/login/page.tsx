@@ -40,10 +40,10 @@ export default function LoginPage() {
       <div className="z-10 max-w-md w-full px-6 py-10 bg-white shadow-xl rounded-xl">
         <div className="text-center mb-8">
           <Image
-            src="/logo.png"
+            src="/desenrola-icon1.png"
             alt="Logo"
-            width={64}
-            height={64}
+            width={100}
+            height={100}
             className="mx-auto mb-2"
           />
           <h1 className="text-2xl font-bold text-black">Bem Vindo de Volta!</h1>
@@ -95,11 +95,11 @@ export default function LoginPage() {
         </form>
         <div className="mt-6 flex flex-col gap-3">
           <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
-            <Image src="/google-icon.png" alt="Google" width={20} height={20} />
+            <Image src="/google.png" alt="Google" width={30} height={30} />
             <span className="text-black">Sign in with Google</span>
           </button>
           <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
-            <Image src="/apple-icon.png" alt="Apple" width={20} height={20} />
+            <Image src="/apple.png" alt="Apple" width={30} height={30} />
             <span className="text-black">Sign in with Apple</span>
           </button>
         </div>
