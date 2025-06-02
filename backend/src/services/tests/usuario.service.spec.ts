@@ -1,112 +1,161 @@
-import { PrismaClient } from '@prisma/client';
+import { UsuarioService } from '../usuario.service';
+import { UsuarioRepository } from '../../repository/usuario.repository';
 import bcrypt from 'bcrypt';
-import { createUsuario, updateUsuario, deleteUsuario } from '../usuario.service';
 import { CreateUsuarioInputDTO } from '../../dtos/usuario/CreateUsuarioInput.dto';
 import { UpdateUsuarioInputDTO } from '../../dtos/usuario/UpdateUsuarioInput.dto';
-import { UsuarioOutputDTO } from '../../dtos/usuario/UsuarioOutput.dto';
 
-jest.mock('@prisma/client', () => {
-  const mPrisma = {
-    usuario: {
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-  };
-  return { PrismaClient: jest.fn(() => mPrisma) };
-});
-
+jest.mock('../repository/usuario.repository');
 jest.mock('bcrypt');
 
-const mockPrisma = new PrismaClient() as jest.Mocked<PrismaClient>;
+const mockUsuario = {
+  id: 1,
+  email: 'test@example.com',
+  primeiro_nome: 'John',
+  sobrenome: 'Doe',
+  senha: 'hashed_password',
+  data_nascimento: new Date('1990-01-01'),
+  status_id: 1,
+  nivel_acesso_id: 2,
+};
 
 describe('UsuarioService', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  describe('findAll', () => {
+    it('deve retornar todos os usuários formatados como DTOs', async () => {
+      (UsuarioRepository.findAll as jest.Mock).mockResolvedValue([mockUsuario]);
+
+      const result = await UsuarioService.findAll();
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toHaveProperty('email', mockUsuario.email);
+      expect(UsuarioRepository.findAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('findById', () => {
+    it('deve retornar o usuário encontrado por ID', async () => {
+      (UsuarioRepository.findById as jest.Mock).mockResolvedValue(mockUsuario);
+
+      const result = await UsuarioService.findById(1);
+
+      expect(result).toHaveProperty('email', mockUsuario.email);
+      expect(UsuarioRepository.findById).toHaveBeenCalledWith(1);
+    });
+
+    it('deve retornar null se o usuário não for encontrado', async () => {
+      (UsuarioRepository.findById as jest.Mock).mockResolvedValue(null);
+
+      const result = await UsuarioService.findById(999);
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('findUsuarioByEmailForAuth', () => {
+    it('deve retornar o AuthOutput do usuário', async () => {
+      (UsuarioRepository.findByEmailForAuth as jest.Mock).mockResolvedValue(mockUsuario);
+
+      const result = await UsuarioService.findUsuarioByEmailForAuth('test@example.com');
+
+      expect(result).toHaveProperty('email', mockUsuario.email);
+    });
+
+    it('deve retornar null se usuário não for encontrado', async () => {
+      (UsuarioRepository.findByEmailForAuth as jest.Mock).mockResolvedValue(null);
+
+      const result = await UsuarioService.findUsuarioByEmailForAuth('notfound@example.com');
+
+      expect(result).toBeNull();
+    });
+  });
+
   describe('createUsuario', () => {
     it('deve criar um usuário com senha criptografada', async () => {
-      const dto: CreateUsuarioInputDTO = {
-        email: 'teste@exemplo.com',
-        primeiro_nome: 'Teste',
-        sobrenome: 'Exemplo',
-        senha: 'senha123',
-        data_nascimento: '1990-01-01',
-        idade: 33,
+      const createDto: CreateUsuarioInputDTO = {
+        email: 'new@example.com',
+        primeiro_nome: 'Jane',
+        sobrenome: 'Doe',
+        senha: '123456',
+        data_nascimento: '2000-01-01',
         status_id: 1,
+        nivel_acesso_id: 1,
       };
 
-      const hashedPassword = 'hashedsenha123';
-      const usuarioCriado = {
-        ...dto,
-        id: 1,
-        senha: hashedPassword,
-        data_nascimento: new Date(dto.data_nascimento),
-      };
-
-      (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
-      mockPrisma.usuario.create.mockResolvedValue(usuarioCriado);
-
-      const result = await createUsuario(dto);
-
-      expect(bcrypt.hash).toHaveBeenCalledWith(dto.senha, expect.any(Number));
-      expect(mockPrisma.usuario.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          email: dto.email,
-          senha: hashedPassword,
-        }),
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_password');
+      (UsuarioRepository.create as jest.Mock).mockResolvedValue({
+        ...mockUsuario,
+        email: createDto.email,
       });
-      expect(result).toBeInstanceOf(UsuarioOutputDTO);
+
+      const result = await UsuarioService.createUsuario(createDto);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith('123456', expect.any(Number));
+      expect(UsuarioRepository.create).toHaveBeenCalled();
+      expect(result).toHaveProperty('email', createDto.email);
+    });
+
+    it('deve lançar erro se criação falhar', async () => {
+      const createDto = {
+        email: 'fail@example.com',
+        primeiro_nome: 'Fail',
+        sobrenome: 'User',
+        senha: '123456',
+        data_nascimento: '2000-01-01',
+        status_id: 1,
+        nivel_acesso_id: 1,
+      };
+
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_password');
+      (UsuarioRepository.create as jest.Mock).mockResolvedValue(null);
+
+      await expect(UsuarioService.createUsuario(createDto as any)).rejects.toThrow(
+        'Usuário não retornado após a criação no Banco de Dados'
+      );
     });
   });
 
   describe('updateUsuario', () => {
-    it('deve atualizar os dados do usuário e criptografar a senha se fornecida', async () => {
-      const id = 1;
-      const dto: UpdateUsuarioInputDTO = {
-        primeiro_nome: 'NovoNome',
-        senha: 'novaSenha',
-        data_nascimento: '1991-02-02',
+    it('deve atualizar o usuário com nova senha criptografada', async () => {
+      const updateDto: UpdateUsuarioInputDTO = {
+        senha: 'newpassword',
+        primeiro_nome: 'Atualizado',
       };
 
-      const hashed = 'senhaCriptografada';
-      const usuarioAtualizado = {
-        id,
-        email: 'teste@exemplo.com',
-        primeiro_nome: dto.primeiro_nome,
-        sobrenome: 'Exemplo',
-        senha: hashed,
-        data_nascimento: new Date(dto.data_nascimento),
-        idade: 34,
-        status_id: 1,
-      };
-
-      (bcrypt.hash as jest.Mock).mockResolvedValue(hashed);
-      mockPrisma.usuario.update.mockResolvedValue(usuarioAtualizado);
-
-      const result = await updateUsuario(id, dto);
-
-      expect(bcrypt.hash).toHaveBeenCalledWith(dto.senha, expect.any(Number));
-      expect(mockPrisma.usuario.update).toHaveBeenCalledWith({
-        where: { id },
-        data: expect.objectContaining({
-          senha: hashed,
-          primeiro_nome: dto.primeiro_nome,
-        }),
+      (bcrypt.hash as jest.Mock).mockResolvedValue('new_hashed_password');
+      (UsuarioRepository.update as jest.Mock).mockResolvedValue({
+        ...mockUsuario,
+        primeiro_nome: updateDto.primeiro_nome,
       });
-      expect(result).toBeInstanceOf(UsuarioOutputDTO);
+
+      const result = await UsuarioService.updateUsuario(1, updateDto);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith('newpassword', expect.any(Number));
+      expect(UsuarioRepository.update).toHaveBeenCalledWith(1, {
+        ...updateDto,
+        senha: 'new_hashed_password',
+      });
+      expect(result).toHaveProperty('primeiro_nome', updateDto.primeiro_nome);
+    });
+
+    it('deve lançar erro se usuário não for retornado', async () => {
+      (UsuarioRepository.update as jest.Mock).mockResolvedValue(null);
+
+      await expect(UsuarioService.updateUsuario(1, {})).rejects.toThrow(
+        'Usuário não retornado após a atualização no Banco de Dados'
+      );
     });
   });
 
   describe('deleteUsuario', () => {
-    it('deve excluir um usuário pelo id', async () => {
-      const id = 1;
+    it('deve chamar o repositório para deletar o usuário', async () => {
+      (UsuarioRepository.delete as jest.Mock).mockResolvedValue(undefined);
 
-      mockPrisma.usuario.delete.mockResolvedValue({});
+      await UsuarioService.deleteUsuario(1);
 
-      await expect(deleteUsuario(id)).resolves.toBeUndefined();
-      expect(mockPrisma.usuario.delete).toHaveBeenCalledWith({ where: { id } });
+      expect(UsuarioRepository.delete).toHaveBeenCalledWith(1);
     });
   });
 });

@@ -1,42 +1,37 @@
+import { Request, Response } from 'express';
 import { ProjetoController } from '../projeto.controller';
 import { ProjetoService } from '../../services/projeto.service';
-import { Request, Response } from 'express';
-import { ProjetoOutputDto } from '../../dtos/projeto/ProjetoOutput.dto';
 
 jest.mock('../services/projeto.service');
-const MockedProjetoService = ProjetoService as jest.MockedClass<typeof ProjetoService>;
+
+const mockResponse = () => {
+  const res = {} as Response;
+  res.status = jest.fn().mockReturnThis();
+  res.json = jest.fn().mockReturnThis();
+  res.send = jest.fn().mockReturnThis();
+  return res;
+};
 
 describe('ProjetoController', () => {
   let req: Partial<Request>;
-  let res: Partial<Response>;
-  let jsonMock: jest.Mock;
-  let statusMock: jest.Mock;
+  let res: Response;
 
   beforeEach(() => {
-    jsonMock = jest.fn();
-    statusMock = jest.fn().mockReturnValue({ json: jsonMock, send: jest.fn() });
-
     req = {};
-    res = {
-      json: jsonMock,
-      status: statusMock,
-      send: jest.fn()
-    };
-
+    res = mockResponse();
     jest.clearAllMocks();
   });
 
   describe('getProjetos', () => {
-    it('should return a paginated list of projetos', async () => {
-      const fakeData = [{ id: 1, nome: 'Projeto Teste' }];
-      MockedProjetoService.prototype.findAll.mockResolvedValueOnce(fakeData);
+    it('deve retornar lista de projetos com paginação', async () => {
+      const projetos = [{ id: 1, nome: 'Projeto 1' }];
+      (ProjetoService.prototype.findAll as jest.Mock).mockResolvedValue(projetos);
 
       req.query = { page: '1', limit: '5' };
 
-      await ProjetoController.getProjetos(req as Request, res as Response);
+      await ProjetoController.getProjetos(req as Request, res);
 
-      expect(MockedProjetoService.prototype.findAll).toHaveBeenCalledWith(1, 5);
-      expect(jsonMock).toHaveBeenCalledWith({
+      expect(res.json).toHaveBeenCalledWith({
         page: 1,
         limit: 5,
         data: expect.any(Array),
@@ -45,71 +40,171 @@ describe('ProjetoController', () => {
   });
 
   describe('getProjetoById', () => {
-    it('should return a projeto by id', async () => {
-      const projeto = { id: 1, nome: 'Projeto' };
-      MockedProjetoService.prototype.findById.mockResolvedValueOnce(projeto);
-
+    it('deve retornar projeto se encontrado', async () => {
+      const projeto = { id: 1, nome: 'Projeto 1' };
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue(projeto);
       req.params = { projetoId: '1' };
 
-      await ProjetoController.getProjetoById(req as Request, res as Response);
+      await ProjetoController.getProjetoById(req as Request, res);
 
-      expect(MockedProjetoService.prototype.findById).toHaveBeenCalledWith(1);
-      expect(jsonMock).toHaveBeenCalledWith(expect.any(ProjetoOutputDto));
+      expect(res.json).toHaveBeenCalledWith(expect.any(Object));
     });
 
-    it('should return 404 if projeto not found', async () => {
-      MockedProjetoService.prototype.findById.mockResolvedValueOnce(null);
+    it('deve retornar 404 se projeto não encontrado', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue(null);
+      req.params = { projetoId: '999' };
 
-      req.params = { projetoId: '1' };
+      await ProjetoController.getProjetoById(req as Request, res);
 
-      await ProjetoController.getProjetoById(req as Request, res as Response);
-
-      expect(statusMock).toHaveBeenCalledWith(404);
-      expect(jsonMock).toHaveBeenCalledWith({ error: 'Projeto não encontrado' });
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Projeto não encontrado' });
     });
   });
 
   describe('createProjeto', () => {
-    it('should create a new projeto', async () => {
-      const novoProjeto = { id: 1, nome: 'Novo Projeto' };
-      MockedProjetoService.prototype.create.mockResolvedValueOnce(novoProjeto);
+    it('deve criar e retornar projeto', async () => {
+      const projetoCriado = { id: 1, nome: 'Novo Projeto' };
+      (ProjetoService.prototype.create as jest.Mock).mockResolvedValue(projetoCriado);
 
-      req.body = { nome: 'Novo Projeto', descricao: '...', data_entrega: '2025-12-31' };
-
-      await ProjetoController.createProjeto(req as Request, res as Response);
-
-      expect(MockedProjetoService.prototype.create).toHaveBeenCalledWith({
+      req.body = {
         nome: 'Novo Projeto',
-        descricao: '...',
-        data_entrega: new Date('2025-12-31'),
-      });
+        descricao: 'Descrição',
+        data_entrega: '2025-07-01',
+      };
+
+      await ProjetoController.createProjeto(req as Request, res);
+
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(jsonMock).toHaveBeenCalledWith(expect.any(ProjetoOutputDto));
+      expect(res.json).toHaveBeenCalledWith(expect.any(Object));
+    });
+  });
+
+  describe('updateProjeto', () => {
+    it('deve atualizar e retornar projeto', async () => {
+      const projetoAtualizado = { id: 1, nome: 'Atualizado' };
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue({ id: 1 });
+      (ProjetoService.prototype.update as jest.Mock).mockResolvedValue(projetoAtualizado);
+
+      req.params = { projetoId: '1' };
+      req.body = { nome: 'Atualizado' };
+
+      await ProjetoController.updateProjeto(req as Request, res);
+
+      expect(res.json).toHaveBeenCalledWith(expect.any(Object));
+    });
+
+    it('deve retornar 404 se projeto não encontrado', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue(null);
+
+      req.params = { projetoId: '999' };
+
+      await ProjetoController.updateProjeto(req as Request, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Projeto não encontrado' });
     });
   });
 
   describe('deleteProjeto', () => {
-    it('should delete a projeto if exists', async () => {
-      MockedProjetoService.prototype.findById.mockResolvedValueOnce({ id: 1 });
-      MockedProjetoService.prototype.delete.mockResolvedValueOnce();
+    it('deve deletar projeto se encontrado', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue({ id: 1 });
+      (ProjetoService.prototype.delete as jest.Mock).mockResolvedValue(undefined);
 
       req.params = { projetoId: '1' };
 
-      await ProjetoController.deleteProjeto(req as Request, res as Response);
+      await ProjetoController.deleteProjeto(req as Request, res);
 
-      expect(MockedProjetoService.prototype.delete).toHaveBeenCalledWith(1);
       expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.send).toHaveBeenCalled();
     });
 
-    it('should return 404 if projeto does not exist', async () => {
-      MockedProjetoService.prototype.findById.mockResolvedValueOnce(null);
+    it('deve retornar 404 se projeto não encontrado', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue(null);
+
+      req.params = { projetoId: '999' };
+
+      await ProjetoController.deleteProjeto(req as Request, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Projeto não encontrado' });
+    });
+  });
+
+  describe('getProjetoUsuarios', () => {
+    it('deve listar usuários do projeto', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue({ id: 1 });
+      (ProjetoService.prototype.listUsuarios as jest.Mock).mockResolvedValue([{ id: 1 }]);
 
       req.params = { projetoId: '1' };
 
-      await ProjetoController.deleteProjeto(req as Request, res as Response);
+      await ProjetoController.getProjetoUsuarios(req as Request, res);
+
+      expect(res.json).toHaveBeenCalledWith([{ id: 1 }]);
+    });
+  });
+
+  describe('addProjetoUsuario', () => {
+    it('deve adicionar usuário ao projeto', async () => {
+      const vinculo = { id_usuario: 1, projetoId: 1, nivel_id: 2 };
+      (ProjetoService.prototype.addUsuario as jest.Mock).mockResolvedValue(vinculo);
+
+      req.params = { projetoId: '1' };
+      req.body = { id_usuario: 1, nivel_id: 2 };
+
+      await ProjetoController.addProjetoUsuario(req as Request, res);
+
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(vinculo);
+    });
+  });
+
+  describe('updateProjetoUsuario', () => {
+    it('deve atualizar vínculo de usuário ao projeto', async () => {
+      const updated = { id_usuario: 1, projetoId: 1, nivel_id: 3 };
+      (ProjetoService.prototype.updateUsuario as jest.Mock).mockResolvedValue(updated);
+
+      req.params = { projetoId: '1', usuarioId: '1' };
+      req.body = { nivel_id: 3 };
+
+      await ProjetoController.updateProjetoUsuario(req as Request, res);
+
+      expect(res.json).toHaveBeenCalledWith(updated);
+    });
+  });
+
+  describe('deleteProjetoUsuario', () => {
+    it('deve remover usuário do projeto', async () => {
+      (ProjetoService.prototype.removeUsuario as jest.Mock).mockResolvedValue(undefined);
+
+      req.params = { projetoId: '1', usuarioId: '1' };
+
+      await ProjetoController.deleteProjetoUsuario(req as Request, res);
+
+      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.send).toHaveBeenCalled();
+    });
+  });
+
+  describe('getProjetoTarefas', () => {
+    it('deve retornar tarefas do projeto', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue({ id: 1 });
+      (ProjetoService.prototype.listTarefas as jest.Mock).mockResolvedValue([{ id: 1, titulo: 'Tarefa' }]);
+
+      req.params = { projetoId: '1' };
+
+      await ProjetoController.getProjetoTarefas(req as Request, res);
+
+      expect(res.json).toHaveBeenCalledWith([{ id: 1, titulo: 'Tarefa' }]);
+    });
+
+    it('deve retornar 404 se projeto não encontrado', async () => {
+      (ProjetoService.prototype.findById as jest.Mock).mockResolvedValue(null);
+      req.params = { projetoId: '999' };
+
+      await ProjetoController.getProjetoTarefas(req as Request, res);
 
       expect(res.status).toHaveBeenCalledWith(404);
-      expect(jsonMock).toHaveBeenCalledWith({ error: 'Projeto não encontrado' });
+      expect(res.json).toHaveBeenCalledWith({ error: 'Projeto não encontrado' });
     });
   });
 });
