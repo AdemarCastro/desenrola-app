@@ -2,9 +2,10 @@ import { Usuario } from "@/types/Usuario";
 
 interface UserTableProps {
   usuarios: Usuario[];
+  onSelect?: (usuario: Usuario) => void; // adiciona handler para seleção de usuário
 }
 
-export default function UserTable({ usuarios }: UserTableProps) {
+export default function UserTable({ usuarios, onSelect }: UserTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
@@ -23,7 +24,8 @@ export default function UserTable({ usuarios }: UserTableProps) {
           {usuarios.map((usuario, index) => (
             <tr
               key={usuario.id}
-              className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
+              className={`${index % 2 === 0 ? "bg-white" : "bg-blue-50"} cursor-pointer`} // torna a linha clicável
+              onClick={() => onSelect && onSelect(usuario)}
             >
               <td className="p-3 text-black">
                 {usuario.primeiro_nome} {usuario.sobrenome}
