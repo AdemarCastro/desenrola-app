@@ -4,9 +4,9 @@ import type { Usuario } from "@/types/Usuario";
 // Atualiza usuário
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ): Promise<NextResponse> {
-  const { id } = params;
+  const { id } = context.params;
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
@@ -30,9 +30,9 @@ export async function PUT(
 // Exclui usuário
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ): Promise<NextResponse> {
-  const { id } = params;
+  const { id } = context.params;
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
