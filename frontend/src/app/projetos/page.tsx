@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Tarefa } from "@/types/tarefa";
 
 interface Projeto {
   id: number;
@@ -64,8 +65,10 @@ export default function ProjetosPage() {
 
       const tarefas = await res.json();
       const total = tarefas.length;
-      const concluidas = tarefas.filter((t: any) => t.status_id === 2).length;
-
+      const concluidas = tarefas.filter(
+        (t: Tarefa) => t.status_id === 2
+      ).length;
+      
       const progresso =
         total === 0 ? 0 : Math.round((concluidas / total) * 100);
       setProgressoProjetos((prev) => ({ ...prev, [projetoId]: progresso }));
