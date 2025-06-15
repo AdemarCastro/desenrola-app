@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
 
   } catch (e) {
-    console.error('ERRO NA API DE LOGIN:', e);
+    console.error('ERRO NA API /api/auth/login:', e);
 
     const message = e instanceof Error ? e.message : 'Ocorreu um erro inesperado.';
     return NextResponse.json({ error: 'Erro interno do servidor.', details: message }, { status: 500 });
