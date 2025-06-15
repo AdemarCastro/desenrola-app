@@ -1,8 +1,9 @@
 import Image from "next/image";
+import { Github, Zap, User } from "lucide-react";
 
 export function Header() {
   return (
-    <header className="bg-black text-white flex justify-between items-center px-6 h-16">
+    <header className="bg-black text-white flex justify-between items-center px-6 h-16 border-b border-gray-800">
       <div className="flex items-center gap-2">
         <Image
           src="/desenrola-white.png"
@@ -14,20 +15,14 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <button>
-          <Image src="/notion.png" alt="Notion" width={30} height={30} />
+        <button className="text-gray-300 hover:text-white transition-colors">
+          <Zap />
         </button>
-        <button>
-          <Image src="/github.png" alt="GitHub" width={30} height={30} />
+        <button className="text-gray-300 hover:text-white transition-colors">
+          <Github />
         </button>
-        <button>
-          <Image
-            src="/icone-usuario.png"
-            alt="Avatar"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
+        <button className="text-gray-300 hover:text-white transition-colors">
+          <User />
         </button>
       </div>
     </header>
