@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   context: { params: { id: string } }
 ) {
   const token = (await cookies()).get('token')?.value;
