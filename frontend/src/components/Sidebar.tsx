@@ -38,34 +38,45 @@ const menu = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const usuario = useUsuarioLogado();
+  const { usuario, loading } = useUsuarioLogado();
 
   return (
-    <aside className="w-64 bg-white text-black p-6 space-y-4 hidden lg:block">
-      {/* Saudação */}
-      <div className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-3 mb-6 mt-2 shadow">
+    <aside className="w-64 bg-black text-white p-6 space-y-4 hidden lg:block">
+      <div className="flex items-center gap-2 mb-6">
+        <Image
+          src="/desenrola-white.png"
+          alt="Logo Desenrola"
+          width={50}
+          height={50}
+        />
+        <span className="text-2xl font-bold">Desenrola</span>
+      </div>
+      <div className="flex items-center gap-2 mb-6">
         <Image
           src={usuario?.avatar_url || "/icone-usuario.png"}
           alt="Avatar"
-          width={36}
-          height={36}
+          width={40}
+          height={40}
           className="rounded-full"
         />
-        <span className="text-sm font-medium">
-          {usuario ? `Olá, ${usuario.primeiro_nome}!` : "Carregando..."}
-        </span>
+        <div>
+          {loading
+            ? "Carregando..."
+            : usuario
+            ? `Olá, ${usuario.primeiro_nome}!`
+            : "Não logado"}
+        </div>
       </div>
-
-      {/* Navegação */}
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-4">
         {menu.map((item) =>
           item.action ? (
             <button
               key={item.name}
               onClick={item.action}
-              className="flex items-center gap-2 text-left w-full px-3 py-2 hover:bg-black/10 rounded transition"
+              className={cn(
+                "text-left w-full hover:bg-white/10 rounded px-3 py-2 transition"
+              )}
             >
-              <item.icon className="w-5 h-5" />
               {item.name}
             </button>
           ) : (
@@ -73,11 +84,10 @@ export function Sidebar() {
               key={item.path}
               href={item.path!}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 hover:bg-black/10 rounded transition",
-                pathname === item.path ? "bg-black/10 font-semibold" : ""
+                "hover:bg-white/10 rounded px-3 py-2 transition",
+                pathname === item.path ? "bg-white/10" : ""
               )}
             >
-              <item.icon className="w-5 h-5" />
               {item.name}
             </Link>
           )
