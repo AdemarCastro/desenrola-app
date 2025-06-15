@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: Request,
+  context: { params: { id: string } }
+) {
   const token = (await cookies()).get('token')?.value;
 
   if (!token) {
@@ -9,7 +12,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
-    const projectId = params.id;
+    const { id: projectId } = context.params;
     const body = await request.json();
 
     const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}`, {
