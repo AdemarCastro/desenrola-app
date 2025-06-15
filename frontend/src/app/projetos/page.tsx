@@ -164,26 +164,97 @@ export default function ProjetosPage() {
             >
               ×
             </button>
-            <h2 className="text-xl font-bold mb-2">{modalProjeto.nome}</h2>
-            <p className="mb-2 text-sm text-black/60">
-              {progressoProjetos[modalProjeto.id] ?? 0}% Completo
-            </p>
-            <p className="mb-2">
-              <strong>Descrição:</strong>{" "}
-              {modalProjeto.descricao || "Sem descrição."}
-            </p>
-            <p className="mb-2">
-              <strong>Data de Entrega:</strong>{" "}
-              {modalProjeto.data_entrega
-                ? new Date(modalProjeto.data_entrega).toLocaleDateString(
-                    "pt-BR"
-                  )
-                : "Não definida"}
-            </p>
-            <p className="text-sm text-black/50 mt-4">
-              Última atualização em{" "}
-              {new Date(modalProjeto.atualizado_em).toLocaleDateString("pt-BR")}
-            </p>
+
+            <h2 className="text-xl font-bold mb-4">Editar Projeto</h2>
+
+            {/* Nome do projeto */}
+            <label className="text-sm font-medium text-gray-600">Nome</label>
+            <input
+              type="text"
+              className="w-full mb-3 p-2 border rounded text-black"
+              placeholder="Nome do projeto"
+              value={modalProjeto.nome}
+              onChange={(e) =>
+                setModalProjeto({ ...modalProjeto, nome: e.target.value })
+              }
+            />
+
+            {/* Descrição */}
+            <label className="text-sm font-medium text-gray-600">
+              Descrição
+            </label>
+            <textarea
+              className="w-full mb-3 p-2 border rounded text-black"
+              placeholder="Descrição"
+              rows={3}
+              value={modalProjeto.descricao || ""}
+              onChange={(e) =>
+                setModalProjeto({ ...modalProjeto, descricao: e.target.value })
+              }
+            />
+
+            {/* Data de entrega */}
+            <label className="text-sm font-medium text-gray-600">
+              Data de Entrega
+            </label>
+            <input
+              type="date"
+              className="w-full mb-4 p-2 border rounded text-black"
+              placeholder="Selecione a data"
+              value={
+                modalProjeto.data_entrega
+                  ? modalProjeto.data_entrega.slice(0, 10)
+                  : ""
+              }
+              onChange={(e) =>
+                setModalProjeto({
+                  ...modalProjeto,
+                  data_entrega: e.target.value,
+                })
+              }
+            />
+
+            {/* Botão salvar */}
+            <button
+              className="bg-black hover:bg-neutral-800 text-white font-semibold py-2 px-4 rounded"
+              onClick={async () => {
+                const token = localStorage.getItem("token");
+                if (!token) return alert("Token ausente");
+
+                const res = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_URL}/projetos/${modalProjeto.id}`,
+                  {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      nome: modalProjeto.nome,
+                      descricao: modalProjeto.descricao,
+                      data_entrega: modalProjeto.data_entrega,
+                    }),
+                  }
+                );
+
+                if (res.ok) {
+                  const atualizado = await res.json();
+
+                  // Atualiza a lista local com o projeto modificado
+                  setProjetos((prev) =>
+                    prev.map((p) =>
+                      p.id === atualizado.id ? { ...p, ...atualizado } : p
+                    )
+                  );
+                  setModalProjeto(null);
+                } else {
+                  const erro = await res.json();
+                  alert(erro.message || "Erro ao salvar alterações");
+                }
+              }}
+            >
+              Salvar Alterações
+            </button>
           </div>
         </div>
       )}
