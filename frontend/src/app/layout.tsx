@@ -22,11 +22,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="pt">
-      <body className="flex h-screen">
-        {!isLoginPage && <Sidebar />}
-        <div className="flex flex-col flex-1">
-          {!isLoginPage && <Header />}
-          <main className={isLoginPage ? "w-full" : "p-6 overflow-auto"}>
+      <body className="h-screen flex flex-col">
+        {!isLoginPage && <Header />}
+
+        <div className="flex flex-1 overflow-hidden">
+          {!isLoginPage && <Sidebar />}
+          <main className={isLoginPage ? "w-full" : "flex-1 p-6 overflow-auto"}>
             {children}
           </main>
         </div>
