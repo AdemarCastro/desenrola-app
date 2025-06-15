@@ -1,12 +1,18 @@
 import { NextResponse, NextRequest } from "next/server";
 import type { Usuario } from "@/types/Usuario";
 
+// Função utilitária para extrair o id da URL
+function getIdFromRequest(request: NextRequest): string | null {
+  const match = request.nextUrl.pathname.match(/\/usuarios\/(.+)$/);
+  return match ? match[1] : null;
+}
+
 // Atualiza usuário
-export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
-  const { id } = context.params;
+export async function PUT(request: NextRequest): Promise<NextResponse> {
+  const id = getIdFromRequest(request);
+  if (!id) {
+    return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+  }
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
@@ -28,11 +34,11 @@ export async function PUT(
 }
 
 // Exclui usuário
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
-  const { id } = context.params;
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  const id = getIdFromRequest(request);
+  if (!id) {
+    return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+  }
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
