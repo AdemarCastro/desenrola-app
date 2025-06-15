@@ -1,12 +1,6 @@
-"use client";
-
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { useUsuarioLogado } from "@/hooks/useUsuarioLogado";
-import { logout } from "@/lib/logout";
-
+"use client"
+import { usePathname } from "next/navigation"
+import Link from "next/link"
 import {
   FolderOpen,
   Calendar,
@@ -19,72 +13,54 @@ import {
   Settings,
   FileCheck,
   LogOut,
-} from "lucide-react";
-
-const menu = [
-  { name: "Projetos", path: "/projetos", icon: FolderOpen },
-  { name: "Cronograma", path: "/cronograma", icon: Calendar },
-  { name: "Quadro Kanban", path: "/kanban", icon: LayoutGrid },
-  { name: "Dashboard", path: "/dashboard", icon: BarChart3 },
-  { name: "Criar Tarefa", path: "/criar-tarefa", icon: Plus },
-  { name: "Criar Projeto", path: "/criar-projeto", icon: FileText},
-  { name: "Gerenciar Usuários", path: "/usuarios", icon: Users },
-  { name: "Relatórios de Desempenho", path: "/relatorios", icon: FileText },
-  { name: "Account", path: "/account", icon: User },
-  { name: "Configurações", path: "/configuracoes", icon: Settings },
-  { name: "Termos de uso", path: "/termos", icon: FileCheck },
-  { name: "Sair", action: logout, icon: LogOut },
-];
+} from "lucide-react"
 
 export function Sidebar() {
-  const pathname = usePathname();
-  const { usuario, loading } = useUsuarioLogado();
+  const pathname = usePathname()
+
+  const menuItems = [
+    { icon: FolderOpen, label: "Projetos", href: "/projetos" },
+    { icon: Calendar, label: "Cronograma", href: "/cronograma" },
+    { icon: LayoutGrid, label: "Quadro Kanban", href: "/kanban" },
+    { icon: BarChart3, label: "Dashboard", href: "/dashboard" },
+    { icon: Plus, label: "Criar Tarefa", href: "/criar-tarefa" },
+    { icon: FolderOpen, label: "Criar projeto", href: "/criar-projeto" },
+    { icon: Users, label: "Gerenciar Usuários", href: "/usuarios" },
+    { icon: FileText, label: "Relatórios de Desempenho", href: "/relatorios" },
+    { icon: User, label: "Conta", href: "/account" },
+    { icon: Settings, label: "Configurações", href: "/configuracoes" },
+    { icon: FileCheck, label: "Termos de uso", href: "/termos" },
+    { icon: LogOut, label: "Sair", href: "/sair" },
+  ]
 
   return (
-    <aside className="w-64 bg-white text-black p-6 space-y-4 hidden lg:block">
-      {/* Saudação */}
-      <div className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-3 mb-6 mt-2 shadow">
-        <Image
-          src={usuario?.avatar_url || "/icone-usuario.png"}
-          alt="Avatar"
-          width={36}
-          height={36}
-          className="rounded-full"
-        />
-        <span className="text-sm font-medium">
-          {loading
-            ? "Carregando..."
-            : usuario
-            ? `Olá, ${usuario.primeiro_nome}!`
-            : "Não logado"}
-        </span>
+    <aside className="w-80 bg-black border-r border-gray-800 h-screen flex flex-col sticky top-0">
+      {/* User Profile Section */}
+      <div className="p-4">
+        <div className="bg-black-800 text-white rounded-lg p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
+            <img src="/images/placeholder-user.png" alt="Ana" className="w-full h-full object-cover" />
+          </div>
+          <span className="font-medium">Olá, Colaborador!</span>
+        </div>
       </div>
-      <nav className="flex flex-col gap-2">
-        {menu.map((item) =>
-          item.action ? (
-            <button
-              key={item.name}
-              onClick={item.action}
-              className="flex items-center gap-2 text-left w-full px-3 py-2 hover:bg-black/10 rounded transition"
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </button>
-          ) : (
-            <Link
-              key={item.path}
-              href={item.path!}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 hover:bg-black/10 rounded transition",
-                pathname === item.path ? "bg-black/10 font-semibold" : ""
-              )}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </Link>
-          )
-        )}
+
+      {/* Navigation Menu */}
+      <nav className="flex-1 px-4 pb-4">
+        <div className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
+
+            return (
+              <Link key={item.href} href={item.href} className={`sidebar-item ${isActive ? "active" : ""}`}>
+                <Icon className="w-5 h-5" />
+                <span className="text-sm font-medium">{item.label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </nav>
     </aside>
-  );
+  )
 }
