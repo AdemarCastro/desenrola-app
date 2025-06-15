@@ -1,7 +1,6 @@
-// src/lib/logout.ts
 "use client";
 
-export function logout() {
-  localStorage.removeItem("token");
-  window.location.href = "/login";
+export async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = "/login";
 }
