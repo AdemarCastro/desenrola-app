@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -14,7 +15,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
@@ -26,9 +27,8 @@ export default function LoginPage() {
         return;
       }
 
-      const { token } = await res.json();
-      localStorage.setItem("token", token);
-      router.push("/usuarios");
+      const callbackUrl = searchParams.get('callbackUrl') || '/projetos';
+      router.push(callbackUrl);
     } catch {
       setErro("Erro ao conectar com o servidor.");
     }

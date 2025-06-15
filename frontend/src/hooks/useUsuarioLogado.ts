@@ -1,13 +1,4 @@
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
-
-interface JwtPayload {
-  userId: number;
-  email: string;
-  nivelAcessoId: number;
-  iat?: number;
-  exp?: number;
-}
 
 interface Usuario {
   id: number;
@@ -18,27 +9,28 @@ interface Usuario {
 }
 
 export function useUsuarioLogado() {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const payload = jwtDecode<JwtPayload>(token);
-
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios/${payload.userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    fetch('/api/auth/me')
+      .then(async (res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return null;
       })
-        .then((res) => res.json())
-        .then((data) => setUsuario(data))
-        .catch(() => setUsuario(null));
-    } catch {
-      setUsuario(null);
-    }
+      .then((data) => {
+        setUsuario(data);
+      })
+      .catch((error) => {
+        console.error("Falha ao buscar dados do usuário:", error);
+        setUsuario(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  return usuario;
+  return { usuario, loading };
 }
