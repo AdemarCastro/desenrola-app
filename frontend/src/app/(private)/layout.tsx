@@ -4,11 +4,11 @@ import { ReactNode } from "react";
 
 export default function PrivateLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-      <div className="flex flex-col flex-1">
-        <Header />
-        <main className="p-6 overflow-auto">{children}</main>
+    <div className="h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <main className="w-full">{children}</main>
       </div>
     </div>
   );
