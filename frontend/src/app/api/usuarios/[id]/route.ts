@@ -1,25 +1,19 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import type { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import type { Usuario } from "@/types/Usuario";
 
+// Atualiza usuário
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  // Recupera token do cookie de autenticação
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+): Promise<NextResponse> {
+  const { id } = params;
+  const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
-
-  // Lê dados do corpo da requisição
-  const body = (await request.json()) as Usuario;
-
-  // Encaminha PUT ao backend Express
+  const body: Usuario = await request.json();
   const apiResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${params.id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${id}`,
     {
       method: "PUT",
       headers: {
@@ -29,8 +23,27 @@ export async function PUT(
       body: JSON.stringify(body),
     }
   );
-
   const data = await apiResponse.json();
-  // Retorna resposta ao cliente Next
+  return NextResponse.json(data, { status: apiResponse.status });
+}
+
+// Exclui usuário
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<NextResponse> {
+  const { id } = params;
+  const token = request.cookies.get("token")?.value;
+  if (!token) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  const apiResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${id}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  const data = await apiResponse.json();
   return NextResponse.json(data, { status: apiResponse.status });
 }
