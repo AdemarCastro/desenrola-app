@@ -4,7 +4,8 @@ export type Usuario = {
   primeiro_nome: string;
   sobrenome: string;
   data_nascimento: string;
-  status_id: number;
+  nivel_acesso_id: number;  // Campo obrigatório
+  status_id: number;        // Campo obrigatório
   projeto?: string;
   tarefas?: number;
   cargo?: string;
