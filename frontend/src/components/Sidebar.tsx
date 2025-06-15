@@ -1,3 +1,5 @@
+"use client";
+
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,7 +22,7 @@ const menu = [
   { name: "Sair", action: logout },
 ];
 
-export default function Sidebar() {
+export function Sidebar() {
   const pathname = usePathname();
   const usuario = useUsuarioLogado();
 
