@@ -13,7 +13,10 @@ export async function POST() {
 
     return NextResponse.json({ success: true });
 
-  } catch {
-    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
+  } catch (e) {
+    console.error('ERRO NA API /api/auth/logout:', e);
+
+    const message = e instanceof Error ? e.message : 'Ocorreu um erro inesperado.';
+    return NextResponse.json({ error: 'Erro interno do servidor.', details: message }, { status: 500 });
   }
 }
