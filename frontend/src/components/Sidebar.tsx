@@ -21,19 +21,18 @@ import {
   LogOut,
 } from "lucide-react";
 
-const menu = [
-  { name: "Projetos", path: "/projetos", icon: FolderOpen },
-  { name: "Cronograma", path: "/cronograma", icon: Calendar },
-  { name: "Quadro Kanban", path: "/kanban", icon: LayoutGrid },
-  { name: "Dashboard", path: "/dashboard", icon: BarChart3 },
-  { name: "Criar Tarefa", path: "/criar-tarefa", icon: Plus },
-  { name: "Criar Projeto", path: "/criar-projeto", icon: FileText},
-  { name: "Gerenciar Usuários", path: "/usuarios", icon: Users },
-  { name: "Relatórios de Desempenho", path: "/relatorios", icon: FileText },
-  { name: "Account", path: "/account", icon: User },
-  { name: "Configurações", path: "/configuracoes", icon: Settings },
-  { name: "Termos de uso", path: "/termos", icon: FileCheck },
-  { name: "Sair", action: logout, icon: LogOut },
+const menuItems = [
+  { href: "/projetos", label: "Projetos", icon: FolderOpen },
+  { href: "/cronograma", label: "Cronograma", icon: Calendar },
+  { href: "/kanban", label: "Quadro Kanban", icon: LayoutGrid },
+  { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
+  { href: "/criar-tarefa", label: "Criar Tarefa", icon: Plus },
+  { href: "/criar-projeto", label: "Criar Projeto", icon: FileText },
+  { href: "/usuarios", label: "Gerenciar Usuários", icon: Users },
+  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/account", label: "Conta", icon: User },
+  { href: "/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/termos", label: "Termos de uso", icon: FileCheck },
 ];
 
 export function Sidebar() {
@@ -41,49 +40,50 @@ export function Sidebar() {
   const { usuario, loading } = useUsuarioLogado();
 
   return (
-    <aside className="w-64 bg-white text-black p-6 space-y-4 hidden lg:block">
-      {/* Saudação */}
-      <div className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-3 mb-6 mt-2 shadow">
-        <Image
-          src={usuario?.avatar_url || "/icone-usuario.png"}
-          alt="Avatar"
-          width={36}
-          height={36}
-          className="rounded-full"
-        />
-        <span className="text-sm font-medium">
-          {loading
-            ? "Carregando..."
-            : usuario
-            ? `Olá, ${usuario.primeiro_nome}!`
-            : "Não logado"}
-        </span>
+    <aside className="w-80 bg-black border-r border-gray-800 h-screen flex flex-col sticky top-0">
+      {/* Seção do Usuário */}
+      <div className="p-4">
+        <div className="bg-gray-900 text-white rounded-lg p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
+            <Image 
+              src={usuario?.avatar_url || "/icone-usuario.png"} 
+              alt="Avatar" 
+              width={40} 
+              height={40} 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <span className="font-medium">
+            {loading ? "Carregando..." : `Olá, ${usuario?.primeiro_nome || "Visitante"}!`}
+          </span>
+        </div>
       </div>
-      <nav className="flex flex-col gap-2">
-        {menu.map((item) =>
-          item.action ? (
-            <button
-              key={item.name}
-              onClick={item.action}
-              className="flex items-center gap-2 text-left w-full px-3 py-2 hover:bg-black/10 rounded transition"
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </button>
-          ) : (
+
+      {/* Menu de Navegação */}
+      <nav className="flex-1 px-4 pb-4">
+        <div className="space-y-1">
+          {menuItems.map((item) => (
             <Link
-              key={item.path}
-              href={item.path!}
+              key={item.href}
+              href={item.href}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 hover:bg-black/10 rounded transition",
-                pathname === item.path ? "bg-black/10 font-semibold" : ""
+                "flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer text-sm font-medium",
+                pathname === item.href ? "bg-white text-black" : ""
               )}
             >
               <item.icon className="w-5 h-5" />
-              {item.name}
+              <span>{item.label}</span>
             </Link>
-          )
-        )}
+          ))}
+          {/* Botão de Sair */}
+          <button
+            onClick={logout}
+            className="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer text-sm font-medium w-full text-left"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Sair</span>
+          </button>
+        </div>
       </nav>
     </aside>
   );

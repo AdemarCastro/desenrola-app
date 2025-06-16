@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export default function LoginPage() {
+export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -13,6 +15,7 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    setErro("");
 
     try {
       const res = await fetch(`/api/auth/login`, {
@@ -23,91 +26,103 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        setErro(errorData.error || "Erro ao fazer login");
+        setErro(errorData.error || "Erro ao fazer login. Verifique suas credenciais.");
         return;
       }
 
       const callbackUrl = searchParams.get('callbackUrl') || '/projetos';
       router.push(callbackUrl);
     } catch {
-      setErro("Erro ao conectar com o servidor.");
+      setErro("Não foi possível conectar ao servidor.");
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(0,0,0,0.05)_1px,_transparent_1px)] [background-size:32px_32px] pointer-events-none" />
-      <div className="z-10 max-w-md w-full px-6 py-10 bg-white shadow-xl rounded-xl">
+    <div className="h-full w-full flex items-center justify-center p-4">
+      <div className="w-full max-w-sm space-y-6">
         <div className="text-center mb-8">
           <Image
-            src="/desenrola-icon1.png"
-            alt="Logo"
-            width={100}
-            height={100}
+            src="/logo_vertical.png"
+            alt="Logo Desenrola"
+            width={120}
+            height={120}
             className="mx-auto mb-2"
           />
-          <h1 className="text-2xl font-bold text-black">Bem Vindo de Volta!</h1>
-          <p className="text-sm text-black">Seus projetos estão te esperando</p>
+          <h1 className="text-2xl font-bold text-black">Bem-vindo de volta!</h1>
+          <p className="text-sm text-zinc-600">Seus projetos estão esperando por você.</p>
         </div>
+        
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-black">
-              Email address
+              Endereço de email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-black focus:border-black text-black placeholder-black/50"
-              placeholder="Enter your email"
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:ring-black focus:border-black text-black placeholder:text-zinc-500 bg-white/60 backdrop-blur-sm"
+              placeholder="seu@email.com"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-black flex justify-between">
-              <span>Password</span>
+            <div className="flex justify-between items-center">
+              <label className="block text-sm font-medium text-black">
+                Senha
+              </label>
               <a href="#" className="text-xs text-blue-600 hover:underline">
-                forgot password
+                Esqueceu a senha?
               </a>
-            </label>
+            </div>
             <input
               type="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-black focus:border-black text-black placeholder-black/50"
-              placeholder="Enter your password"
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:ring-black focus:border-black text-black placeholder:text-zinc-500 bg-white/60 backdrop-blur-sm"
+              placeholder="Sua senha"
               required
             />
           </div>
           <div className="flex items-center gap-2">
-            <input type="checkbox" id="remember" className="rounded" />
+            <input type="checkbox" id="remember" className="rounded border-gray-300 text-black focus:ring-black" />
             <label htmlFor="remember" className="text-sm text-black">
-              Remember for 30 days
+              Lembrar por 30 dias
             </label>
           </div>
-          {erro && <p className="text-red-500 text-sm">{erro}</p>}
-          <button
-            type="submit"
-            className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
-          >
-            Login
-          </button>
+
+          {erro && <p className="text-red-500 text-sm font-medium text-center">{erro}</p>}
+          
+          <Button type="submit" size="lg" className="w-full font-semibold">
+            Entrar
+          </Button>
         </form>
-        <div className="mt-6 flex flex-col gap-3">
-          <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
-            <Image src="/google.png" alt="Google" width={30} height={30} />
-            <span className="text-black">Sign in with Google</span>
-          </button>
-          <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
-            <Image src="/apple.png" alt="Apple" width={30} height={30} />
-            <span className="text-black">Sign in with Apple</span>
-          </button>
+
+        <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-zinc-300" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-zinc-500">Ou continue com</span>
+            </div>
         </div>
-        <p className="mt-6 text-center text-sm text-black">
-          Don’t have an account?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
-            Sign Up
-          </a>
+
+        <div className="space-y-3">
+          <Button variant="white" className="w-full">
+            <Image src="/google.png" alt="Google" width={20} height={20} className="mr-2"/>
+            Entrar com Google
+          </Button>
+          <Button variant="white" className="w-full">
+            <Image src="/apple.png" alt="Apple" width={20} height={20} className="mr-2"/>
+            Entrar com Apple
+          </Button>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-zinc-600">
+          Não tem uma conta?{" "}
+          <Link href="/inscreva-se" className="font-semibold text-blue-600 hover:underline">
+            Inscreva-se
+          </Link>
         </p>
       </div>
     </div>
