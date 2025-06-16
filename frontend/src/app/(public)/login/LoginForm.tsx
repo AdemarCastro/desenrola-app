@@ -42,7 +42,7 @@ export default function LoginForm() {
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center mb-8">
           <Image
-            src="/logo_vertical.png"
+            src="/logos/logo_vertical.png"
             alt="Logo Desenrola"
             width={120}
             height={120}
@@ -120,7 +120,7 @@ export default function LoginForm() {
 
         <p className="mt-6 text-center text-sm text-zinc-600">
           Não tem uma conta?{" "}
-          <Link href="/inscreva-se" className="font-semibold text-blue-600 hover:underline">
+          <Link href="/signup" className="font-semibold text-blue-600 hover:underline">
             Inscreva-se
           </Link>
         </p>

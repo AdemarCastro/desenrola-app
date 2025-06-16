@@ -41,7 +41,7 @@ export function Footer() {
           <div className="md:col-span-12 lg:col-span-4">
             <Link href="/" className="inline-block mb-4">
               <Image
-                src="/logo_horizontal_o_novelo_de_la_white.png"
+                src="/logos/logo_horizontal_o_novelo_de_la_white.png"
                 alt="Logo Desenrola"
                 width={150}
                 height={40}

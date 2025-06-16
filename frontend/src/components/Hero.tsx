@@ -24,7 +24,7 @@ export function Hero() {
         </Link>
 
         <Link
-          href="/inscreva-se"
+          href="/planos"
           className={cn(buttonVariants({ variant: 'white', size: 'lg' }))}
         >
           Ver planos
