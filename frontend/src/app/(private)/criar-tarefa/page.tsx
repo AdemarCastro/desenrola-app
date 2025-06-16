@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Projeto } from "@/types/projeto";
 import { FormCriarTarefa } from "@/components/FormCriarTarefa";
-import { revalidatePath } from "next/cache";
 
 async function fetchProjetos(token: string): Promise<Projeto[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, {
