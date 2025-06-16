@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Projeto } from "@/types/projeto";
-import { FormCriarTarefa } from "@/components/FormCriarTarefa";
+import { FormCriarTarefaWrapper } from "@/components/FormCriarTarefaWrapper";
 
 async function fetchProjetos(token: string): Promise<Projeto[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, {
@@ -49,11 +49,7 @@ async function criarTarefa(formData: FormData) {
   redirect("/criar-tarefa?sucesso=1");
 }
 
-export default async function CriarTarefaPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+export default async function CriarTarefaPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) redirect("/login");
@@ -66,19 +62,10 @@ export default async function CriarTarefaPage({
     return <p className="text-red-600">Erro: {msg}</p>;
   }
 
-  const sucesso = searchParams?.sucesso === "1";
-
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Criar Nova Tarefa</h1>
-
-      {sucesso && (
-        <div className="mb-4 p-4 bg-green-100 text-green-800 rounded">
-          ✅ Tarefa criada com sucesso!
-        </div>
-      )}
-
-      <FormCriarTarefa projetos={projetos} action={criarTarefa} />
+      <FormCriarTarefaWrapper projetos={projetos} action={criarTarefa} />
     </div>
   );
 }
