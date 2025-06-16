@@ -1,11 +1,12 @@
 import { Github, Zap, Square } from "lucide-react"
+import Image from "next/image"
 
 export function Header() {
   return (
     <header className="relative w-full h-[75px] bg-black flex items-center justify-between px-4">
       {/* Logo Section */}
       <div className="absolute left-[9px] top-0 w-[284px] h-[78px] flex items-center">
-        <img src="/images/desenrola-logo.png" alt="Desenrola" className="h-10 w-auto object-contain" />
+        <Image src="/images/desenrola-logo.png" alt="Desenrola" className="h-10 w-auto object-contain" />
       </div>
 
       {/* Right Icons Section */}
@@ -29,7 +30,7 @@ export function Header() {
         {/* User Profile */}
         <div className="w-[54px] h-[48px] flex items-center justify-center">
           <div className="w-[54px] h-[54px] rounded-full border border-[#221C1D] overflow-hidden bg-gray-600">
-            <img src="/images/placeholder-user.png" alt="Profile" className="w-full h-full object-cover" />
+            <Image src="/images/placeholder-user.png" alt="Profile" className="w-full h-full object-cover" />
           </div>
         </div>
       </div>

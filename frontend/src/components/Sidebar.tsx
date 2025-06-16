@@ -1,6 +1,7 @@
 "use client"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import {
   FolderOpen,
   Calendar,
@@ -39,7 +40,7 @@ export function Sidebar() {
       <div className="p-4">
         <div className="bg-black-800 text-white rounded-lg p-4 flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
-            <img src="/images/placeholder-user.png" alt="Ana" className="w-full h-full object-cover" />
+            <Image src="/images/placeholder-user.png" alt="Ana" className="w-full h-full object-cover" />
           </div>
           <span className="font-medium">Olá, Colaborador!</span>
         </div>

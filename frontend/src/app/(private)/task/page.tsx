@@ -16,13 +16,13 @@ export default function CriarTarefaPage() {
   const [priority, setPriority] = useState("")
   const [project, setProject] = useState("")
   const [dueDate, setDueDate] = useState("")
-  const [labels, setLabels] = useState([
-    { id: 1, text: "tag", color: "bg-red-500" },
-    { id: 2, text: "tag", color: "bg-blue-500" },
-    { id: 3, text: "tag", color: "bg-red-400" },
-    { id: 4, text: "tag", color: "bg-green-500" },
-    { id: 5, text: "tag", color: "bg-purple-500" },
-  ])
+  const [labels] = useState([
+  { id: 1, text: "tag", color: "bg-red-500" },
+  { id: 2, text: "tag", color: "bg-blue-500" },
+  { id: 3, text: "tag", color: "bg-red-400" },
+  { id: 4, text: "tag", color: "bg-green-500" },
+  { id: 5, text: "tag", color: "bg-purple-500" },
+])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
