@@ -3,6 +3,12 @@ import { redirect } from "next/navigation";
 import { Projeto } from "@/types/projeto";
 import { FormCriarTarefa } from "@/components/FormCriarTarefa";
 
+interface PageProps {
+  searchParams?: {
+    sucesso?: string;
+  };
+}
+
 async function fetchProjetos(token: string): Promise<Projeto[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -49,11 +55,7 @@ async function criarTarefa(formData: FormData) {
   redirect("/criar-tarefa?sucesso=1");
 }
 
-export default async function CriarTarefaPage({
-  searchParams,
-}: {
-  searchParams: { sucesso?: string };
-}) {
+export default async function CriarTarefaPage({ searchParams }: PageProps) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) redirect("/login");
