@@ -109,11 +109,11 @@ export default function LoginForm() {
 
         <div className="space-y-3">
           <Button variant="white" className="w-full">
-            <Image src="/google.png" alt="Google" width={20} height={20} className="mr-2"/>
+            <Image src="/logos/google.png" alt="Google" width={20} height={20} className="mr-2"/>
             Entrar com Google
           </Button>
           <Button variant="white" className="w-full">
-            <Image src="/apple.png" alt="Apple" width={20} height={20} className="mr-2"/>
+            <Image src="/logos/apple.png" alt="Apple" width={20} height={20} className="mr-2"/>
             Entrar com Apple
           </Button>
         </div>
