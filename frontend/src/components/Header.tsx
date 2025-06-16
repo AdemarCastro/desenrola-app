@@ -8,7 +8,7 @@ export function Header() {
       <Link href="/" className="cursor-pointer">
         <div className="flex items-center gap-2">
           <Image
-            src="/logo_horizontal_o_novelo_de_la_white.png"
+            src="/logos/logo_horizontal_o_novelo_de_la_white.png"
             alt="Logo Desenrola - Voltar para a página inicial"
             width={160}
             height={160}
