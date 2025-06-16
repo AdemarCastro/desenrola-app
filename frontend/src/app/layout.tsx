@@ -1,23 +1,23 @@
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
-import { ReactNode } from "react";
+import type { Metadata } from "next";
+// import { Inter } from 'next/font/google'
 
-export const metadata = {
-  title: "Desenrola",
-  description: "Sistema de Gerenciamento",
+// const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: "Desenrola App",
+  description: "Organize seus projetos e equipes.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="pt">
-      <body className="flex h-screen">
-        <Sidebar />
-        <div className="flex flex-col flex-1">
-          <Header />
-          <main className="p-6 overflow-auto">{children}</main>
-        </div>
-      </body>
+    <html lang="pt-BR">
+      {/* a classe da fonte iria no body: className={inter.className} */}
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,22 +1,16 @@
 import { Router } from 'express';
 import { ComentarioController } from '../controllers/comentario.controller';
-import {
-  validateComentarioCreate,
-  validateComentarioUpdate,
-  validateComentarioExists,
-} from '../middleware/comentario.middleware';
+import { ComentarioMiddleware } from '../middleware/comentario.middleware';
 import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
-const controller = new ComentarioController();
 
-// todas as rotas de comentário requerem JWT
 router.use(authenticateJWT);
 
-router.get('/', controller.getComentarios);
-router.get('/:comentarioId', validateComentarioExists, controller.getComentarioById);
-router.post('/', validateComentarioCreate, controller.createComentario);
-router.put('/:comentarioId', validateComentarioExists, validateComentarioUpdate, controller.updateComentario);
-router.delete('/:comentarioId', validateComentarioExists, controller.deleteComentario);
+router.get('/', ComentarioController.getComentarios);
+router.get('/:comentarioId', ComentarioMiddleware.validateComentarioExists, ComentarioController.getComentarioById);
+router.post('/', ComentarioMiddleware.validateComentarioCreate, ComentarioController.createComentario);
+router.put('/:comentarioId', ComentarioMiddleware.validateComentarioExists, ComentarioMiddleware.validateComentarioUpdate, ComentarioController.updateComentario);
+router.delete('/:comentarioId', ComentarioMiddleware.validateComentarioExists, ComentarioController.deleteComentario);
 
 export default router;
