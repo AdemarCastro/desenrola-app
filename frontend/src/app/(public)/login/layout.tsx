@@ -1,9 +1,13 @@
-// frontend/src/app/login/layout.tsx
+import React from 'react';
 
 export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="h-screen overflow-hidden">
+      {children}
+    </div>
+  );
 }

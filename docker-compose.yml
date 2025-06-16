@@ -34,6 +34,7 @@ services:
         WATCHPACK_POLLING: ${WATCHPACK_POLLING}
     volumes:
       - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
       - ./frontend/package.json:/app/package.json
       - ./frontend/package-lock.json:/app/package-lock.json
       - ./frontend/tsconfig.json:/app/tsconfig.json
