@@ -4,10 +4,11 @@ import { Tarefa } from '@/types/tarefa'
 
 interface Props {
   column: string
+  projetoId: number
   setCards: React.Dispatch<React.SetStateAction<Tarefa[]>>
 }
 
-const AddCard: React.FC<Props> = ({ column, setCards }) => {
+const AddCard: React.FC<Props> = ({ column, projetoId, setCards }) => {
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
 
@@ -21,7 +22,7 @@ const AddCard: React.FC<Props> = ({ column, setCards }) => {
         descricao: text.trim(),
         status_id: mapColumnToStatus(column),
         prioridade_id: 1,
-        id_projeto: 1 // ajustar conforme projetoId
+        id_projeto: projetoId // usa o projeto selecionado
       })
     })
     const nova: Tarefa = await res.json()
@@ -65,8 +66,7 @@ const AddCard: React.FC<Props> = ({ column, setCards }) => {
   )
 }
 
-// mapeia coluna para status_id (ajuste conforme seu backend)
-function mapColumnToStatus(col: string) {
+export function mapColumnToStatus(col: string) {
   switch (col) {
     case 'backlog': return 1
     case 'todo': return 2

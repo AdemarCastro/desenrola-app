@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { DragEvent } from 'react'
 import { Tarefa } from '@/types/tarefa'
 import Card from './Card'
-import AddCard from './AddCard'
+import AddCard, { mapColumnToStatus } from './AddCard'
 
 interface Props {
   title: string
@@ -21,10 +21,29 @@ const Column: React.FC<Props> = ({
   projects,
 }) => {
   // filtra só as tarefas desta coluna
-  const columnCards = cards.filter((c) => c.status === column)
-
+  const columnCards = cards.filter((c) => c.status_id === mapColumnToStatus(column))
+  
+  // função para tratar drop e atualizar status da tarefa
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const id = e.dataTransfer.getData('cardId')
+    const status_id = mapColumnToStatus(column)
+    // atualiza no backend
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status_id }),
+    })
+    // atualiza estado local
+    setCards(prev => prev.map(c => c.id.toString() === id ? { ...c, status_id } : c))
+  }
+   
   return (
-    <div className="flex-1 bg-white rounded p-3 flex flex-col">
+    <div
+      onDragOver={e => e.preventDefault()}
+      onDrop={handleDrop}
+      className="flex-1 bg-white rounded p-3 flex flex-col"
+    >
       <h2 className="font-semibold mb-2 flex justify-between items-center">
         {title} <span className="text-sm bg-supportlight-grey rounded-full px-2">{columnCards.length}</span>
       </h2>
