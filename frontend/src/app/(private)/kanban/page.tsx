@@ -1,57 +1,66 @@
-"use client";
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import KanbanBoard from '@/components/kanban/KanbanBoard'
+import { Projeto } from '@/types/projeto'
+import { Tarefa } from '@/types/tarefa'
 
-import React, { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import KanbanBoard from "@/components/kanban/KanbanBoard";
-import { Projeto } from "@/types/projeto";
+export default async function KanbanPage({
+  searchParams
+}: {
+  searchParams: { projetoId?: string }
+}) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('token')?.value
+  if (!token) redirect('/login')
 
-export default function KanbanPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const projetoIdParam = searchParams.get("projetoId");
-  const selectedProjectId = projetoIdParam ? Number(projetoIdParam) : undefined;
+  const baseURL = process.env.NEXT_PUBLIC_API_URL!
+  const projetoId = searchParams.projetoId ? Number(searchParams.projetoId) : undefined
 
-  const [projects, setProjects] = useState<Projeto[]>([]);
+  try {
+    // Busca todos os projetos
+    const projetosRes = await fetch(`${baseURL}/projetos`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    })
+    
+    if (projetosRes.status === 401) redirect('/login')
+    if (!projetosRes.ok) throw new Error('Falha ao buscar projetos')
+    
+    const projetosData = await projetosRes.json()
+    const projetos: Projeto[] = projetosData.data || projetosData
 
-  // 1) Carrega todos os projetos para o filtro
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, { cache: "no-store" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Erro ao buscar projetos");
-        return res.json();
-      })
-      .then((body) => setProjects(body.data ?? body))
-      .catch((err) => console.error(err));
-  }, []);
+    // Busca tarefas conforme filtro
+    const path = projetoId 
+      ? `/projetos/${projetoId}/tarefas` 
+      : '/tarefas'
+      
+    const tasksRes = await fetch(`${baseURL}${path}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    })
+    
+    if (tasksRes.status === 401) redirect('/login')
+    if (!tasksRes.ok) throw new Error('Erro ao carregar tarefas')
+    
+    const tarefasData = await tasksRes.json()
+    const tarefas: Tarefa[] = tarefasData.data || tarefasData
 
-  // 2) Altera a rota com o projeto selecionado
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value;
-    router.push(id ? `/kanban?projetoId=${id}` : "/kanban");
-  };
-
-  return (
-    <main className="p-6 bg-supportwhite-grey h-full">
-      <div className="mb-4 flex items-center gap-2">
-        <label htmlFor="projectFilter" className="font-medium">
-          Projeto:
-        </label>
-        <select
-          id="projectFilter"
-          value={selectedProjectId ?? ""}
-          onChange={handleFilterChange}
-          className="border rounded px-2 py-1"
-        >
-          <option value="">Todos projetos</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Kanban Board</h1>
+        <KanbanBoard 
+          projetoId={projetoId}
+          projects={projetos}
+          initialCards={tarefas}
+        />
       </div>
-
-      <KanbanBoard projetoId={selectedProjectId} projects={projects} />
-    </main>
-  );
+    )
+  } catch (error) {
+    console.error('Erro no KanbanPage:', error)
+    return (
+      <div className="p-4 text-red-500">
+        Erro ao carregar dados do Kanban: {(error as Error).message}
+      </div>
+    )
+  }
 }

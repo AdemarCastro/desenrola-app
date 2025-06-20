@@ -1,36 +1,52 @@
+'use client'
 import React, { useState, DragEvent } from 'react'
-import { FiTrash } from 'react-icons/fi'
-import { FaFire } from 'react-icons/fa'
-import { Tarefa } from '@/types/tarefa'
+import { FaTrash, FaFire } from 'react-icons/fa'
 
-interface Props {
-  setCards: React.Dispatch<React.SetStateAction<Tarefa[]>>
-}
-
-const BurnBarrel: React.FC<Props> = ({ setCards }) => {
+export default function BurnBarrel() {
   const [active, setActive] = useState(false)
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault()
-    const id = e.dataTransfer.getData('cardId')
-    setCards((prev) => prev.filter((c) => c.id.toString() !== id))
+    setActive(true)
+  }
+
+  const handleDragLeave = () => {
     setActive(false)
+  }
+
+  const handleDrop = async (e: DragEvent) => {
+    e.preventDefault()
+    const cardId = e.dataTransfer.getData('cardId')
+    setActive(false)
+    
+    try {
+      const res = await fetch(`/api/tarefas/${cardId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      
+      if (!res.ok) {
+        throw new Error('Falha ao excluir tarefa')
+      }
+    } catch (error) {
+      console.error('Erro ao excluir tarefa:', error)
+    }
   }
 
   return (
     <div
-      onDragOver={(e) => {
-        e.preventDefault()
-        setActive(true)
-      }}
-      onDragLeave={() => setActive(false)}
+      className={`mt-10 w-16 h-16 flex items-center justify-center rounded-lg
+        transition-colors ${
+          active
+            ? 'bg-red-800 text-white'
+            : 'bg-gray-200 text-gray-500'
+        }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`w-[100px] h-[100px] flex items-center justify-center rounded border-2 
-        ${active ? 'border-red-600 bg-red-100 text-red-600' : 'border-fgmuted text-fgmuted'}`}
     >
-      {active ? <FaFire size={24} /> : <FiTrash size={24} />}
+      {active ? <FaFire size={24} /> : <FaTrash size={24} />}
     </div>
   )
 }
-
-export default BurnBarrel
