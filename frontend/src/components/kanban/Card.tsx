@@ -1,7 +1,7 @@
 'use client'
 import React, { DragEvent } from 'react'
-import { Tarefa } from '@/types/tarefa'
 import { FaSpinner } from 'react-icons/fa'
+import { Tarefa } from '@/types/tarefa'
 
 interface Props {
   card: Tarefa
@@ -14,27 +14,36 @@ export default function Card({ card, isUpdating }: Props) {
     e.dataTransfer.effectAllowed = 'move'
   }
 
+  const getPriorityColor = () => {
+    switch (card.prioridade_id) {
+      case 2: return 'border-l-red-500'
+      case 3: return 'border-l-green-500'
+      default: return 'border-l-blue-500'
+    }
+  }
+
   return (
     <div
       draggable
       onDragStart={handleDragStart}
-      className={`bg-white p-3 rounded shadow cursor-grab relative
-        ${isUpdating ? 'opacity-70' : 'opacity-100'}`}
+      className={`bg-white p-3 rounded shadow mb-3 relative border-l-4 ${getPriorityColor()}
+        ${isUpdating ? 'opacity-70' : 'opacity-100 hover:shadow-md transition-shadow'}`}
     >
       {isUpdating && (
-        <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center">
-          <FaSpinner className="animate-spin text-blue-500" />
+        <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+          <FaSpinner className="animate-spin text-blue-500 text-xl" />
         </div>
       )}
-      {/* use 'descricao' em vez de 'texto' */}
-      <h3 className="font-medium">{card.descricao}</h3>
-      <div className="flex justify-between items-center mt-2">
-        <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-          {card.id_projeto ? `Projeto #${card.id_projeto}` : 'Sem projeto'}
-        </span>
-        {/* use 'criado_em' em vez de 'data_criacao' */}
-        <span className="text-xs text-gray-500">
+      
+      <p className="font-medium mb-1">{card.descricao}</p>
+      
+      <div className="flex justify-between text-xs text-gray-500 mt-2">
+        <span>
           {new Date(card.criado_em).toLocaleDateString('pt-BR')}
+        </span>
+        <span>
+          {card.prioridade_id === 2 ? 'Alta' : 
+           card.prioridade_id === 3 ? 'Baixa' : 'Normal'}
         </span>
       </div>
     </div>

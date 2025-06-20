@@ -23,16 +23,14 @@ const statusMap: Record<string, number> = {
 export default function KanbanBoard({ projetoId, projects, initialCards }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
   
   const { 
     cards, 
     updateCardStatus, 
     confirmStatusUpdate,
     isUpdating
-  } = useKanban(projetoId, initialCards, token || undefined)
+  } = useKanban(projetoId, initialCards)
 
-  // Atualiza o filtro de projeto
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newProjetoId = e.target.value === 'all' ? undefined : Number(e.target.value)
     const params = new URLSearchParams(searchParams.toString())
@@ -46,7 +44,6 @@ export default function KanbanBoard({ projetoId, projects, initialCards }: Props
     router.push(`/kanban?${params.toString()}`)
   }
 
-  // Handler para drag and drop
   const handleDrop = useCallback(async (
     e: React.DragEvent<HTMLDivElement>, 
     statusKey: string
@@ -57,10 +54,7 @@ export default function KanbanBoard({ projetoId, projects, initialCards }: Props
     
     if (!cardId || !newStatusId) return
     
-    // Atualização otimista
     updateCardStatus(Number(cardId), newStatusId)
-    
-    // Confirmação com backend
     await confirmStatusUpdate(Number(cardId), newStatusId)
   }, [updateCardStatus, confirmStatusUpdate])
 
