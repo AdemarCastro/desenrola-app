@@ -7,7 +7,6 @@ export function useKanban(projetoId?: number, initialCards: Tarefa[] = [], token
   const [error, setError] = useState<string | null>(null)
   const [isUpdating, setIsUpdating] = useState<Record<number, boolean>>({})
 
-  // Função para atualizar otimisticamente o status
   const updateCardStatus = (cardId: number, newStatusId: number) => {
     setIsUpdating(prev => ({ ...prev, [cardId]: true }))
     setCards(prev => 
@@ -17,11 +16,11 @@ export function useKanban(projetoId?: number, initialCards: Tarefa[] = [], token
     )
   }
 
-  // Função para confirmar atualização no backend
   const confirmStatusUpdate = async (cardId: number, newStatusId: number) => {
     try {
-      const res = await fetch(`/api/tarefas/${cardId}`, {
-        method: 'PATCH',
+      // CORREÇÃO: URL correta para atualização de tarefas
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas/${cardId}`, {
+        method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -30,18 +29,38 @@ export function useKanban(projetoId?: number, initialCards: Tarefa[] = [], token
       })
       
       if (!res.ok) {
-        throw new Error(`Erro ${res.status} ao atualizar tarefa`)
+        // Melhor tratamento de erro
+        let errorMessage = `Erro ${res.status} ao atualizar tarefa`
+        
+        try {
+          const errorData = await res.json()
+          if (errorData.error) errorMessage = errorData.error
+          else if (errorData.message) errorMessage = errorData.message
+        } catch {
+          // Não faz nada se não conseguir parsear o JSON
+        }
+        
+        throw new Error(errorMessage)
       }
-    } catch (error) {
-      console.error('Falha na atualização:', error)
+    } catch (err) {
+      console.error('Falha na atualização:', err)
+      
+      // Tratamento de erro seguro
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido'
+      
       // Reverte a mudança em caso de erro
-      setCards(prev => 
-        prev.map(card => 
+      setCards(prevCards => {
+        const originalCard = initialCards.find(c => c.id === cardId) ||
+          cards.find(c => c.id === cardId)
+        return prevCards.map(card => 
           card.id === cardId 
-            ? { ...card, status_id: cards.find(c => c.id === cardId)?.status_id || card.status_id } 
+            ? { ...card, status_id: originalCard?.status_id || card.status_id } 
             : card
         )
-      )
+      })
+
+      // Atualiza o estado de erro
+      setError(errorMessage)
     } finally {
       setIsUpdating(prev => ({ ...prev, [cardId]: false }))
     }
@@ -53,19 +72,35 @@ export function useKanban(projetoId?: number, initialCards: Tarefa[] = [], token
     const fetchTarefas = async () => {
       setLoading(true)
       try {
+        // CORREÇÃO: URL correta para buscar tarefas
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/projetos/${projetoId}/tarefas`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/projetos/${projetoId}/tarefas`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             cache: 'no-store'
           }
         )
         
-        if (!res.ok) throw new Error(`Erro ${res.status}`)
+        if (!res.ok) {
+          let errorMessage = `Erro ${res.status} ao carregar tarefas`
+          
+          try {
+            const errorData = await res.json()
+            if (errorData.error) errorMessage = errorData.error
+            else if (errorData.message) errorMessage = errorData.message
+          } catch {
+            // Não faz nada se não conseguir parsear o JSON
+          }
+          
+          throw new Error(errorMessage)
+        }
+        
         const data = await res.json()
         setCards(data.data || data)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido')
+        // Tratamento de erro seguro
+        const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido'
+        setError(errorMessage)
       } finally {
         setLoading(false)
       }

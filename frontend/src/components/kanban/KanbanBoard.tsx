@@ -14,10 +14,9 @@ interface Props {
 }
 
 const statusMap: Record<string, number> = {
-  backlog: 1,
-  todo: 2,
-  doing: 3,
-  done: 4
+  todo: 1,
+  doing: 2,
+  done: 3,
 }
 
 export default function KanbanBoard({ projetoId, projects, initialCards }: Props) {

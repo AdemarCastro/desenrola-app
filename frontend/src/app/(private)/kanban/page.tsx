@@ -7,17 +7,18 @@ import { Tarefa } from '@/types/tarefa'
 export default async function KanbanPage({
   searchParams
 }: {
-  searchParams: { projetoId?: string }
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
+  const params = await searchParams
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
   if (!token) redirect('/login')
 
   const baseURL = process.env.NEXT_PUBLIC_API_URL!
-  const projetoId = searchParams.projetoId ? Number(searchParams.projetoId) : undefined
+  const rawId = params.projetoId
+  const projetoId = typeof rawId === 'string' ? Number(rawId) : undefined
 
   try {
-    // Busca todos os projetos
     const projetosRes = await fetch(`${baseURL}/projetos`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
