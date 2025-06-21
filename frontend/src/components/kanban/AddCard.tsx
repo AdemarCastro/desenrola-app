@@ -23,7 +23,7 @@ const AddCard: React.FC<Props> = ({ column, projetoId, setCards }) => {
         descricao: text.trim(),
         status_id: mapColumnToStatus(column),
         prioridade_id: 1,
-        id_projeto: projetoId // usa o projeto selecionado
+        id_projeto: projetoId 
       })
     })
     const nova: Tarefa = await res.json()
