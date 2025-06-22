@@ -31,6 +31,18 @@ export function FormCriarProjeto({ action }: Props) {
         />
       </div>
 
+      <div>
+        <label htmlFor="data_entrega" className="block mb-1">
+          Data de Entrega Estimada
+        </label>
+        <input
+          id="data_entrega"
+          type="date"
+          name="data_entrega"
+          className="w-full border border-gray-300 p-2 rounded"
+        />
+      </div>
+
       <button
         type="submit"
         className="bg-black text-white px-4 py-2 rounded hover:bg-neutral-800 transition cursor-pointer"

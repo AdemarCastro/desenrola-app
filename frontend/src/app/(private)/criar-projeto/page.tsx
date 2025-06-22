@@ -11,6 +11,7 @@ async function criarProjeto(formData: FormData) {
 
   const nome = formData.get("nome")?.toString();
   const descricao = formData.get("descricao")?.toString();
+  const dataEntrega = formData.get("data_entrega")?.toString();
 
   if (!nome) {
     throw new Error("O nome do projeto é obrigatório.");
@@ -25,6 +26,7 @@ async function criarProjeto(formData: FormData) {
     body: JSON.stringify({
       nome,
       descricao,
+      data_entrega: dataEntrega,
     }),
   });
 
