@@ -90,8 +90,9 @@ model Tarefa {
   status_id     Int
   prioridade_id Int
   criado_em     DateTime  @default(now())
-  concluido_em  DateTime?
   atualizado_em DateTime  @updatedAt
+  data_inicio   DateTime?
+  data_fim      DateTime?
   apagado_em    DateTime?
 
   status     StatusTarefa     @relation(fields: [status_id], references: [id])

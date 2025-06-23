@@ -15,7 +15,7 @@ type TarefaComCor = Tarefa & {
 
 // Paleta de cores (mesclada das duas versões, com algumas cores extras)
 const COLOR_PALETTE = [
-  "#60A5FA", "#34D399", "#A78BFA", "#FBBF24",
+  "#60B5FA", "#34D399", "#A78BFA", "#FBBF24",
   "#F472B6", "#38BDF8", "#F87171", "#4ADE80"
 ];
 
@@ -290,7 +290,6 @@ const TimelineChart: React.FC<TimelineChartProps> = ({ tarefas, projeto }) => {
     const container = timelineContainerRef.current;
     if (!container) return;
     if (todayIndex > -1 && todayRef.current) {
-      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     } else {
       // se hoje não estiver visível ou fora do intervalo, rolar para o início
       container.scrollTo({ left: 0, behavior: 'smooth' });
