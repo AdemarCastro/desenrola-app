@@ -9,9 +9,11 @@ export async function PUT(
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
+
   try {
-    const { id: projectId } = context.params;
+    const projectId = context.params.id;
     const body = await request.json();
+    
     const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}`, {
       method: 'PUT',
       headers: {
@@ -20,6 +22,7 @@ export async function PUT(
       },
       body: JSON.stringify(body),
     });
+
     const data = await apiRes.json();
     if (!apiRes.ok) {
       console.error('Erro ao atualizar projeto:', data);
