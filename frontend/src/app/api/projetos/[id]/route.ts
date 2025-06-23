@@ -3,17 +3,15 @@ import { cookies } from 'next/headers';
 
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
-
   try {
-    const projectId = context.params.id;
+    const { id: projectId } = await params;
     const body = await request.json();
-    
     const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}`, {
       method: 'PUT',
       headers: {
@@ -22,7 +20,6 @@ export async function PUT(
       },
       body: JSON.stringify(body),
     });
-
     const data = await apiRes.json();
     if (!apiRes.ok) {
       console.error('Erro ao atualizar projeto:', data);
