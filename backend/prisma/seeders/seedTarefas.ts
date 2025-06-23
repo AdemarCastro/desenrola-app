@@ -6,6 +6,8 @@ interface TaskSeed {
   descricao: string;
   status_id: number;
   prioridade_id: number;
+  data_inicio?: Date;
+  data_fim?: Date;
   id_projeto: number;
 }
 
@@ -14,18 +16,24 @@ const tasksToSeed: TaskSeed[] = [
     descricao: 'Definir escopo inicial do projeto',
     status_id: 1,
     prioridade_id: 2,
+    data_inicio: new Date('2025-05-01'),
+    data_fim: new Date('2025-05-07'),
     id_projeto: 1,
   },
   {
     descricao: 'Configurar ambiente de desenvolvimento',
     status_id: 2,
     prioridade_id: 1,
+    data_inicio: new Date('2025-05-08'),
+    data_fim: new Date('2025-05-14'),
     id_projeto: 1,
   },
   {
     descricao: 'Escrever testes unitários iniciais',
     status_id: 1,
     prioridade_id: 3,
+    data_inicio: new Date('2025-05-15'),
+    data_fim: new Date('2025-05-21'),
     id_projeto: 1,
   },
 ];
@@ -90,6 +98,8 @@ export async function seedTarefas() {
           descricao: t.descricao,
           status_id: status.id,
           prioridade_id: prioridade.id,
+          data_inicio: t.data_inicio,
+          data_fim: t.data_fim,
           id_projeto: projeto.id,
         },
       });

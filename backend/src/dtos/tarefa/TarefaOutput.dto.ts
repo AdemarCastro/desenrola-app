@@ -20,5 +20,11 @@ export class TarefaOutputDto {
   criado_em: Date;
 
   @Expose()
+  data_inicio: Date;
+
+  @Expose()
+  data_fim: Date;
+
+  @Expose()
   atualizado_em: Date;
 }
