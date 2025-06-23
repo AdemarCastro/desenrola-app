@@ -10,7 +10,7 @@ export async function PUT(
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
   try {
-    const { id: projectId } = await context.params;
+    const { id: projectId } = context.params;
     const body = await request.json();
     const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}`, {
       method: 'PUT',
