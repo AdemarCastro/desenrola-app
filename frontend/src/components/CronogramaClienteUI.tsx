@@ -20,24 +20,24 @@ const COLOR_PALETTE = [
 ];
 
 // Dados de exemplo (mantidos para demonstração)
-const DADOS_EXEMPLO: Omit<TarefaComCor, 'cor'>[] = [
-  { id: 1, descricao: "Pesquisa de mercado e análise de concorrentes", status_id: 3, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-07-01", data_fim: "2024-07-10" },
-  { id: 2, descricao: "Definição de escopo e requisitos do MVP", status_id: 2, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-07-11", data_fim: "2024-07-18" },
-  { id: 3, descricao: "Design de UI/UX - Wireframes e Protótipos", status_id: 1, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-07-19", data_fim: "2024-08-05" },
-  { id: 4, descricao: "Desenvolvimento do Backend e configuração da API", status_id: 1, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-08-06", data_fim: "2024-08-25" },
-  { id: 5, descricao: "Desenvolvimento do Frontend", status_id: 1, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-08-20", data_fim: "2024-09-10" },
-  { id: 6, descricao: "Testes de integração e QA", status_id: 1, prioridade_id: 3, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-09-11", data_fim: "2024-09-20" },
-  { id: 7, descricao: "Configuração de CI/CD e pipelines de automação", status_id: 2, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-09-21", data_fim: "2024-10-05" },
-  { id: 8, descricao: "Deploy em ambiente de staging e validação", status_id: 1, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-10-06", data_fim: "2024-10-15" },
-  { id: 9, descricao: "Correção de bugs encontrados em staging", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-10-16", data_fim: "2024-10-25" },
-  { id: 10, descricao: "Preparação de ambiente de produção", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-10-26", data_fim: "2024-11-05" },
-  { id: 11, descricao: "Lançamento em produção e monitoramento inicial", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-11-06", data_fim: "2024-11-15" },
-  { id: 12, descricao: "Implementação de logging e alertas em produção", status_id: 0, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-11-16", data_fim: "2024-11-25" },
-  { id: 13, descricao: "Coleta de feedback de usuários e métricas de uso", status_id: 0, prioridade_id: 3, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-11-26", data_fim: "2024-12-05" },
-  { id: 14, descricao: "Documentação da API e guias de usuário", status_id: 0, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-12-06", data_fim: "2024-12-15" },
-  { id: 15, descricao: "Planejamento de versão 2.0 com novas funcionalidades", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-12-16", data_fim: "2024-12-31" },
-  { id: 16, descricao: "Avaliação de performance e otimizações contínuas", status_id: 0, prioridade_id: 3, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2025-01-02", data_fim: "2025-01-15" },
-];
+// const DADOS_EXEMPLO: Omit<TarefaComCor, 'cor'>[] = [
+//   { id: 1, descricao: "Pesquisa de mercado e análise de concorrentes", status_id: 3, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-07-01", data_fim: "2024-07-10" },
+//   { id: 2, descricao: "Definição de escopo e requisitos do MVP", status_id: 2, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-07-11", data_fim: "2024-07-18" },
+//   { id: 3, descricao: "Design de UI/UX - Wireframes e Protótipos", status_id: 1, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-07-19", data_fim: "2024-08-05" },
+//   { id: 4, descricao: "Desenvolvimento do Backend e configuração da API", status_id: 1, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-08-06", data_fim: "2024-08-25" },
+//   { id: 5, descricao: "Desenvolvimento do Frontend", status_id: 1, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-08-20", data_fim: "2024-09-10" },
+//   { id: 6, descricao: "Testes de integração e QA", status_id: 1, prioridade_id: 3, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-09-11", data_fim: "2024-09-20" },
+//   { id: 7, descricao: "Configuração de CI/CD e pipelines de automação", status_id: 2, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-09-21", data_fim: "2024-10-05" },
+//   { id: 8, descricao: "Deploy em ambiente de staging e validação", status_id: 1, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-10-06", data_fim: "2024-10-15" },
+//   { id: 9, descricao: "Correção de bugs encontrados em staging", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-10-16", data_fim: "2024-10-25" },
+//   { id: 10, descricao: "Preparação de ambiente de produção", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-10-26", data_fim: "2024-11-05" },
+//   { id: 11, descricao: "Lançamento em produção e monitoramento inicial", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-11-06", data_fim: "2024-11-15" },
+//   { id: 12, descricao: "Implementação de logging e alertas em produção", status_id: 0, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-11-16", data_fim: "2024-11-25" },
+//   { id: 13, descricao: "Coleta de feedback de usuários e métricas de uso", status_id: 0, prioridade_id: 3, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-11-26", data_fim: "2024-12-05" },
+//   { id: 14, descricao: "Documentação da API e guias de usuário", status_id: 0, prioridade_id: 2, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-12-06", data_fim: "2024-12-15" },
+//   { id: 15, descricao: "Planejamento de versão 2.0 com novas funcionalidades", status_id: 0, prioridade_id: 1, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2024-12-16", data_fim: "2024-12-31" },
+//   { id: 16, descricao: "Avaliação de performance e otimizações contínuas", status_id: 0, prioridade_id: 3, criado_em: "2024-07-01", atualizado_em: "", data_inicio: "2025-01-02", data_fim: "2025-01-15" },
+// ];
 
 // Parsing robusto: aceita "YYYY-MM-DD" ou, em fallback, Date(string)
 // Retorna Date à meia-noite local, ou null se inválido
@@ -87,15 +87,41 @@ export function CronogramaClientUI({ projetos }: { projetos: Projeto[] }) {
     }
     const fetchTarefas = async () => {
       setLoading(true);
+
       // Exemplo: mocado. Substitua por fetch real.
-      setTimeout(() => {
-        const tarefasComCor: TarefaComCor[] = DADOS_EXEMPLO.map((tarefa, idx) => ({
+      // setTimeout(() => {
+      //   const tarefasComCor: TarefaComCor[] = DADOS_EXEMPLO.map((tarefa, idx) => ({
+      //     ...tarefa,
+      //     cor: COLOR_PALETTE[idx % COLOR_PALETTE.length],
+      //   }));
+      //   setTarefas(tarefasComCor);
+      //   setLoading(false);
+      // }, 300);
+
+      try {
+        const res = await fetch(`/api/projetos/${selectedProjectId}/tarefas`);
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Falha ao buscar as tarefas do projeto.');
+        }
+
+        const data: Omit<TarefaComCor, 'cor'>[] = await res.json();
+        
+        const tarefasComCor: TarefaComCor[] = data.map((tarefa, idx) => ({
           ...tarefa,
           cor: COLOR_PALETTE[idx % COLOR_PALETTE.length],
         }));
+
         setTarefas(tarefasComCor);
+
+      } catch (error) {
+        console.error("Erro ao carregar cronograma:", error);
+        // Opcional: Adicionar um estado para exibir uma mensagem de erro na UI
+        setTarefas([]);
+      } finally {
         setLoading(false);
-      }, 300);
+      }
     };
     fetchTarefas();
   }, [selectedProjectId]);
