@@ -17,7 +17,7 @@ const tasksToSeed: TaskSeed[] = [
     status_id: 1,
     prioridade_id: 2,
     data_inicio: new Date('2025-05-01'),
-    data_fim: new Date('2023-05-07'),
+    data_fim: new Date('2025-05-07'),
     id_projeto: 1,
   },
   {
@@ -25,7 +25,7 @@ const tasksToSeed: TaskSeed[] = [
     status_id: 2,
     prioridade_id: 1,
     data_inicio: new Date('2025-05-08'),
-    data_fim: new Date('2023-05-14'),
+    data_fim: new Date('2025-05-14'),
     id_projeto: 1,
   },
   {
@@ -33,7 +33,7 @@ const tasksToSeed: TaskSeed[] = [
     status_id: 1,
     prioridade_id: 3,
     data_inicio: new Date('2025-05-15'),
-    data_fim: new Date('2023-05-21'),
+    data_fim: new Date('2025-05-21'),
     id_projeto: 1,
   },
 ];
@@ -98,6 +98,8 @@ export async function seedTarefas() {
           descricao: t.descricao,
           status_id: status.id,
           prioridade_id: prioridade.id,
+          data_inicio: t.data_inicio,
+          data_fim: t.data_fim,
           id_projeto: projeto.id,
         },
       });
