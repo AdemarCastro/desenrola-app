@@ -3,14 +3,14 @@ import { cookies } from 'next/headers';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
-  const projectId = params.id;
+  const projectId = context.params.id;
   if (!projectId) {
     return NextResponse.json({ error: 'ID do projeto é obrigatório' }, { status: 400 });
   }
