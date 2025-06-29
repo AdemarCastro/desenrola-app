@@ -15,8 +15,6 @@ import {
   Plus,
   Users,
   FileText,
-  User,
-  Settings,
   FileCheck,
   LogOut,
 } from "lucide-react";
