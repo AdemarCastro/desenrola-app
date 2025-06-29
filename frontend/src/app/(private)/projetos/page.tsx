@@ -32,7 +32,7 @@ async function fetchProjetosComProgresso(token: string | undefined): Promise<Pro
     const projetosComProgresso = projetos.map((projeto, index) => {
       const tarefas: Tarefa[] = resultadosTarefas[index];
       const total = tarefas.length;
-      const concluidas = tarefas.filter(t => t.status_id === 2).length;
+      const concluidas = tarefas.filter(t => t.status_id === 3).length;
       const progresso = total === 0 ? 0 : Math.round((concluidas / total) * 100);
 
       return { ...projeto, progresso };

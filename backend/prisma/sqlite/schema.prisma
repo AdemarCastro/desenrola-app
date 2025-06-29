@@ -13,34 +13,33 @@ datasource db {
   url      = env("DATABASE_SQLITE_URL")
 }
 
-
 model Usuario {
-  id              Int        @id @default(autoincrement())
-  email           String     @unique
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
   primeiro_nome   String
   sobrenome       String
   senha           String
   data_nascimento DateTime
-  idade           Int?       @default(0)
+  idade           Int?      @default(0)
   status_id       Int
-  nivel_acesso_id Int        @default(1)
+  nivel_acesso_id Int       @default(1)
   logout_em       DateTime?
-  criado_em       DateTime   @default(now())
-  atualizado_em   DateTime   @updatedAt
+  criado_em       DateTime  @default(now())
+  atualizado_em   DateTime  @updatedAt
   apagado_em      DateTime?
 
-  status       StatusUsuario  @relation(fields: [status_id], references: [id])
-  nivel_acesso NivelAcesso    @relation(fields: [nivel_acesso_id], references: [id])
+  status       StatusUsuario    @relation(fields: [status_id], references: [id])
+  nivel_acesso NivelAcesso      @relation(fields: [nivel_acesso_id], references: [id])
   projetos     ProjetoUsuario[]
   comentarios  Comentario[]
 }
 
 model NivelAcesso {
-  id          Int       @id @default(autoincrement())
-  nome        String    @unique
+  id   Int    @id @default(autoincrement())
+  nome String @unique
 
-  usuarios    Usuario[]
-  projetos    ProjetoUsuario[]
+  usuarios Usuario[]
+  projetos ProjetoUsuario[]
 
   @@map("niveis_acesso")
 }
@@ -51,6 +50,7 @@ model Projeto {
   descricao     String?
   data_entrega  DateTime?
   criado_em     DateTime  @default(now())
+  concluido_em  DateTime?
   atualizado_em DateTime  @updatedAt
   apagado_em    DateTime?
 
@@ -59,52 +59,53 @@ model Projeto {
 }
 
 model ProjetoUsuario {
-  id          Int       @id @default(autoincrement())
-  usuario_id  Int
-  projeto_id  Int
+  id              Int       @id @default(autoincrement())
+  usuario_id      Int
+  projeto_id      Int
   nivel_acesso_id Int
-  criado_em   DateTime  @default(now())
-  atualizado_em DateTime @updatedAt
-  apagado_em  DateTime?
+  criado_em       DateTime  @default(now())
+  atualizado_em   DateTime  @updatedAt
+  apagado_em      DateTime?
 
-  usuario     Usuario   @relation(fields: [usuario_id], references: [id])
-  projeto     Projeto   @relation(fields: [projeto_id], references: [id])
+  usuario      Usuario      @relation(fields: [usuario_id], references: [id])
+  projeto      Projeto      @relation(fields: [projeto_id], references: [id])
   nivel_acesso NivelAcesso? @relation(fields: [nivel_acesso_id], references: [id])
-
 }
 
 model StatusTarefa {
-  id     Int    @id @default(autoincrement())
-  nome   String @unique
+  id      Int      @id @default(autoincrement())
+  nome    String   @unique
   tarefas Tarefa[]
 }
 
 model PrioridadeTarefa {
-  id     Int    @id @default(autoincrement())
-  nome   String @unique
+  id      Int      @id @default(autoincrement())
+  nome    String   @unique
   tarefas Tarefa[]
 }
 
 model Tarefa {
-  id                  Int      @id @default(autoincrement())
-  descricao           String
-  status_id           Int
-  prioridade_id       Int
-  criado_em           DateTime @default(now())
-  atualizado_em       DateTime @updatedAt
-  apagado_em          DateTime?
+  id            Int       @id @default(autoincrement())
+  descricao     String
+  status_id     Int
+  prioridade_id Int
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime  @updatedAt
+  data_inicio   DateTime?
+  data_fim      DateTime?
+  apagado_em    DateTime?
 
-  status              StatusTarefa @relation(fields: [status_id], references: [id])
-  prioridade          PrioridadeTarefa @relation(fields: [prioridade_id], references: [id])
-  projeto             Projeto @relation(fields: [id_projeto], references: [id])
-  id_projeto          Int
+  status     StatusTarefa     @relation(fields: [status_id], references: [id])
+  prioridade PrioridadeTarefa @relation(fields: [prioridade_id], references: [id])
+  projeto    Projeto          @relation(fields: [id_projeto], references: [id])
+  id_projeto Int
 
-  comentarios         Comentario[]
+  comentarios Comentario[]
 }
 
 model StatusUsuario {
-  id      Int      @id @default(autoincrement())
-  nome    String   @unique
+  id       Int       @id @default(autoincrement())
+  nome     String    @unique
   usuarios Usuario[]
 }
 
