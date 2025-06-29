@@ -33,7 +33,11 @@ async function criarProjeto(formData: FormData) {
   redirect("/criar-projeto?sucesso=1");
 }
 
-export default function CriarProjetoPage() {
+export default async function CriarProjetoPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) redirect("/login");
+
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Criar Novo Projeto</h1>
