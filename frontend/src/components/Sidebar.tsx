@@ -30,8 +30,6 @@ const menuItems = [
   { href: "/criar-projeto", label: "Criar Projeto", icon: FileText },
   { href: "/usuarios", label: "Gerenciar Usuários", icon: Users },
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
-  // { href: "/account", label: "Conta", icon: User },
-  // { href: "/configuracoes", label: "Configurações", icon: Settings },
   { href: "/termos", label: "Termos de uso", icon: FileCheck },
 ];
 
