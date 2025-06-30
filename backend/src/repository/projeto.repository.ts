@@ -3,11 +3,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class ProjetoRepository {
-  static async findAll(skip: number, take: number) {
+  static async findAll() {
     return prisma.projeto.findMany({
       where: { apagado_em: null },
-      skip,
-      take,
       orderBy: { criado_em: "desc" },
     });
   }
