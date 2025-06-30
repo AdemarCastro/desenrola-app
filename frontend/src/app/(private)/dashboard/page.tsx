@@ -19,10 +19,10 @@ async function getProjetos(token: string): Promise<Projeto[]> {
   return body.data || [];
 }
 
-export default async function DashboardPage({
+export default (async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
@@ -42,4 +42,5 @@ export default async function DashboardPage({
       <DashboardClient projetos={projetos} initialProjectId={selectedProjectId} />
     </div>
   );
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+}) as any;
