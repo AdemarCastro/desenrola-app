@@ -12,13 +12,9 @@ interface KanbanBoardProps {
 
 export default function KanbanBoard({ tarefas: initialTarefas }: KanbanBoardProps) {
   const router = useRouter();
-  // Inicializa todas as tarefas em To Do (status_id = 1)
-  const [tarefas, setTarefas] = useState<Tarefa[]>(
-    initialTarefas.map(t => ({ ...t, status_id: 1 }))
-  );
-  // Atualiza tarefas se o prop initialTarefas mudar (ex: filtro de projeto)
+  const [tarefas, setTarefas] = useState<Tarefa[]>(initialTarefas);
   useEffect(() => {
-    setTarefas(initialTarefas.map(t => ({ ...t, status_id: 1 })));
+    setTarefas(initialTarefas);
   }, [initialTarefas]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
