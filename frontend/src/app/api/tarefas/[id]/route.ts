@@ -2,11 +2,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Tarefa } from "@/types/tarefa";
 
+// Tipagem para o contexto do handler
+interface RouteContext {
+  params: { id: string };
+}
+
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-  const id = params.id;
+  context: RouteContext
+) {
+  const { id } = context.params;
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
@@ -18,8 +23,8 @@ export async function PUT(
 
   try {
     const body: Partial<Tarefa> = await request.json();
-    const updateData = body.status_id 
-      ? { status_id: body.status_id } 
+    const updateData = body.status_id != null
+      ? { status_id: body.status_id }
       : body;
 
     const apiResponse = await fetch(
@@ -34,7 +39,6 @@ export async function PUT(
       }
     );
 
-    // Se o token estiver expirado ou inválido
     if (apiResponse.status === 401) {
       return NextResponse.json(
         { error: "Token expirado ou inválido" },
@@ -44,8 +48,7 @@ export async function PUT(
 
     const data = await apiResponse.json();
     return NextResponse.json(data, { status: apiResponse.status });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Erro interno do servidor" },
       { status: 500 }
@@ -55,9 +58,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-  const { id } = params;
+  context: RouteContext
+) {
+  const { id } = context.params;
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
@@ -82,7 +85,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-    // evita JSON.parse em 204
     if (apiRes.status === 204) {
       return NextResponse.json({}, { status: 200 });
     }
