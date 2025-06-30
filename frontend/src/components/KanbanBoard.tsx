@@ -14,7 +14,12 @@ interface KanbanBoardProps {
   token: string;
 }
 
-export default function KanbanBoard({ projetos, tarefas: initialTarefas, projetoId, token }: KanbanBoardProps) {
+export default function KanbanBoard({ 
+  projetos, 
+  tarefas: initialTarefas, 
+  projetoId, 
+  token 
+}: KanbanBoardProps) {
   const router = useRouter();
   const [tarefas, setTarefas] = useState<Tarefa[]>(initialTarefas);
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +34,21 @@ export default function KanbanBoard({ projetos, tarefas: initialTarefas, projeto
   const updateStatus = async (id: number, newStatus: number) => {
     setError(null);
     const prev = [...tarefas];
-    setTarefas(prev.map(t => t.id === id ? { ...t, status_id: newStatus } : t));
+    setTarefas(prev.map(t => 
+      t.id === id ? { ...t, status_id: newStatus } : t
+    ));
+    
     setLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
         body: JSON.stringify({ status_id: newStatus }),
       });
+      
       if (res.status === 401) return router.push('/login');
       if (!res.ok) throw new Error('Erro ao atualizar tarefa');
     } catch (err) {
@@ -51,12 +63,14 @@ export default function KanbanBoard({ projetos, tarefas: initialTarefas, projeto
     setError(null);
     const prev = [...tarefas];
     setTarefas(prev.filter(t => t.id !== id));
+    
     setLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
+      
       if (res.status === 401) return router.push('/login');
       if (!res.ok) throw new Error('Erro ao deletar tarefa');
     } catch (err) {
@@ -68,23 +82,33 @@ export default function KanbanBoard({ projetos, tarefas: initialTarefas, projeto
     }
   };
 
+  // IDs corrigidos para corresponder ao backend
   const columns = [
-    { id: 2, title: 'To Do' },
-    { id: 3, title: 'Doing' },
-    { id: 4, title: 'Done' },
+    { id: 1, title: 'To Do' },
+    { id: 2, title: 'Doing' },
+    { id: 3, title: 'Done' },
   ];
 
   return (
     <div className="relative flex flex-col h-full">
       <h1 className="text-2xl font-bold mb-6">Kanban</h1>
-      {error && <p className="text-red-500 text-sm mb-4">Erro: {error}</p>}
-
+      
+      {error && (
+        <p className="text-red-500 text-sm mb-4">Erro: {error}</p>
+      )}
+      
       <div className="flex justify-between mb-4">
         <label className="mr-2 font-medium">Projeto:</label>
-        <select value={projetoId || ''} onChange={handleFilterChange} className="p-2 border rounded">
+        <select 
+          value={projetoId || ''} 
+          onChange={handleFilterChange}
+          className="p-2 border rounded"
+        >
           <option value="">Todos</option>
           {projetos.map(p => (
-            <option key={p.id} value={p.id}>{p.nome}</option>
+            <option key={p.id} value={p.id}>
+              {p.nome}
+            </option>
           ))}
         </select>
       </div>
@@ -98,13 +122,18 @@ export default function KanbanBoard({ projetos, tarefas: initialTarefas, projeto
             onDrop={(taskId) => updateStatus(taskId, col.id)}
           />
         ))}
+        
         <BurnBarrel
           over={overTrash}
-          onDragOver={(e) => { e.preventDefault(); setOverTrash(true); }}
+          onDragOver={(e) => { 
+            e.preventDefault(); 
+            setOverTrash(true); 
+          }}
           onDragLeave={() => setOverTrash(false)}
           onDrop={(taskId) => deleteTask(taskId)}
         />
       </div>
+
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50">
           <FaSpinner className="animate-spin text-4xl text-gray-600" />
