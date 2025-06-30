@@ -3,11 +3,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class TarefaRepository {
-  static async findAll(skip: number, take: number) {
+  static async findAll() {
     return prisma.tarefa.findMany({
       where: { apagado_em: null },
-      skip,
-      take,
       orderBy: { criado_em: "desc" },
     });
   }
