@@ -3,14 +3,14 @@ import { cookies } from 'next/headers';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
   try {
-    const { id: projectId } = params;
+    const { id: projectId } = await params;
     const body = await request.json();
     const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}`, {
       method: 'PUT',

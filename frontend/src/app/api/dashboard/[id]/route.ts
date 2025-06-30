@@ -13,14 +13,14 @@ const prioridadeColors: { [key: string]: string } = { "Alta": "#F87171", "Média
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
-  const { id: projectId } = params;
+  const { id: projectId } = await params;
 
   try {
     const [resProjeto, resTarefas] = await Promise.all([
