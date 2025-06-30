@@ -8,10 +8,9 @@ import BurnBarrel from './BurnBarrel';
 
 interface KanbanBoardProps {
   tarefas: Tarefa[];
-  token: string;
 }
 
-export default function KanbanBoard({ tarefas: initialTarefas, token }: KanbanBoardProps) {
+export default function KanbanBoard({ tarefas: initialTarefas }: KanbanBoardProps) {
   const router = useRouter();
   // Inicializa todas as tarefas em To Do (status_id = 1)
   const [tarefas, setTarefas] = useState<Tarefa[]>(
@@ -30,12 +29,10 @@ export default function KanbanBoard({ tarefas: initialTarefas, token }: KanbanBo
     
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`, {
+      const res = await fetch(`/api/tarefas/${id}`, {
         method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ status_id: newStatus }),
       });
       
@@ -56,9 +53,9 @@ export default function KanbanBoard({ tarefas: initialTarefas, token }: KanbanBo
     
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`, {
+      const res = await fetch(`/api/tarefas/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
       });
       
       if (res.status === 401) return router.push('/login');

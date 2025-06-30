@@ -32,7 +32,6 @@ export default async function KanbanPage() {
     <main className="h-screen p-4 bg-white text-black overflow-auto">
       <KanbanBoard
         tarefas={tarefas}
-        token={token}
       />
     </main>
   );
