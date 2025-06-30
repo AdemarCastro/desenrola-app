@@ -1,7 +1,7 @@
 // frontend/src/app/(private)/relatorios/page.tsx
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Printer } from "lucide-react";
+import { RelatoriosPDFExport } from "@/components/RelatoriosPDFExport";
 import { Projeto } from "@/types/projeto";
 import { Tarefa } from "@/types/tarefa";
 
@@ -92,111 +92,110 @@ export default async function RelatoriosPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <header className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Relatório de desempenho
-          </h1>
-          <button className="p-2 hover:bg-gray-100 rounded-lg">
-            <Printer className="w-5 h-5 text-gray-600" />
-          </button>
-        </header>
+        <RelatoriosPDFExport>
+          <header className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Relatório de desempenho
+            </h1>
+          </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((s, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-            >
-              <p className="text-sm text-gray-500 mb-2">{s.label}</p>
-              <p className="text-3xl font-semibold text-gray-900">
-                {s.value}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {projetos.length > 0 && (
-          <section className="bg-white rounded-lg border border-gray-200 mb-8 shadow-sm overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  {["Projeto", "Entrega", "Tarefas", "Status"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {projetos.map((p) => {
-                  const ts = tarefas.filter((t) => t.id_projeto === p.id);
-                  const status = getProjectStatus(p.id);
-                  return (
-                    <tr key={p.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {p.nome}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {p.data_entrega
-                          ? new Date(p.data_entrega).toLocaleDateString("pt-BR")
-                          : "—"}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {/* total de tarefas associadas ao projeto */}
-                        {ts.length}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                            status
-                          )}`}
-                        >
-                          {status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </section>
-        )}
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">
-            Tarefas por mês
-          </h2>
-          <div className="relative h-64">
-            <svg viewBox="0 0 400 200" className="w-full h-full">
-              {[...Array(8)].map((_, i) => (
-                <line
-                  key={i}
-                  x1={50 + i * 40}
-                  y1={20}
-                  x2={50 + i * 40}
-                  y2={160}
-                  stroke="#f3f4f6"
-                  strokeWidth={1}
-                />
-              ))}
-              
-              <text
-                x="50"
-                y="180"
-                textAnchor="middle"
-                className="text-xs fill-gray-500"
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            {stats.map((s, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
               >
-                Últimos 8 meses
-              </text>
-            </svg>
+                <p className="text-sm text-gray-500 mb-2">{s.label}</p>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {s.value}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="mt-4 text-center text-gray-600">
-            Gráfico de tarefas será implementado no proximo commit
+
+          {projetos.length > 0 && (
+            <section className="bg-white rounded-lg border border-gray-200 mb-8 shadow-sm overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {["Projeto", "Entrega", "Tarefas", "Status"].map((h) => (
+                      <th
+                        key={h}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {projetos.map((p) => {
+                    const ts = tarefas.filter((t) => t.id_projeto === p.id);
+                    const status = getProjectStatus(p.id);
+                    return (
+                      <tr key={p.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {p.nome}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          {p.data_entrega
+                            ? new Date(p.data_entrega).toLocaleDateString("pt-BR")
+                            : "—"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {/* total de tarefas associadas ao projeto */}
+                          {ts.length}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                              status
+                            )}`}
+                          >
+                            {status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </section>
+          )}
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Tarefas por mês
+            </h2>
+            <div className="relative h-64">
+              <svg viewBox="0 0 400 200" className="w-full h-full">
+                {[...Array(8)].map((_, i) => (
+                  <line
+                    key={i}
+                    x1={50 + i * 40}
+                    y1={20}
+                    x2={50 + i * 40}
+                    y2={160}
+                    stroke="#f3f4f6"
+                    strokeWidth={1}
+                  />
+                ))}
+
+                <text
+                  x="50"
+                  y="180"
+                  textAnchor="middle"
+                  className="text-xs fill-gray-500"
+                >
+                  Últimos 8 meses
+                </text>
+              </svg>
+            </div>
+            <div className="mt-4 text-center text-gray-600">
+              Gráfico de tarefas será implementado no próximo commit
+            </div>
           </div>
-        </div>
+        </RelatoriosPDFExport>
       </div>
     </div>
   );
