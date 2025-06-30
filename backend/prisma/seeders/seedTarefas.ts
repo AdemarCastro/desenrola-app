@@ -121,20 +121,31 @@ export async function seedTarefas() {
     console.log('✅ Dependências verificadas.');
     console.log(`⚙️  Iniciando a inserção de ${tasksToSeed.length} tarefas...`);
 
-    // Loop direto para criar cada tarefa. Simples e direto.
     for (const task of tasksToSeed) {
-      await prisma.tarefa.create({
-        data: {
+
+      const existingTask = await prisma.tarefa.findFirst({
+        where: {
           descricao: task.descricao,
-          status_id: task.status_id,
-          prioridade_id: task.prioridade_id,
-          data_inicio: task.data_inicio,
-          data_fim: task.data_fim,
           id_projeto: task.id_projeto,
-          concluido_em: task.concluido_em,
         },
       });
-      console.log(`✅ Tarefa criada: "${task.descricao}" no projeto ${task.id_projeto}`);
+      
+      if (!existingTask) {
+        await prisma.tarefa.create({
+          data: {
+            descricao: task.descricao,
+            status_id: task.status_id,
+            prioridade_id: task.prioridade_id,
+            data_inicio: task.data_inicio,
+            data_fim: task.data_fim,
+            id_projeto: task.id_projeto,
+            concluido_em: task.concluido_em,
+          },
+        });
+        console.log(`✅ Tarefa criada: "${task.descricao}" no projeto ${task.id_projeto}`);
+      } else {
+        console.log(`⏭️  Tarefa ignorada (já existe no projeto ${task.id_projeto}): "${task.descricao}"`);
+      }
     }
 
     console.log('🟢 Seed de tarefas concluído com sucesso!');
