@@ -3,9 +3,8 @@ import { ComentarioOutputDto } from "../dtos/comentario/ComentarioOutput.dto";
 import { plainToInstance } from "class-transformer";
 
 export class ComentarioService {
-  static async findAll(page: number = 1, limit: number = 10): Promise<ComentarioOutputDto[]> {
-    const skip = (page - 1) * limit;
-    const comentarios = await ComentarioRepository.findAll(skip, limit);
+  static async findAll(): Promise<ComentarioOutputDto[]> {
+    const comentarios = await ComentarioRepository.findAll();
 
     return plainToInstance(ComentarioOutputDto, comentarios, {
       excludeExtraneousValues: true,
