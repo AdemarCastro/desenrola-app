@@ -34,6 +34,7 @@ export async function PUT(
       }
     );
 
+    // Se o token estiver expirado ou inválido
     if (apiResponse.status === 401) {
       return NextResponse.json(
         { error: "Token expirado ou inválido" },
@@ -54,9 +55,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const id = params.id;
+  const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
@@ -67,26 +68,28 @@ export async function DELETE(
   }
 
   try {
-    const apiResponse = await fetch(
+    const apiRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`,
       {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
-    if (apiResponse.status === 401) {
+    if (apiRes.status === 401) {
       return NextResponse.json(
         { error: "Token expirado ou inválido" },
         { status: 401 }
       );
     }
+    // evita JSON.parse em 204
+    if (apiRes.status === 204) {
+      return NextResponse.json({}, { status: 200 });
+    }
 
-    return NextResponse.json(null, { status: apiResponse.status });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+    const data = await apiRes.json();
+    return NextResponse.json(data, { status: apiRes.status });
+  } catch {
     return NextResponse.json(
       { error: "Erro interno do servidor" },
       { status: 500 }

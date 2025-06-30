@@ -47,25 +47,18 @@ export default function KanbanBoard({ tarefas: initialTarefas }: KanbanBoardProp
   };
 
   const deleteTask = async (id: number) => {
-    setError(null);
     const prev = [...tarefas];
-    setTarefas(prev.filter(t => t.id !== id));
-    
-    setLoading(true);
+    setTarefas(tarefas.filter(t => t.id !== id));
+
     try {
-      const res = await fetch(`/api/tarefas/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      
-      if (res.status === 401) return router.push('/login');
-      if (!res.ok) throw new Error('Erro ao deletar tarefa');
-    } catch (err) {
+      const res = await fetch(`/api/tarefas/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) throw new Error("Erro ao deletar tarefa");
+
+      // Recarrega a página para obter o estado mais recente
+      router.refresh();
+    } catch (error) {
       setTarefas(prev);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-      setOverTrash(false);
+      console.error(error);
     }
   };
 
