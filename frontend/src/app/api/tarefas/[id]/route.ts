@@ -2,16 +2,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Tarefa } from "@/types/tarefa";
 
-// Tipagem para o contexto do handler
-interface RouteContext {
-  params: { id: string };
+// Função utilitária para extrair o id da URL
+function getIdFromRequest(request: NextRequest): string | null {
+  const match = request.nextUrl.pathname.match(/\/tarefas\/([^\/]+)$/);
+  return match ? match[1] : null;
 }
 
-export async function PUT(
-  request: NextRequest,
-  context: RouteContext
-) {
-  const { id } = context.params;
+// Atualiza tarefa
+export async function PUT(request: NextRequest): Promise<NextResponse> {
+  const id = getIdFromRequest(request);
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
@@ -21,46 +20,41 @@ export async function PUT(
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  try {
-    const body: Partial<Tarefa> = await request.json();
-    const updateData = body.status_id != null
-      ? { status_id: body.status_id }
-      : body;
+  const body: Partial<Tarefa> = await request.json();
+  const updateData = body.status_id != null
+    ? { status_id: body.status_id }
+    : body;
 
-    const apiResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updateData),
-      }
-    );
-
-    if (apiResponse.status === 401) {
-      return NextResponse.json(
-        { error: "Token expirado ou inválido" },
-        { status: 401 }
-      );
+  const apiResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updateData),
     }
+  );
 
-    const data = await apiResponse.json();
-    return NextResponse.json(data, { status: apiResponse.status });
-  } catch {
+  if (apiResponse.status === 401) {
+    return NextResponse.json({ error: "Token expirado ou inválido" }, { status: 401 });
+  }
+  if (!apiResponse.ok) {
+    const err = await apiResponse.json();
     return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 }
+      { error: err.error || "Falha ao atualizar tarefa" },
+      { status: apiResponse.status }
     );
   }
+
+  const data = await apiResponse.json();
+  return NextResponse.json(data, { status: 200 });
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: RouteContext
-) {
-  const { id } = context.params;
+// Exclui tarefa
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  const id = getIdFromRequest(request);
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
@@ -70,31 +64,28 @@ export async function DELETE(
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  try {
-    const apiRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-
-    if (apiRes.status === 401) {
-      return NextResponse.json(
-        { error: "Token expirado ou inválido" },
-        { status: 401 }
-      );
+  const apiResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
     }
-    if (apiRes.status === 204) {
-      return NextResponse.json({}, { status: 200 });
-    }
+  );
 
-    const data = await apiRes.json();
-    return NextResponse.json(data, { status: apiRes.status });
-  } catch {
+  if (apiResponse.status === 401) {
+    return NextResponse.json({ error: "Token expirado ou inválido" }, { status: 401 });
+  }
+  if (apiResponse.status === 204) {
+    return NextResponse.json({ message: "Tarefa deletada" }, { status: 200 });
+  }
+  if (!apiResponse.ok) {
+    const err = await apiResponse.json();
     return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 }
+      { error: err.error || "Falha ao deletar tarefa" },
+      { status: apiResponse.status }
     );
   }
+
+  const data = await apiResponse.json();
+  return NextResponse.json(data, { status: 200 });
 }
