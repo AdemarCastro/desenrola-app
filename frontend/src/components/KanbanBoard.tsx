@@ -2,34 +2,24 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaSpinner } from 'react-icons/fa';
-import { Projeto } from '@/types/projeto';
 import { Tarefa } from '@/types/tarefa';
 import KanbanColumn from './KanbanColumn';
 import BurnBarrel from './BurnBarrel';
 
 interface KanbanBoardProps {
-  projetos: Projeto[];
   tarefas: Tarefa[];
-  projetoId?: string;
   token: string;
 }
 
-export default function KanbanBoard({ 
-  projetos, 
-  tarefas: initialTarefas, 
-  projetoId, 
-  token 
-}: KanbanBoardProps) {
+export default function KanbanBoard({ tarefas: initialTarefas, token }: KanbanBoardProps) {
   const router = useRouter();
-  const [tarefas, setTarefas] = useState<Tarefa[]>(initialTarefas);
+  // Inicializa todas as tarefas em To Do (status_id = 1)
+  const [tarefas, setTarefas] = useState<Tarefa[]>(
+    initialTarefas.map(t => ({ ...t, status_id: 1 }))
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [overTrash, setOverTrash] = useState(false);
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value;
-    router.push(id ? `/kanban?projetoId=${id}` : '/kanban');
-  };
 
   const updateStatus = async (id: number, newStatus: number) => {
     setError(null);
@@ -82,7 +72,6 @@ export default function KanbanBoard({
     }
   };
 
-  // IDs corrigidos para corresponder ao backend
   const columns = [
     { id: 1, title: 'To Do' },
     { id: 2, title: 'Doing' },
@@ -97,22 +86,6 @@ export default function KanbanBoard({
         <p className="text-red-500 text-sm mb-4">Erro: {error}</p>
       )}
       
-      <div className="flex justify-between mb-4">
-        <label className="mr-2 font-medium">Projeto:</label>
-        <select 
-          value={projetoId || ''} 
-          onChange={handleFilterChange}
-          className="p-2 border rounded"
-        >
-          <option value="">Todos</option>
-          {projetos.map(p => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="flex gap-4 overflow-x-auto pb-4">
         {columns.map(col => (
           <KanbanColumn
