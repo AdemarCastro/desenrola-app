@@ -55,9 +55,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
-  const { id } = await params;
+  const { id } = params;
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
