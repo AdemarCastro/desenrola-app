@@ -3,6 +3,10 @@ import { redirect } from 'next/navigation';
 import { DashboardClient } from '@/components/DashboardClient';
 import type { Projeto } from '@/types/projeto';
 
+interface DashboardPageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
 async function getProjetos(token: string): Promise<Projeto[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -19,11 +23,7 @@ async function getProjetos(token: string): Promise<Projeto[]> {
   return body.data || [];
 }
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     redirect('/login');
