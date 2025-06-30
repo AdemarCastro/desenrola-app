@@ -1,38 +1,38 @@
 //frontend\src\app\(private)\kanban\page.tsx
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import KanbanBoard from '@/components/KanbanBoard';
-import { Tarefa } from '@/types/tarefa';
+import { Projeto } from '@/types/projeto';
+import KanbanClientUI from '@/components/KanbanClientUI';
 
-async function fetchTarefas(token: string): Promise<Tarefa[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tarefas`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
-  if (res.status === 401) redirect('/login');
-  if (!res.ok) throw new Error('Erro ao buscar tarefas');
-  return res.json();
+async function fetchProjetos(token: string): Promise<Projeto[] | { error: string }> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+    if (res.status === 401) redirect('/login');
+    if (!res.ok) throw new Error('Erro ao buscar projetos');
+    const data = await res.json();
+    return data.data || data;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido';
+    return { error: msg };
+  }
 }
 
 export default async function KanbanPage() {
   const token = (await cookies()).get('token')?.value;
   if (!token) redirect('/login');
-  let tarefas: Tarefa[];
-  try {
-    tarefas = await fetchTarefas(token);
-  } catch (err) {
+  const projetosResult = await fetchProjetos(token);
+  if ('error' in projetosResult) {
     return (
-      <div className="p-4 bg-white text-black min-h-screen">
-        <h1 className="text-2xl font-bold mb-6">Kanban</h1>
-        <p className="text-red-500 text-sm mb-4">
-          Erro: {err instanceof Error ? err.message : 'desconhecido'}
-        </p>
+      <div className="p-4 bg-white text-black min-h-screen max-w-7xl mx-auto">
+        <p className="text-red-500 text-sm mb-4">Erro: {projetosResult.error}</p>
       </div>
     );
   }
-
   return (
-    <main className="h-screen p-4 bg-white text-black overflow-auto">
-      <KanbanBoard
-        tarefas={tarefas}
-      />
+    <main className="h-screen overflow-auto bg-white text-black">
+      <div className="max-w-7xl mx-auto p-4">
+        <KanbanClientUI projetos={projetosResult} />
+      </div>
     </main>
   );
 }
