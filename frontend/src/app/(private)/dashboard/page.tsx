@@ -8,7 +8,9 @@ async function getProjetos(token: string): Promise<Projeto[]> {
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store',
   });
-  if (res.status === 401) redirect('/login');
+  if (res.status === 401) {
+    redirect('/login');
+  }
   if (!res.ok) {
     console.error("Falha ao buscar projetos para o dashboard");
     return [];
@@ -17,11 +19,11 @@ async function getProjetos(token: string): Promise<Projeto[]> {
   return body.data || [];
 }
 
-type DashboardPageProps = {
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
-export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     redirect('/login');
@@ -29,7 +31,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const projetos = await getProjetos(token);
 
-  const projectIdParam = searchParams.projectId;
+  const projectIdParam = searchParams?.projectId;
   
   const selectedProjectId = projectIdParam && typeof projectIdParam === 'string'
     ? parseInt(projectIdParam, 10) 
