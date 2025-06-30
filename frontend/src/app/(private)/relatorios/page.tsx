@@ -28,7 +28,8 @@ async function fetchTarefas(token: string): Promise<Tarefa[]> {
   if (res.status === 401) redirect("/login");
   if (!res.ok) throw new Error("Falha ao buscar tarefas");
   const body = await res.json();
-  return body.data || [];
+  // o backend retorna array direto ou { data: [...] }
+  return (body.data ?? body) as Tarefa[];
 }
 
 export default async function RelatoriosPage() {
@@ -132,7 +133,6 @@ export default async function RelatoriosPage() {
               <tbody className="divide-y divide-gray-200">
                 {projetos.map((p) => {
                   const ts = tarefas.filter((t) => t.id_projeto === p.id);
-                  const done = ts.filter((t) => t.status_id === 3).length;
                   const status = getProjectStatus(p.id);
                   return (
                     <tr key={p.id} className="hover:bg-gray-50">
@@ -145,7 +145,8 @@ export default async function RelatoriosPage() {
                           : "—"}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {done} / {ts.length}
+                        {/* total de tarefas associadas ao projeto */}
+                        {ts.length}
                       </td>
                       <td className="px-6 py-4">
                         <span
