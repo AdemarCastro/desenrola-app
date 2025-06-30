@@ -2,9 +2,8 @@ import { ProjetoRepository } from "../repository/projeto.repository";
 import { ProjetoOutputDto } from "../dtos/projeto/ProjetoOutput.dto";
 
 export class ProjetoService {
-  static async findAll(page = 1, limit = 10): Promise<ProjetoOutputDto[]> {
-    const skip = (page - 1) * limit;
-    const projetos = await ProjetoRepository.findAll(skip, limit);
+  static async findAll(): Promise<ProjetoOutputDto[]> {
+    const projetos = await ProjetoRepository.findAll();
 
     return projetos.map((projeto) => ({
       ...projeto,
