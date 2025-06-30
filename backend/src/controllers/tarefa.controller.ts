@@ -3,10 +3,7 @@ import { TarefaService } from "../services/tarefa.service";
 
 export class TarefaController {
   static async getTarefas(req: Request, res: Response): Promise<void> {
-    const { page = 1, limit = 10 } = req.query;
-
-    const tarefas = await TarefaService.findAll(Number(page), Number(limit));
-
+    const tarefas = await TarefaService.findAll();
     res.json(tarefas);
   }
 
