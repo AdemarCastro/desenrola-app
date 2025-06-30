@@ -5,14 +5,10 @@ import { ProjetoOutputDto } from '../dtos/projeto/ProjetoOutput.dto';
 
 export class ProjetoController {
   static async getProjetos(req: Request, res: Response): Promise<void> {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
 
-    const data = await ProjetoService.findAll(page, limit);
+    const data = await ProjetoService.findAll();
 
     res.json({
-      page,
-      limit,
       data: plainToInstance(ProjetoOutputDto, data),
     });
   }

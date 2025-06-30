@@ -3,11 +3,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class ComentarioRepository {
-  static async findAll(skip: number, take: number) {
+  static async findAll() {
     return prisma.comentario.findMany({
       where: { apagado_em: null },
-      skip,
-      take,
       orderBy: { criado_em: "desc" },
     });
   }

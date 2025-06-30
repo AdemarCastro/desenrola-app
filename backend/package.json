@@ -42,6 +42,7 @@
     "ms": "^2.1.3",
     "nodemon": "^3.1.10",
     "prisma": "^6.7.0",
+    "recharts": "^2.15.4",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },

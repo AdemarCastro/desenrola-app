@@ -3,14 +3,13 @@ import { TarefaOutputDto } from "../dtos/tarefa/TarefaOutput.dto";
 import { plainToInstance } from "class-transformer";
 
 export class TarefaService {
-  static async findAll(page: number = 1, limit: number = 10): Promise<TarefaOutputDto[]> {
-    const skip = (page - 1) * limit;
-    const tarefas = await TarefaRepository.findAll(skip, limit);
+  static async findAll(): Promise<TarefaOutputDto[]> {
+  const tarefas = await TarefaRepository.findAll();
 
-    return plainToInstance(TarefaOutputDto, tarefas, {
-      excludeExtraneousValues: true,
-    });
-  }
+  return plainToInstance(TarefaOutputDto, tarefas, {
+    excludeExtraneousValues: true,
+  });
+}
 
   static async findById(id: number): Promise<TarefaOutputDto | null> {
     const tarefa = await TarefaRepository.findById(id);

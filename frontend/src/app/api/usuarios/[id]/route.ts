@@ -1,22 +1,20 @@
 import { NextResponse, NextRequest } from "next/server";
 import type { Usuario } from "@/types/Usuario";
 
-// Função utilitária para extrair o id da URL
-function getIdFromRequest(request: NextRequest): string | null {
-  const match = request.nextUrl.pathname.match(/\/usuarios\/(.+)$/);
-  return match ? match[1] : null;
-}
-
-// Atualiza usuário
-export async function PUT(request: NextRequest): Promise<NextResponse> {
-  const id = getIdFromRequest(request);
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
+
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+
   const body: Usuario = await request.json();
   const apiResponse = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${id}`,
@@ -33,16 +31,20 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   return NextResponse.json(data, { status: apiResponse.status });
 }
 
-// Exclui usuário
-export async function DELETE(request: NextRequest): Promise<NextResponse> {
-  const id = getIdFromRequest(request);
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   }
+
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+
   const apiResponse = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${id}`,
     {

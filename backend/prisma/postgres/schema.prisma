@@ -22,6 +22,7 @@ model Usuario {
   senha           String
   data_nascimento DateTime
   idade           Int?      @default(0)
+  avatar_url      String?   @default("https://desenrola.com/default-avatar.png")
   status_id       Int
   nivel_acesso_id Int       @default(1)
   logout_em       DateTime?
@@ -60,7 +61,6 @@ model Projeto {
 }
 
 model ProjetoUsuario {
-  id              Int       @id @default(autoincrement())
   usuario_id      Int
   projeto_id      Int
   nivel_acesso_id Int
@@ -71,7 +71,10 @@ model ProjetoUsuario {
   usuario      Usuario      @relation(fields: [usuario_id], references: [id])
   projeto      Projeto      @relation(fields: [projeto_id], references: [id])
   nivel_acesso NivelAcesso? @relation(fields: [nivel_acesso_id], references: [id])
+
+  @@id([usuario_id, projeto_id])
 }
+
 
 model StatusTarefa {
   id      Int      @id @default(autoincrement())
@@ -92,6 +95,7 @@ model Tarefa {
   prioridade_id Int
   criado_em     DateTime  @default(now())
   atualizado_em DateTime  @updatedAt
+  concluido_em  DateTime?
   data_inicio   DateTime?
   data_fim      DateTime?
   apagado_em    DateTime?

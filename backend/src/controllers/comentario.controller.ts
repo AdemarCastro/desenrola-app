@@ -3,9 +3,7 @@ import { ComentarioService } from "../services/comentario.service";
 
 export class ComentarioController {
   static async getComentarios(req: Request, res: Response): Promise<void> {
-    const { page = 1, limit = 10 } = req.query;
-
-    const comentarios = await ComentarioService.findAll(Number(page), Number(limit));
+    const comentarios = await ComentarioService.findAll();
 
     if (!comentarios) {
       res.status(404).json({ error: "Comentários não encontrado" });

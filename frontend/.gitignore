@@ -48,8 +48,6 @@ src/components/ui/aspect-ratio.tsx
 src/components/ui/avatar.tsx
 src/components/ui/badge.tsx
 src/components/ui/breadcrumb.tsx
-src/components/ui/card.tsx
-src/components/ui/chart.tsx
 src/components/ui/checkbox.tsx
 src/components/ui/collapsible.tsx
 src/components/ui/command.tsx
@@ -74,7 +72,6 @@ src/components/ui/select.tsx
 src/components/ui/separator.tsx
 src/components/ui/sheet.tsx
 src/components/ui/sidebar.tsx
-src/components/ui/skeleton.tsx
 src/components/ui/slider.tsx
 src/components/ui/sonner.tsx
 src/components/ui/switch.tsx
