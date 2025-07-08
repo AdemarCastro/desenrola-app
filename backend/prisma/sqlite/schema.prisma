@@ -14,35 +14,51 @@ datasource db {
 }
 
 model Usuario {
-  id              Int       @id @default(autoincrement())
-  email           String    @unique
+  id              Int      @id @default(autoincrement())
+  email           String   @unique
   primeiro_nome   String
   sobrenome       String
   senha           String
   data_nascimento DateTime
-  idade           Int?      @default(0)
-  avatar_url      String?   @default("https://desenrola.com/default-avatar.png")
+  avatar_url      String?  @default("https://desenrola.com/default-avatar.png")
   status_id       Int
-  nivel_acesso_id Int       @default(1)
-  logout_em       DateTime?
-  criado_em       DateTime  @default(now())
-  atualizado_em   DateTime  @updatedAt
-  apagado_em      DateTime?
+  nivel_acesso_id Int
+  cargoId         Int?
+
+  logout_em     DateTime?
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime  @updatedAt
+  apagado_em    DateTime?
 
   status       StatusUsuario    @relation(fields: [status_id], references: [id])
   nivel_acesso NivelAcesso      @relation(fields: [nivel_acesso_id], references: [id])
-  projetos     ProjetoUsuario[]
-  comentarios  Comentario[]
+  cargo        Cargo?           @relation(fields: [cargoId], references: [id], onDelete: SetNull)
+  projetos     ProjetoUsuario[] @relation("ProjetosDoUsuario")
+  tarefas      TarefaUsuario[]  @relation("ResponsaveisPelaTarefa")
+  comentarios  Comentario[]     @relation("ComentariosDoUsuario")
+
+  @@index([status_id])
+  @@index([nivel_acesso_id])
+  @@index([cargoId])
+}
+
+model Cargo {
+  id       Int       @id @default(autoincrement())
+  nome     String    @unique
+  usuarios Usuario[]
 }
 
 model NivelAcesso {
-  id   Int    @id @default(autoincrement())
-  nome String @unique
+  id             Int              @id @default(autoincrement())
+  nome           String           @unique
+  usuarios       Usuario[]
+  projetoUsuario ProjetoUsuario[]
+}
 
+model StatusUsuario {
+  id       Int       @id @default(autoincrement())
+  nome     String    @unique
   usuarios Usuario[]
-  projetos ProjetoUsuario[]
-
-  @@map("niveis_acesso")
 }
 
 model Projeto {
@@ -50,12 +66,12 @@ model Projeto {
   nome          String
   descricao     String?
   data_entrega  DateTime?
-  criado_em     DateTime  @default(now())
   concluido_em  DateTime?
+  criado_em     DateTime  @default(now())
   atualizado_em DateTime  @updatedAt
   apagado_em    DateTime?
 
-  usuarios ProjetoUsuario[]
+  usuarios ProjetoUsuario[] @relation("UsuariosDoProjeto")
   tarefas  Tarefa[]
 }
 
@@ -63,15 +79,18 @@ model ProjetoUsuario {
   usuario_id      Int
   projeto_id      Int
   nivel_acesso_id Int
-  criado_em       DateTime  @default(now())
-  atualizado_em   DateTime  @updatedAt
-  apagado_em      DateTime?
 
-  usuario      Usuario      @relation(fields: [usuario_id], references: [id])
-  projeto      Projeto      @relation(fields: [projeto_id], references: [id])
-  nivel_acesso NivelAcesso? @relation(fields: [nivel_acesso_id], references: [id])
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime  @updatedAt
+  apagado_em    DateTime?
+
+  usuario     Usuario     @relation("ProjetosDoUsuario", fields: [usuario_id], references: [id], onDelete: Cascade)
+  projeto     Projeto     @relation("UsuariosDoProjeto", fields: [projeto_id], references: [id], onDelete: Cascade)
+  nivelAcesso NivelAcesso @relation(fields: [nivel_acesso_id], references: [id])
 
   @@id([usuario_id, projeto_id])
+  @@index([projeto_id])
+  @@index([usuario_id])
 }
 
 model StatusTarefa {
@@ -91,37 +110,70 @@ model Tarefa {
   descricao     String
   status_id     Int
   prioridade_id Int
-  criado_em     DateTime  @default(now())
-  atualizado_em DateTime  @updatedAt
-  concluido_em  DateTime?
+  id_projeto    Int
   data_inicio   DateTime?
   data_fim      DateTime?
+  concluido_em  DateTime?
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime  @updatedAt
   apagado_em    DateTime?
 
-  status     StatusTarefa     @relation(fields: [status_id], references: [id])
-  prioridade PrioridadeTarefa @relation(fields: [prioridade_id], references: [id])
-  projeto    Projeto          @relation(fields: [id_projeto], references: [id])
-  id_projeto Int
+  projeto      Projeto          @relation(fields: [id_projeto], references: [id], onDelete: Cascade)
+  status       StatusTarefa     @relation(fields: [status_id], references: [id])
+  prioridade   PrioridadeTarefa @relation(fields: [prioridade_id], references: [id])
+  comentarios  Comentario[]
+  responsaveis TarefaUsuario[]  @relation("ResponsaveisPelaTarefa")
+  tags         Tag[]
+  anexos       Anexo[]
 
-  comentarios Comentario[]
+  @@index([id_projeto])
+  @@index([status_id])
+  @@index([prioridade_id])
 }
 
-model StatusUsuario {
-  id       Int       @id @default(autoincrement())
-  nome     String    @unique
-  usuarios Usuario[]
+model TarefaUsuario {
+  tarefa_id  Int
+  usuario_id Int
+  criado_em  DateTime @default(now())
+
+  tarefa  Tarefa  @relation("ResponsaveisPelaTarefa", fields: [tarefa_id], references: [id], onDelete: Cascade)
+  usuario Usuario @relation("ResponsaveisPelaTarefa", fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@id([tarefa_id, usuario_id])
+  @@index([usuario_id])
 }
 
 model Comentario {
   id            Int       @id @default(autoincrement())
   conteudo      String
+  id_tarefa     Int
+  id_usuario    Int
   criado_em     DateTime  @default(now())
   atualizado_em DateTime  @updatedAt
   apagado_em    DateTime?
 
-  tarefa    Tarefa @relation(fields: [id_tarefa], references: [id])
-  id_tarefa Int
+  tarefa  Tarefa  @relation(fields: [id_tarefa], references: [id], onDelete: Cascade)
+  usuario Usuario @relation("ComentariosDoUsuario", fields: [id_usuario], references: [id], onDelete: Cascade)
 
-  usuario    Usuario @relation(fields: [id_usuario], references: [id])
-  id_usuario Int
+  @@index([id_tarefa])
+  @@index([id_usuario])
+}
+
+model Tag {
+  id      Int      @id @default(autoincrement())
+  nome    String   @unique
+  tarefas Tarefa[]
+}
+
+model Anexo {
+  id           Int      @id @default(autoincrement())
+  url          String
+  nome_arquivo String
+  tipo_arquivo String
+  id_tarefa    Int
+  criado_em    DateTime @default(now())
+
+  tarefa Tarefa @relation(fields: [id_tarefa], references: [id], onDelete: Cascade)
+
+  @@index([id_tarefa])
 }
