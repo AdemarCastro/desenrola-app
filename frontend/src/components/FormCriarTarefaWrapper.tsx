@@ -8,10 +8,11 @@ import { CheckCircle } from "lucide-react";
 
 interface Props {
   projetos: Projeto[];
+  statuses?: { id: string; label: string }[];
   action: (formData: FormData) => Promise<void>;
 }
 
-export function FormCriarTarefaWrapper({ projetos, action }: Props) {
+export function FormCriarTarefaWrapper({ projetos, statuses = [], action }: Props) {
   const searchParams = useSearchParams();
   const sucesso = searchParams.get("sucesso") === "1";
 
@@ -27,7 +28,7 @@ export function FormCriarTarefaWrapper({ projetos, action }: Props) {
           </CardContent>
         </Card>
       )}
-      <FormCriarTarefa projetos={projetos} action={action} />
+      <FormCriarTarefa projetos={projetos} statuses={statuses} action={action} />
     </div>
   );
 }

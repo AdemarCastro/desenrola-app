@@ -3,6 +3,13 @@ import { redirect } from "next/navigation";
 import { Projeto } from "@/types/projeto";
 import { FormCriarTarefaWrapper } from "@/components/FormCriarTarefaWrapper";
 
+// Status baseados no seed do backend
+const statusTarefa = [
+  { id: "1", label: "Pendente" },
+  { id: "2", label: "Em Progresso" },
+  { id: "3", label: "Concluída" },
+];
+
 async function fetchProjetos(token: string): Promise<Projeto[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -27,8 +34,9 @@ async function criarTarefa(formData: FormData) {
   const descricao = formData.get("descricao")?.toString();
   const projetoId = formData.get("projetoId")?.toString();
   const prioridadeId = formData.get("prioridadeId")?.toString();
+  const statusId = formData.get("statusId")?.toString();
 
-  if (!titulo || !projetoId || !prioridadeId) {
+  if (!titulo || !projetoId || !prioridadeId || !statusId) {
     throw new Error("Dados obrigatórios ausentes");
   }
 
@@ -40,7 +48,7 @@ async function criarTarefa(formData: FormData) {
     },
     body: JSON.stringify({
       descricao: `${titulo} - ${descricao || ""}`,
-      status_id: 1,
+      status_id: Number(statusId),
       prioridade_id: Number(prioridadeId),
       id_projeto: Number(projetoId),
     }),
@@ -76,7 +84,11 @@ export default async function CriarTarefaPage() {
           Preencha as informações abaixo para criar uma nova tarefa.
         </p>
       </div>
-      <FormCriarTarefaWrapper projetos={projetos} action={criarTarefa} />
+      <FormCriarTarefaWrapper
+        projetos={projetos}
+        statuses={statusTarefa}
+        action={criarTarefa}
+      />
     </div>
   );
 }

@@ -36,7 +36,10 @@ export const criarTarefaSchema = z.object({
 
   tagIds: z.array(z.string()).optional(),
 
-  statusId: z.string().min(1, "Status é obrigatório"),
+  statusId: z
+    .string({ message: "Status deve ser selecionado" })
+    .min(1, "Status é obrigatório")
+    .refine((val) => ["1", "2", "3"].includes(val), "Selecione um status válido"),
 
   dataInicio: z.date(),
 

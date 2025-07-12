@@ -27,7 +27,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Calendar } from "@/components/ui/calendar";
 import { Loader2, AlertCircle } from "lucide-react";
 
@@ -254,7 +253,7 @@ export function FormCriarTarefa({
               />
             </div>
 
-            {/* Responsáveis e Tags lado a lado */}
+            {/* Responsáveis - versão corrigida */}
             <FormField
               control={form.control}
               name="responsavelIds"
@@ -264,7 +263,11 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start text-left"
+                          disabled={isPending}
+                        >
                           {field.value.length
                             ? usuarios
                                 .filter(u => field.value.includes(u.id.toString()))
@@ -274,27 +277,42 @@ export function FormCriarTarefa({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                        <Command>
-                          <CommandInput placeholder="Buscar usuário..." />
-                          <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
-                          <CommandGroup>
-                            {usuarios.map(user => (
-                              <CommandItem
-                                key={user.id}
-                                onSelect={() => {
-                                  const exists = field.value.includes(user.id.toString());
-                                  field.onChange(
-                                    exists
-                                      ? field.value.filter(id => id !== user.id.toString())
-                                      : [...field.value, user.id.toString()]
-                                  );
-                                }}
-                              >
-                                {user.nome}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </Command>
+                        <div className="max-h-60 overflow-auto">
+                          <div className="p-1">
+                            {usuarios.map(user => {
+                              const isSelected = field.value.includes(user.id.toString());
+                              return (
+                                <div
+                                  key={user.id}
+                                  className={`
+                                    flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
+                                    ${isSelected 
+                                      ? "bg-gray-100 text-gray-900" 
+                                      : "hover:bg-gray-100 text-gray-700"
+                                    }
+                                  `}
+                                  onClick={() => {
+                                    const exists = field.value.includes(user.id.toString());
+                                    field.onChange(
+                                      exists
+                                        ? field.value.filter(id => id !== user.id.toString())
+                                        : [...field.value, user.id.toString()]
+                                    );
+                                  }}
+                                >
+                                  <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
+                                    {isSelected && (
+                                      <div className="w-3 h-3 bg-primary rounded-sm flex items-center justify-center">
+                                        <span className="text-white text-xs">✓</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-sm font-medium flex-1">{user.nome}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </PopoverContent>
                     </Popover>
                   </FormControl>
@@ -302,6 +320,7 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
+            {/* Tags - versão corrigida */}
             <FormField
               control={form.control}
               name="tagIds"
@@ -313,7 +332,7 @@ export function FormCriarTarefa({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start"
+                          className="w-full justify-start text-left"
                           disabled={isPending}
                         >
                           {field.value.length
@@ -325,29 +344,43 @@ export function FormCriarTarefa({
                           }
                         </Button>
                       </PopoverTrigger>
-
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                        <Command>
-                          <CommandInput placeholder="Buscar tag..." />
-                          <CommandEmpty>Nenhuma tag encontrada.</CommandEmpty>
-                          <CommandGroup>
-                            {tags.map(tag => (
-                              <CommandItem
-                                key={tag.id}
-                                onSelect={() => {
-                                  const exists = field.value.includes(tag.id.toString());
-                                  field.onChange(
-                                    exists
-                                      ? field.value.filter(id => id !== tag.id.toString())
-                                      : [...field.value, tag.id.toString()]
-                                  );
-                                }}
-                              >
-                                {tag.nome}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </Command>
+                        <div className="max-h-60 overflow-auto">
+                          <div className="p-1">
+                            {tags.map(tag => {
+                              const isSelected = field.value.includes(tag.id.toString());
+                              return (
+                                <div
+                                  key={tag.id}
+                                  className={`
+                                    flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
+                                    ${isSelected 
+                                      ? "bg-gray-100 text-gray-900" 
+                                      : "hover:bg-gray-100 text-gray-700"
+                                    }
+                                  `}
+                                  onClick={() => {
+                                    const exists = field.value.includes(tag.id.toString());
+                                    field.onChange(
+                                      exists
+                                        ? field.value.filter(id => id !== tag.id.toString())
+                                        : [...field.value, tag.id.toString()]
+                                    );
+                                  }}
+                                >
+                                  <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
+                                    {isSelected && (
+                                      <div className="w-3 h-3 bg-primary rounded-sm flex items-center justify-center">
+                                        <span className="text-white text-xs">✓</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-sm font-medium flex-1">{tag.nome}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </PopoverContent>
                     </Popover>
                   </FormControl>
@@ -356,7 +389,7 @@ export function FormCriarTarefa({
               )}
             />
 
-            {/* Status em full-width */}
+            {/* Status - versão padronizada */}
             <div className="sm:col-span-2">
               <FormField
                 control={form.control}
@@ -370,13 +403,23 @@ export function FormCriarTarefa({
                         onValueChange={field.onChange}
                         disabled={isPending}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Selecione o status" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                          {statuses.map(s => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.label}
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50 max-h-[200px] overflow-y-auto">
+                          {statuses.map((s) => (
+                            <SelectItem
+                              key={s.id}
+                              value={s.id}
+                              className="
+                                cursor-pointer transition-colors
+                                data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900
+                                data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
+                                focus:bg-gray-100 focus:text-gray-900
+                                px-3 py-2
+                              "
+                            >
+                              <span className="text-sm font-medium">{s.label}</span>
                             </SelectItem>
                           ))}
                         </SelectContent>
