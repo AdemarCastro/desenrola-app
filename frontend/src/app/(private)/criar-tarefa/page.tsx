@@ -59,12 +59,23 @@ export default async function CriarTarefaPage() {
     projetos = await fetchProjetos(token);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Erro desconhecido";
-    return <p className="text-red-600">Erro: {msg}</p>;
+    return (
+      <div className="p-6 max-w-2xl mx-auto">
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
+          Erro: {msg}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Criar Nova Tarefa</h1>
+    <div className="container mx-auto p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Criar Nova Tarefa</h1>
+        <p className="text-muted-foreground">
+          Preencha as informações abaixo para criar uma nova tarefa.
+        </p>
+      </div>
       <FormCriarTarefaWrapper projetos={projetos} action={criarTarefa} />
     </div>
   );
