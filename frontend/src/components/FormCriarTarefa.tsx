@@ -29,7 +29,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Calendar } from "@/components/ui/calendar";
-import { Loader2, AlertCircle, CalendarIcon, Users, Tags } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 interface Props {
   projetos: Projeto[];
@@ -133,7 +133,11 @@ export function FormCriarTarefa({
         )}
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+          >
+            {/* Projeto e Prioridade lado a lado */}
             <FormField
               control={form.control}
               name="projetoId"
@@ -171,40 +175,6 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="titulo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Título *</FormLabel>
-                  <FormControl>
-                    <Input {...field} disabled={isPending}/>
-                  </FormControl>
-                  <FormMessage />  {/* aqui mostra “Título é obrigatório” */}
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="descricao"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Descreva os detalhes da tarefa (opcional)"
-                      className="min-h-[100px] resize-none"
-                      disabled={isPending}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="prioridadeId"
@@ -246,18 +216,51 @@ export function FormCriarTarefa({
               )}
             />
 
-            {/* Responsáveis */}
+            {/* Título em full-width */}
+            <div className="sm:col-span-2">
+              <FormField
+                control={form.control}
+                name="titulo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Título *</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" disabled={isPending} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Descrição em full-width */}
+            <div className="sm:col-span-2">
+              <FormField
+                control={form.control}
+                name="descricao"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className="min-h-[100px] w-full"
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Responsáveis e Tags lado a lado */}
             <FormField
               control={form.control}
               name="responsavelIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      Responsáveis
-                    </div>
-                  </FormLabel>
+                  <FormLabel>Responsáveis</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -270,7 +273,7 @@ export function FormCriarTarefa({
                             : "Selecione responsáveis"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0">
+                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
                         <Command>
                           <CommandInput placeholder="Buscar usuário..." />
                           <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
@@ -299,32 +302,31 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
-
-            {/* Tags */}
             <FormField
               control={form.control}
               name="tagIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <div className="flex items-center gap-2">
-                      <Tags className="h-4 w-4" />
-                      Tags
-                    </div>
-                  </FormLabel>
+                  <FormLabel>Tags</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          disabled={isPending}
+                        >
                           {field.value.length
                             ? tags
                                 .filter(t => field.value.includes(t.id.toString()))
                                 .map(t => t.nome)
                                 .join(", ")
-                            : "Selecione tags"}
+                            : "Selecione tags"
+                          }
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0">
+
+                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
                         <Command>
                           <CommandInput placeholder="Buscar tag..." />
                           <CommandEmpty>Nenhuma tag encontrada.</CommandEmpty>
@@ -354,48 +356,45 @@ export function FormCriarTarefa({
               )}
             />
 
-            {/* Status Inicial */}
-            <FormField
-              control={form.control}
-              name="statusId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status Inicial *</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={isPending}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o status" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                        {statuses.map(s => (
-                          <SelectItem key={s.id} value={s.id}>
-                            {s.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Status em full-width */}
+            <div className="sm:col-span-2">
+              <FormField
+                control={form.control}
+                name="statusId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status Inicial *</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isPending}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o status" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                          {statuses.map(s => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            {/* Data Início */}
+            {/* Datas lado a lado */}
             <FormField
               control={form.control}
               name="dataInicio"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4" />
-                      Data Início *
-                    </div>
-                  </FormLabel>
+                  <FormLabel>Data Início *</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -415,19 +414,12 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
-
-            {/* Data Fim */}
             <FormField
               control={form.control}
               name="dataFim"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4" />
-                      Data Fim *
-                    </div>
-                  </FormLabel>
+                  <FormLabel>Data Fim *</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -448,21 +440,24 @@ export function FormCriarTarefa({
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full h-11"
-              disabled={isPending}
-              size="lg"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Criando tarefa...
-                </>
-              ) : (
-                "Criar Tarefa"
-              )}
-            </Button>
+            {/* Botão em full-width, alinhado à direita */}
+            <div className="sm:col-span-2 flex justify-end">
+              <Button
+                type="submit"
+                className="h-11 px-6"
+                disabled={isPending}
+                size="lg"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Criando…
+                  </>
+                ) : (
+                  "Criar Tarefa"
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>
