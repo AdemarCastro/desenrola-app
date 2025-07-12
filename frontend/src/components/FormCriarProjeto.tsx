@@ -1,54 +1,147 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+
+import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+
+const schema = z.object({
+  nome: z.string().min(1, "O nome do projeto é obrigatório"),
+  descricao: z.string().optional(),
+  data_entrega: z
+    .date()
+    .refine((d) => !!d, { message: "A data de entrega é obrigatória" }),
+});
+
+type FormSchema = z.infer<typeof schema>;
+
 interface Props {
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => void;
 }
 
 export function FormCriarProjeto({ action }: Props) {
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      nome: "",
+      descricao: "",
+      data_entrega: undefined,
+    },
+  });
+
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const onSubmit = (data: FormSchema) => {
+    const formData = new FormData();
+    formData.append("nome", data.nome);
+    if (data.descricao) formData.append("descricao", data.descricao);
+    formData.append(
+      "data_entrega",
+      data.data_entrega.toISOString().split("T")[0]
+    );
+    action(formData);
+  };
+
   return (
-    <form action={action} className="space-y-4">
-      <div>
-        <label htmlFor="nome" className="block mb-1">
-          Nome do Projeto
-        </label>
-        <input
-          id="nome"
-          type="text"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
           name="nome"
-          required
-          placeholder="Ex: Novo Sistema de Pagamento"
-          className="w-full border border-gray-300 p-2 rounded"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome do Projeto</FormLabel>
+              <FormControl>
+                <Input placeholder="Ex: Novo Sistema de Pagamento" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div>
-        <label htmlFor="descricao" className="block mb-1">
-          Descrição
-        </label>
-        <textarea
-          id="descricao"
+        <FormField
+          control={form.control}
           name="descricao"
-          placeholder="Descreva os detalhes do projeto"
-          className="w-full border border-gray-300 p-2 rounded"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descrição</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Descreva os detalhes do projeto"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div>
-        <label htmlFor="data_entrega" className="block mb-1">
-          Data de Entrega Estimada
-        </label>
-        <input
-          id="data_entrega"
-          type="date"
+        <FormField
+          control={form.control}
           name="data_entrega"
-          className="w-full border border-gray-300 p-2 rounded"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Data de Entrega Estimada</FormLabel>
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? format(field.value, "dd/MM/yyyy", { locale: ptBR })
+                        : "Selecionar data"}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    onSelectDate={(date: Date) => {
+                      field.onChange(date);
+                      setCalendarOpen(false);
+                    }}
+                    initialDate={field.value}
+                    className="w-full"
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <button
-        type="submit"
-        className="bg-black text-white px-4 py-2 rounded hover:bg-neutral-800 transition cursor-pointer"
-      >
-        Criar Projeto
-      </button>
-    </form>
+        <Button type="submit" className="w-full">
+          Criar Projeto
+        </Button>
+      </form>
+    </Form>
   );
 }
