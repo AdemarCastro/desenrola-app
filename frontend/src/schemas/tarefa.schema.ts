@@ -31,6 +31,16 @@ export const criarTarefaSchema = z.object({
       const num = Number(val);
       return !isNaN(num) && num > 0 && ["1", "2", "3"].includes(val);
     }, "Selecione uma prioridade válida"),
+
+  responsavelIds: z.array(z.string()).optional(),
+
+  tagIds: z.array(z.string()).optional(),
+
+  statusId: z.string().min(1, "Status é obrigatório"),
+
+  dataInicio: z.date(),
+
+  dataFim: z.date(),
 });
 
 // Tipo inferido do schema para TypeScript

@@ -1,11 +1,9 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import type { Projeto } from "@/types/projeto";
 import { 
-  criarTarefaSchema, 
   type CriarTarefaFormData,
   type Prioridade 
 } from "@/schemas/tarefa.schema";
@@ -28,15 +26,21 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Calendar } from "@/components/ui/calendar";
+import { Loader2, AlertCircle, CalendarIcon, Users, Tags } from "lucide-react";
 
 interface Props {
   projetos: Projeto[];
+  usuarios?: { id: number; nome: string }[];
+  tags?: { id: number; nome: string }[];
+  statuses?: { id: string; label: string }[];
   action: (formData: FormData) => Promise<void>;
 }
 
 const prioridades: Prioridade[] = [
-  { id: "1", nome: "Normal", cor: "text-blue-600" },
+  { id: "1", nome: "Média", cor: "text-blue-600" },
   { id: "2", nome: "Alta", cor: "text-red-600" },
   { id: "3", nome: "Baixa", cor: "text-gray-600" },
 ];
@@ -50,22 +54,40 @@ const getPrioridadeIcon = (prioridadeId: string) => {
   }
 };
 
-export function FormCriarTarefa({ projetos, action }: Props) {
+type ExtendedFormData = CriarTarefaFormData & {
+  responsavelIds: string[];
+  tagIds: string[];
+  statusId: string;
+  dataInicio: Date;
+  dataFim: Date;
+};
+
+export function FormCriarTarefa({ 
+  projetos, 
+  usuarios = [], 
+  tags = [], 
+  statuses = [], 
+  action 
+}: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<CriarTarefaFormData>({
-    resolver: zodResolver(criarTarefaSchema),
+  const form = useForm<ExtendedFormData>({
     defaultValues: {
       titulo: "",
       descricao: "",
       projetoId: "",
       prioridadeId: "",
+      responsavelIds: [],
+      tagIds: [],
+      statusId: "",
+      dataInicio: new Date(),
+      dataFim: new Date(),
     },
     mode: "onChange", // Validação em tempo real
   });
 
-  const onSubmit = async (data: CriarTarefaFormData) => {
+  const onSubmit = async (data: ExtendedFormData) => {
     setError(null);
     
     startTransition(async () => {
@@ -75,6 +97,11 @@ export function FormCriarTarefa({ projetos, action }: Props) {
         formData.append("descricao", data.descricao || "");
         formData.append("projetoId", data.projetoId);
         formData.append("prioridadeId", data.prioridadeId);
+        formData.append("responsavelIds", JSON.stringify(data.responsavelIds));
+        formData.append("tagIds", JSON.stringify(data.tagIds));
+        formData.append("statusId", data.statusId);
+        formData.append("dataInicio", data.dataInicio.toISOString());
+        formData.append("dataFim", data.dataFim.toISOString());
         
         await action(formData);
         
@@ -152,13 +179,9 @@ export function FormCriarTarefa({ projetos, action }: Props) {
                 <FormItem>
                   <FormLabel>Título *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Ex: Corrigir bug de login"
-                      disabled={isPending}
-                      {...field}
-                    />
+                    <Input {...field} disabled={isPending}/>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage />  {/* aqui mostra “Título é obrigatório” */}
                 </FormItem>
               )}
             />
@@ -217,6 +240,208 @@ export function FormCriarTarefa({ projetos, action }: Props) {
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Responsáveis */}
+            <FormField
+              control={form.control}
+              name="responsavelIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      Responsáveis
+                    </div>
+                  </FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                          {field.value.length
+                            ? usuarios
+                                .filter(u => field.value.includes(u.id.toString()))
+                                .map(u => u.nome)
+                                .join(", ")
+                            : "Selecione responsáveis"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar usuário..." />
+                          <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
+                          <CommandGroup>
+                            {usuarios.map(user => (
+                              <CommandItem
+                                key={user.id}
+                                onSelect={() => {
+                                  const exists = field.value.includes(user.id.toString());
+                                  field.onChange(
+                                    exists
+                                      ? field.value.filter(id => id !== user.id.toString())
+                                      : [...field.value, user.id.toString()]
+                                  );
+                                }}
+                              >
+                                {user.nome}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Tags */}
+            <FormField
+              control={form.control}
+              name="tagIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <div className="flex items-center gap-2">
+                      <Tags className="h-4 w-4" />
+                      Tags
+                    </div>
+                  </FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                          {field.value.length
+                            ? tags
+                                .filter(t => field.value.includes(t.id.toString()))
+                                .map(t => t.nome)
+                                .join(", ")
+                            : "Selecione tags"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar tag..." />
+                          <CommandEmpty>Nenhuma tag encontrada.</CommandEmpty>
+                          <CommandGroup>
+                            {tags.map(tag => (
+                              <CommandItem
+                                key={tag.id}
+                                onSelect={() => {
+                                  const exists = field.value.includes(tag.id.toString());
+                                  field.onChange(
+                                    exists
+                                      ? field.value.filter(id => id !== tag.id.toString())
+                                      : [...field.value, tag.id.toString()]
+                                  );
+                                }}
+                              >
+                                {tag.nome}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Status Inicial */}
+            <FormField
+              control={form.control}
+              name="statusId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status Inicial *</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o status" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                        {statuses.map(s => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Data Início */}
+            <FormField
+              control={form.control}
+              name="dataInicio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4" />
+                      Data Início *
+                    </div>
+                  </FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                          {field.value ? field.value.toLocaleDateString("pt-BR") : "Selecione uma data"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          onSelectDate={field.onChange}
+                          initialDate={field.value}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Data Fim */}
+            <FormField
+              control={form.control}
+              name="dataFim"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4" />
+                      Data Fim *
+                    </div>
+                  </FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                          {field.value ? field.value.toLocaleDateString("pt-BR") : "Selecione uma data"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          onSelectDate={field.onChange}
+                          initialDate={field.value}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
