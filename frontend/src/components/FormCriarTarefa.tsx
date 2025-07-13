@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import type { Projeto } from "@/types/projeto";
 import { 
   type CriarTarefaFormData,
@@ -63,13 +63,15 @@ type ExtendedFormData = CriarTarefaFormData & {
 
 export function FormCriarTarefa({ 
   projetos, 
-  usuarios = [], 
-  tags = [], 
   statuses = [], 
   action 
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  // opções vindas da API
+  const [projectUsers, setProjectUsers] = useState<{ id: string; nome: string }[]>([]);
+  const [tagOptions, setTagOptions] = useState<{ id: string; nome: string }[]>([]);
 
   const form = useForm<ExtendedFormData>({
     defaultValues: {
@@ -85,6 +87,27 @@ export function FormCriarTarefa({
     },
     mode: "onChange", // Validação em tempo real
   });
+  const projetoId = form.watch("projetoId");
+
+  // 1) carrega todas as tags
+  useEffect(() => {
+    fetch("/api/tags", { cache: "no-store" })
+      .then(res => res.json())
+      .then(json => setTagOptions(json.data ?? json))
+      .catch(() => setTagOptions([]));
+  }, []);
+
+  // 2) carrega usuários do projeto selecionado
+  useEffect(() => {
+    if (!projetoId) {
+      setProjectUsers([]);
+      return;
+    }
+    fetch(`/api/projetos/${projetoId}/usuarios`, { cache: "no-store" })
+      .then(res => res.json())
+      .then(json => setProjectUsers(json.data ?? json))
+      .catch(() => setProjectUsers([]));
+  }, [projetoId]);
 
   const onSubmit = async (data: ExtendedFormData) => {
     setError(null);
@@ -128,10 +151,8 @@ export function FormCriarTarefa({
         )}
         
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
             {/* Projeto e Prioridade lado a lado */}
             <FormField
               control={form.control}
@@ -249,7 +270,7 @@ export function FormCriarTarefa({
               />
             </div>
 
-            {/* Responsáveis - versão corrigida */}
+            {/* Responsáveis */}
             <FormField
               control={form.control}
               name="responsavelIds"
@@ -259,55 +280,29 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          className="w-full justify-start text-left"
-                          disabled={isPending}
-                        >
+                        <Button variant="outline" className="w-full text-left" disabled={isPending}>
                           {field.value.length
-                            ? usuarios
-                                .filter(u => field.value.includes(u.id.toString()))
-                                .map(u => u.nome)
-                                .join(", ")
+                            ? projectUsers.filter(u => field.value.includes(u.id)).map(u => u.nome).join(", ")
                             : "Selecione responsáveis"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                        <div className="max-h-60 overflow-auto">
-                          <div className="p-1">
-                            {usuarios.map(user => {
-                              const isSelected = field.value.includes(user.id.toString());
-                              return (
-                                <div
-                                  key={user.id}
-                                  className={`
-                                    flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
-                                    ${isSelected 
-                                      ? "bg-gray-100 text-gray-900" 
-                                      : "hover:bg-gray-100 text-gray-700"
-                                    }
-                                  `}
-                                  onClick={() => {
-                                    const exists = field.value.includes(user.id.toString());
-                                    field.onChange(
-                                      exists
-                                        ? field.value.filter(id => id !== user.id.toString())
-                                        : [...field.value, user.id.toString()]
-                                    );
-                                  }}
-                                >
-                                  <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                                    {isSelected && (
-                                      <div className="w-3 h-3 bg-primary rounded-sm flex items-center justify-center">
-                                        <span className="text-white text-xs">✓</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span className="text-sm font-medium flex-1">{user.nome}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
+                        <div className="max-h-60 overflow-auto p-1">
+                          {projectUsers.map(user => {
+                            const isSel = field.value.includes(user.id);
+                            return (
+                              <div key={user.id} className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                                onClick={() => {
+                                  field.onChange(isSel
+                                    ? field.value.filter(id => id !== user.id)
+                                    : [...field.value, user.id]);
+                                }}
+                              >
+                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
+                                <span className="text-sm flex-1">{user.nome}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -316,7 +311,7 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
-            {/* Tags - versão corrigida */}
+            {/* Tags */}
             <FormField
               control={form.control}
               name="tagIds"
@@ -326,56 +321,29 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left"
-                          disabled={isPending}
-                        >
+                        <Button variant="outline" className="w-full text-left" disabled={isPending}>
                           {field.value.length
-                            ? tags
-                                .filter(t => field.value.includes(t.id.toString()))
-                                .map(t => t.nome)
-                                .join(", ")
-                            : "Selecione tags"
-                          }
+                            ? tagOptions.filter(t => field.value.includes(t.id)).map(t => t.nome).join(", ")
+                            : "Selecione tags"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                        <div className="max-h-60 overflow-auto">
-                          <div className="p-1">
-                            {tags.map(tag => {
-                              const isSelected = field.value.includes(tag.id.toString());
-                              return (
-                                <div
-                                  key={tag.id}
-                                  className={`
-                                    flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
-                                    ${isSelected 
-                                      ? "bg-gray-100 text-gray-900" 
-                                      : "hover:bg-gray-100 text-gray-700"
-                                    }
-                                  `}
-                                  onClick={() => {
-                                    const exists = field.value.includes(tag.id.toString());
-                                    field.onChange(
-                                      exists
-                                        ? field.value.filter(id => id !== tag.id.toString())
-                                        : [...field.value, tag.id.toString()]
-                                    );
-                                  }}
-                                >
-                                  <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                                    {isSelected && (
-                                      <div className="w-3 h-3 bg-primary rounded-sm flex items-center justify-center">
-                                        <span className="text-white text-xs">✓</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span className="text-sm font-medium flex-1">{tag.nome}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
+                        <div className="max-h-60 overflow-auto p-1">
+                          {tagOptions.map(tag => {
+                            const isSel = field.value.includes(tag.id);
+                            return (
+                              <div key={tag.id} className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                                onClick={() => {
+                                  field.onChange(isSel
+                                    ? field.value.filter(id => id !== tag.id)
+                                    : [...field.value, tag.id]);
+                                }}
+                              >
+                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
+                                <span className="text-sm flex-1">{tag.nome}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </PopoverContent>
                     </Popover>
