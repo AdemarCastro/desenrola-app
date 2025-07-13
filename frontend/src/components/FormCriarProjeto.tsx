@@ -238,7 +238,7 @@ export function FormCriarProjeto({ action, proprietarios, membros }: Props) {
         <FormField
           control={form.control}
           name="membros_ids"
-          render={({ field }) => (
+          render={({ }) => (
             <FormItem>
               <FormLabel>Membros do Projeto</FormLabel>
               <Popover open={membroOpen} onOpenChange={setMembroOpen}>

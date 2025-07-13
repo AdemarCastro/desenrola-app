@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FormCriarProjetoWrapper } from "@/components/FormCriarProjetoWrapper";
+import { Usuario } from "@/types/Usuario";
 
 async function criarProjeto(formData: FormData) {
   "use server";
@@ -51,7 +52,7 @@ export default async function CriarProjetoPage() {
     cache: "no-store",
   });
 
-  const usuarios: any[] = await res.json();
+  const usuarios: Usuario[] = await res.json();
 
   const gerentes = usuarios.filter((u) => u.nivel_acesso_id === 2);
   const membros = usuarios.filter((u) => u.nivel_acesso_id === 3);
