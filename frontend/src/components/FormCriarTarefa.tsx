@@ -145,7 +145,7 @@ export function FormCriarTarefa({
   };
 
   return (
-    <Card className="shadow-lg rounded-md border">
+    <Card className="shadow-none rounded-md border">
       <CardContent className="pt-6">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start gap-3">
@@ -168,31 +168,47 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Projeto *</FormLabel>
                   <FormControl>
-                    <Select 
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={isPending}
-                    >
-                      <SelectTrigger className="w-full whitespace-normal text-left items-start">
-                        <SelectValue placeholder="Selecione um projeto" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50 max-h-[200px] overflow-y-auto">
-                        {projetos.map((projeto) => (
-                          <SelectItem 
-                            key={projeto.id} 
-                            value={projeto.id.toString()}
-                            className="
-                              cursor-pointer
-                              data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900
-                              data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
-                              focus:bg-gray-100 focus:text-gray-900
-                            "
-                          >
-                            {projeto.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div
+                          className="
+                            w-full border border-gray-200 rounded-md p-2
+                            flex items-center justify-between cursor-pointer whitespace-normal break-words
+                          "
+                        >
+                          {field.value
+                            ? projetos.find(p => p.id.toString() === field.value)?.nome
+                            : "Selecione um projeto"}
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="
+                          w-[300px] p-0 bg-white border border-gray-200
+                          rounded-md z-50 max-h-[200px] overflow-y-auto
+                          shadow-none ring-0
+                        "
+                      >
+                        <div className="p-1">
+                          {projetos.map(proj => {
+                            const isSel = proj.id.toString() === field.value;
+                            return (
+                              <div
+                                key={proj.id}
+                                className={`
+                                  flex items-center gap-3 px-3 py-2
+                                  cursor-pointer rounded-sm transition-colors
+                                  ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}
+                                `}
+                                onClick={() => field.onChange(proj.id.toString())}
+                              >
+                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
+                                <span className="text-sm flex-1">{proj.nome}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,10 +226,10 @@ export function FormCriarTarefa({
                       onValueChange={field.onChange}
                       disabled={isPending}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="shadow-none ring-0 focus:ring-0">
                         <SelectValue placeholder="Selecione a prioridade" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50 max-h-[200px] overflow-y-auto">
+                      <SelectContent className="bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50 max-h-[200px] overflow-y-auto">
                         {prioridades.map((prioridade) => (
                           <SelectItem 
                             key={prioridade.id} 
@@ -248,7 +264,7 @@ export function FormCriarTarefa({
                   <FormItem>
                     <FormLabel>Título *</FormLabel>
                     <FormControl>
-                      <Input {...field} className="w-full" disabled={isPending} />
+                      <Input {...field} className="w-full shadow-none ring-0 focus:ring-0" disabled={isPending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -267,7 +283,7 @@ export function FormCriarTarefa({
                     <FormControl>
                       <Textarea
                         {...field}
-                        className="min-h-[100px] w-full"
+                        className="min-h-[100px] w-full shadow-none ring-0 focus:ring-0"
                         disabled={isPending}
                       />
                     </FormControl>
@@ -287,7 +303,7 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <div className="w-full border border-gray-200 rounded-md p-2 flex flex-wrap gap-2 cursor-pointer whitespace-normal overflow-wrap break-words" disabled={isPending}>
+                        <div className="w-full border border-gray-200 rounded-md p-2 flex flex-wrap gap-2 cursor-pointer whitespace-normal overflow-wrap break-words">
                           {field.value.length > 0 ? (
                             projectUsers
                               .filter(u => field.value.includes(u.id))
@@ -301,7 +317,7 @@ export function FormCriarTarefa({
                           )}
                         </div>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
                         <div className="max-h-60 overflow-auto p-1">
                           {projectUsers.map(user => {
                             const isSel = field.value.includes(user.id);
@@ -326,6 +342,7 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
+
             {/* Tags */}
             <FormField
               control={form.control}
@@ -336,13 +353,27 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full text-left" disabled={isPending}>
-                          {field.value.length
-                            ? tagOptions.filter(t => field.value.includes(t.id)).map(t => t.nome).join(", ")
-                            : "Selecione tags"}
-                        </Button>
+                        <div
+                          className="
+                            w-full border border-gray-200 rounded-md p-2
+                            flex gap-2 cursor-pointer whitespace-nowrap overflow-x-auto
+                          "
+                        >
+                          {field.value.length > 0
+                            ? tagOptions
+                                .filter(t => field.value.includes(t.id))
+                                .map(t => (
+                                  <span
+                                    key={t.id}
+                                    className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm whitespace-nowrap"
+                                  >
+                                    {t.nome}
+                                  </span>
+                                ))
+                            : <span className="text-gray-500">Selecione tags</span>}
+                        </div>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
                         <div className="max-h-60 overflow-auto p-1">
                           {tagOptions.map(tag => {
                             const isSel = field.value.includes(tag.id);
@@ -377,35 +408,45 @@ export function FormCriarTarefa({
                   <FormItem>
                     <FormLabel>Status Inicial *</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={isPending}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Selecione o status" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50 max-h-[200px] overflow-y-auto">
-                          {statuses.map((s) => (
-                            <SelectItem
-                              key={s.id}
-                              value={s.id}
-                              className="
-                                cursor-pointer transition-colors
-                                data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900
-                                data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
-                                focus:bg-gray-100 focus:text-gray-900
-                                px-3 py-2
-                              "
-                            >
-                              <span className="text-sm font-medium">{s.label}</span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <div
+                            className="
+                              w-full border border-gray-200 rounded-md p-2
+                              flex items-center gap-2 cursor-pointer whitespace-normal
+                            "
+                          >
+                            {field.value
+                              ? <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm">
+                                  {statuses.find(s => s.id === field.value)?.label}
+                                </span>
+                              : <span className="text-gray-500">Selecione status</span>}
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
+                          <div className="p-1">
+                            {statuses.map(s => {
+                              const isSel = s.id === field.value;
+                              return (
+                                <div
+                                  key={s.id}
+                                  className={`
+                                    flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
+                                    ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}
+                                  `}
+                                  onClick={() => field.onChange(s.id)}
+                                >
+                                  <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
+                                  <span className="text-sm flex-1">{s.label}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                     </FormControl>
+                     <FormMessage />
+                   </FormItem>
                 )}
               />
             </div>
@@ -420,11 +461,11 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                        <Button variant="outline" className="w-full justify-start shadow-none ring-0 focus:ring-0" disabled={isPending}>
                           {field.value ? field.value.toLocaleDateString("pt-BR") : "Selecione uma data"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0 shadow-none ring-0">
                         <Calendar
                           onSelectDate={field.onChange}
                           initialDate={field.value}
@@ -445,11 +486,11 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start" disabled={isPending}>
+                        <Button variant="outline" className="w-full justify-start shadow-none ring-0 focus:ring-0" disabled={isPending}>
                           {field.value ? field.value.toLocaleDateString("pt-BR") : "Selecione uma data"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0 shadow-none ring-0">
                         <Calendar
                           onSelectDate={field.onChange}
                           initialDate={field.value}
@@ -466,7 +507,7 @@ export function FormCriarTarefa({
             <div className="sm:col-span-2 flex justify-end">
               <Button
                 type="submit"
-                className="h-11 px-6"
+                className="h-11 px-6 shadow-none ring-0 focus:ring-0"
                 disabled={isPending}
                 size="lg"
               >
