@@ -31,4 +31,8 @@ export class CreateUsuarioInputDTO {
 
   @IsInt({ message: "Nível de acesso inválido" })
   nivel_acesso_id: number;
+
+  @IsNotEmpty({ message: 'O ID do cargo não pode ser vazio.' })
+  @IsInt({ message: 'O ID do cargo deve ser um número inteiro.' })
+  cargo_id: number;
 }
