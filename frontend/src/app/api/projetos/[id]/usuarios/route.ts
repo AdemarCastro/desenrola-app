@@ -3,14 +3,14 @@ import { cookies } from 'next/headers';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
-  const { id: projectId } = await params;
+  const projectId = params.id;
   if (!projectId) {
     return NextResponse.json({ error: 'ID do projeto é obrigatório' }, { status: 400 });
   }
@@ -30,12 +30,21 @@ export async function GET(
         { status: apiRes.status }
       );
     }
-    return NextResponse.json(body.data ?? body);
+
+    // body.data pode ser o array de usuários ou um wrapper
+    const rawList = body.data ?? body;
+    const users = (Array.isArray(rawList) ? rawList : []).map((item: any) => {
+      const u = item.usuario ?? item;
+      return {
+        id: u.id.toString(),
+        nome: u.nome ?? `${u.primeiro_nome} ${u.sobrenome}`
+      };
+    });
+    return NextResponse.json(users);
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'Erro inesperado no servidor.';
-    console.error('ERRO NA API /api/projetos/[id]/usuarios:', e);
+    console.error(`ERRO NA API /api/projetos/${projectId}/usuarios:`, e);
     return NextResponse.json(
-      { error: 'Erro interno do servidor.', details: message },
+      { error: 'Erro interno do servidor.' },
       { status: 500 }
     );
   }

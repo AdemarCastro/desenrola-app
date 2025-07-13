@@ -104,9 +104,16 @@ export function FormCriarTarefa({
       return;
     }
     fetch(`/api/projetos/${projetoId}/usuarios`, { cache: "no-store" })
-      .then(res => res.json())
-      .then(json => setProjectUsers(json.data ?? json))
-      .catch(() => setProjectUsers([]));
+      .then(res => {
+        if (!res.ok) throw new Error("Falha ao buscar usuários");
+        return res.json();
+      })
+      .then((list: { id: string; nome: string }[]) => {
+        setProjectUsers(list);
+      })
+      .catch(() => {
+        setProjectUsers([]);
+      });
   }, [projetoId]);
 
   const onSubmit = async (data: ExtendedFormData) => {
