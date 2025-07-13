@@ -35,8 +35,7 @@ export class UpdateUsuarioInputDTO {
   @IsOptional()
   nivel_acesso_id?: number;
 
-  // ⚠️ Remover futuramente
-  @IsInt()
+  @IsInt({ message: 'O ID do cargo deve ser um número inteiro.' })
   @IsOptional()
-  idade?: number;
+  cargo_id?: number;
 }

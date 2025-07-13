@@ -9,6 +9,11 @@ import comentarioRoutes from './routes/comentario.routes';
 import authRoutes from './routes/auth.routes';
 import usuarioRoutes from './routes/usuario.routes';
 import projetoRoutes from './routes/projeto.routes';
+import dashboardRoutes from './routes/dashboard.routes';
+import cargoRoutes from './routes/cargo.routes';
+import tagRoutes from './routes/tag.routes';
+import anexoRoutes from './routes/anexo.routes';
+
 import { errorHandler } from './middleware/errorhandler';
 
 const app = express();
@@ -39,6 +44,11 @@ app.use('/api/tarefas', tarefaRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/projetos', projetoRoutes);
 app.use('/api/comentarios', comentarioRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/cargos', cargoRoutes);
+app.use('/api/tags', tagRoutes);
+app.use('/api/anexos', anexoRoutes);
+
 
 app.get('/', (_req, res) => {
   res.status(200).json({

@@ -41,7 +41,8 @@ export class ProjetoRepository {
       where: { projeto_id: projetoId, apagado_em: null },
       include: {
         usuario: { select: { id: true, primeiro_nome: true, sobrenome: true } },
-        nivel_acesso: { select: { id: true, nome: true } },
+        nivelAcesso: { select: { id: true, nome: true } },
+        projeto: { select: { id: true, nome: true }}
       },
     });
   }
