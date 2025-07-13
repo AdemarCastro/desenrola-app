@@ -53,6 +53,7 @@ export class AuthService {
       data_nascimento,
       status_id: 1,
       nivel_acesso_id: 3,
+      cargo_id: 1,
     };
 
     const novoUsuario = await UsuarioService.createUsuario(createUsuarioDto);
