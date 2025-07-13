@@ -23,36 +23,64 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
+  Command,
+  CommandInput,
+  CommandItem,
+  CommandGroup,
+} from "@/components/ui/command";
 
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
-  nome: z.string().min(1, "O nome do projeto é obrigatório"),
+  nome: z.string().min(1, "Nome do projeto é obrigatório"),
   descricao: z.string().optional(),
   data_entrega: z
     .date()
-    .refine((d) => !!d, { message: "A data de entrega é obrigatória" }),
+    .refine((d) => !!d, { message: "A data é obrigatória" }),
+  proprietario_id: z.string().min(1, "Selecione um proprietário"),
+  membros_ids: z.array(z.string()).min(1, "Selecione pelo menos um membro"),
 });
 
 type FormSchema = z.infer<typeof schema>;
 
-interface Props {
-  action: (formData: FormData) => void;
+interface Usuario {
+  id: number;
+  primeiro_nome: string;
+  sobrenome: string;
 }
 
-export function FormCriarProjeto({ action }: Props) {
+interface Props {
+  action: (formData: FormData) => void;
+  proprietarios: Usuario[];
+  membros: Usuario[];
+}
+
+export function FormCriarProjeto({ action, proprietarios, membros }: Props) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: "",
       descricao: "",
       data_entrega: undefined,
+      proprietario_id: "",
+      membros_ids: [],
     },
   });
 
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [membroOpen, setMembroOpen] = useState(false);
+
+  const selectedMembros = form.watch("membros_ids");
 
   const onSubmit = (data: FormSchema) => {
     const formData = new FormData();
@@ -62,12 +90,15 @@ export function FormCriarProjeto({ action }: Props) {
       "data_entrega",
       data.data_entrega.toISOString().split("T")[0]
     );
+    formData.append("proprietario_id", data.proprietario_id);
+    data.membros_ids.forEach((id) => formData.append("membros_ids", id));
     action(formData);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Nome */}
         <FormField
           control={form.control}
           name="nome"
@@ -75,13 +106,14 @@ export function FormCriarProjeto({ action }: Props) {
             <FormItem>
               <FormLabel>Nome do Projeto</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: Novo Sistema de Pagamento" {...field} />
+                <Input placeholder="Ex: Novo Sistema" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Descrição */}
         <FormField
           control={form.control}
           name="descricao"
@@ -89,29 +121,27 @@ export function FormCriarProjeto({ action }: Props) {
             <FormItem>
               <FormLabel>Descrição</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Descreva os detalhes do projeto"
-                  {...field}
-                />
+                <Textarea placeholder="Detalhes do projeto" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Data de Entrega */}
         <FormField
           control={form.control}
           name="data_entrega"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Data de Entrega Estimada</FormLabel>
+              <FormLabel>Data de Entrega</FormLabel>
               <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full pl-3 text-left font-normal",
+                        "w-full pl-3 text-left",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -131,6 +161,89 @@ export function FormCriarProjeto({ action }: Props) {
                     initialDate={field.value}
                     className="w-full"
                   />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Proprietário */}
+        <FormField
+          control={form.control}
+          name="proprietario_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Proprietário do Projeto</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um proprietário" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="z-50">
+                  {proprietarios.map((p) => (
+                    <SelectItem key={p.id} value={String(p.id)}>
+                      {p.primeiro_nome} {p.sobrenome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Membros do Projeto */}
+        <FormField
+          control={form.control}
+          name="membros_ids"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Membros do Projeto</FormLabel>
+              <Popover open={membroOpen} onOpenChange={setMembroOpen}>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between"
+                    >
+                      {selectedMembros.length > 0
+                        ? `${selectedMembros.length} selecionado(s)`
+                        : "Selecionar membros"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="z-50 w-[300px] p-0 bg-white border shadow-md">
+                  <Command>
+                    <CommandInput placeholder="Buscar membro..." />
+                    <CommandGroup>
+                      {membros.map((m) => (
+                        <CommandItem
+                          key={m.id}
+                          onSelect={() => {
+                            const id = String(m.id);
+                            const newList = selectedMembros.includes(id)
+                              ? selectedMembros.filter((v) => v !== id)
+                              : [...selectedMembros, id];
+                            form.setValue("membros_ids", newList);
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors rounded-md px-2 py-1"
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedMembros.includes(String(m.id))
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {m.primeiro_nome} {m.sobrenome}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
                 </PopoverContent>
               </Popover>
               <FormMessage />
