@@ -24,13 +24,6 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import {
   Command,
   CommandInput,
   CommandItem,
@@ -79,6 +72,7 @@ export function FormCriarProjeto({ action, proprietarios, membros }: Props) {
 
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [membroOpen, setMembroOpen] = useState(false);
+  const [proprietarioOpen, setProprietarioOpen] = useState(false);
 
   const selectedMembros = form.watch("membros_ids");
 
@@ -175,20 +169,66 @@ export function FormCriarProjeto({ action, proprietarios, membros }: Props) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Proprietário do Projeto</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um proprietário" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="z-50">
-                  {proprietarios.map((p) => (
-                    <SelectItem key={p.id} value={String(p.id)}>
-                      {p.primeiro_nome} {p.sobrenome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover
+                open={proprietarioOpen}
+                onOpenChange={setProprietarioOpen}
+              >
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between"
+                    >
+                      {field.value
+                        ? `${
+                            proprietarios.find(
+                              (p) => String(p.id) === field.value
+                            )?.primeiro_nome || ""
+                          } ${
+                            proprietarios.find(
+                              (p) => String(p.id) === field.value
+                            )?.sobrenome || ""
+                          }`
+                        : "Selecionar proprietário"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0 bg-white z-50">
+                  <Command>
+                    <CommandInput placeholder="Buscar proprietário..." />
+                    <CommandGroup>
+                      {proprietarios.map((p) => {
+                        const idStr = String(p.id);
+                        return (
+                          <CommandItem
+                            key={idStr}
+                            onSelect={() => {
+                              field.onChange(idStr);
+                              setProprietarioOpen(false);
+                            }}
+                            className={cn(
+                              "cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors rounded-md px-2 py-1",
+                              field.value === idStr &&
+                                "bg-gray-100 dark:bg-zinc-800"
+                            )}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                field.value === idStr
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {p.primeiro_nome} {p.sobrenome}
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}
