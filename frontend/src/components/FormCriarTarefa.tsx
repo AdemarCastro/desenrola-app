@@ -1,4 +1,8 @@
+"use client";
+
 import type { Projeto } from "@/types/projeto";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 interface Props {
   projetos: Projeto[];
@@ -6,25 +10,39 @@ interface Props {
 }
 
 export function FormCriarTarefa({ projetos, action }: Props) {
+  const [selectedProjetoId, setSelectedProjetoId] = useState<string>("");
+
+  const handleSubmit = async (formData: FormData) => {
+    // Add the selected project ID to the form data
+    formData.set("projetoId", selectedProjetoId);
+    await action(formData);
+  };
+
   return (
-    <form action={action} className="space-y-4">
+    <form action={handleSubmit} className="space-y-4">
       <div>
         <label htmlFor="projetoId" className="block mb-1">
           Projeto
         </label>
-        <select
-          id="projetoId"
-          name="projetoId"
-          required
-          className="w-full border border-gray-300 p-2 rounded"
-        >
-          <option value="">Selecione um projeto</option>
-          {projetos.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
+        <Select value={selectedProjetoId} onValueChange={setSelectedProjetoId} required>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecione um projeto" />
+          </SelectTrigger>
+          <SelectContent>
+            {projetos.map((p) => (
+              <SelectItem key={p.id} value={p.id.toString()}>
+                {p.nome}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {/* Hidden input to ensure form validation works */}
+        <input 
+          type="hidden" 
+          name="projetoId" 
+          value={selectedProjetoId} 
+          required 
+        />
       </div>
 
       <div>
