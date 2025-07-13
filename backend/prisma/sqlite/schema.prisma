@@ -23,7 +23,7 @@ model Usuario {
   avatar_url      String?  @default("https://desenrola.com/default-avatar.png")
   status_id       Int
   nivel_acesso_id Int
-  cargoId         Int?
+  cargo_id         Int?
 
   logout_em     DateTime?
   criado_em     DateTime  @default(now())
@@ -32,14 +32,14 @@ model Usuario {
 
   status       StatusUsuario    @relation(fields: [status_id], references: [id])
   nivel_acesso NivelAcesso      @relation(fields: [nivel_acesso_id], references: [id])
-  cargo        Cargo?           @relation(fields: [cargoId], references: [id], onDelete: SetNull)
+  cargo        Cargo?           @relation(fields: [cargo_id], references: [id], onDelete: SetNull)
   projetos     ProjetoUsuario[] @relation("ProjetosDoUsuario")
   tarefas      TarefaUsuario[]  @relation("ResponsaveisPelaTarefa")
   comentarios  Comentario[]     @relation("ComentariosDoUsuario")
 
   @@index([status_id])
   @@index([nivel_acesso_id])
-  @@index([cargoId])
+  @@index([cargo_id])
 }
 
 model Cargo {
