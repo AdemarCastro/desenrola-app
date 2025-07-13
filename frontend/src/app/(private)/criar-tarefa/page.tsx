@@ -77,7 +77,7 @@ export default async function CriarTarefaPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="p-6 max-w-2xl mx-auto space-y-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">Criar Nova Tarefa</h1>
         <p className="text-muted-foreground">
