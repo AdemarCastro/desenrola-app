@@ -21,9 +21,9 @@ export class TarefaController {
   }
 
   static async createTarefa(req: Request, res: Response): Promise<void> {
-    const { descricao, status_id, prioridade_id, id_projeto } = req.body;
+    const { descricao, status_id, prioridade_id, id_projeto, data_inicio, data_fim, responsaveis_id, tags_id, anexos_id } = req.body;
 
-    const tarefa = await TarefaService.create({ descricao, status_id, prioridade_id, id_projeto });
+    const tarefa = await TarefaService.create({ descricao, status_id, prioridade_id, id_projeto, data_inicio, data_fim, responsaveis_id, tags_id, anexos_id });
 
     res.status(201).json(tarefa);
   }
