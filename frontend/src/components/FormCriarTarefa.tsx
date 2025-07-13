@@ -173,7 +173,7 @@ export function FormCriarTarefa({
                       onValueChange={field.onChange}
                       disabled={isPending}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full whitespace-normal text-left items-start">
                         <SelectValue placeholder="Selecione um projeto" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50 max-h-[200px] overflow-y-auto">
@@ -287,11 +287,19 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full text-left" disabled={isPending}>
-                          {field.value.length
-                            ? projectUsers.filter(u => field.value.includes(u.id)).map(u => u.nome).join(", ")
-                            : "Selecione responsáveis"}
-                        </Button>
+                        <div className="w-full border border-gray-200 rounded-md p-2 flex flex-wrap gap-2 cursor-pointer whitespace-normal overflow-wrap break-words" disabled={isPending}>
+                          {field.value.length > 0 ? (
+                            projectUsers
+                              .filter(u => field.value.includes(u.id))
+                              .map(u => (
+                                <span key={u.id} className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm">
+                                  {u.nome}
+                                </span>
+                              ))
+                          ) : (
+                            <span className="text-gray-500">Selecione responsáveis</span>
+                          )}
+                        </div>
                       </PopoverTrigger>
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-lg rounded-md z-50">
                         <div className="max-h-60 overflow-auto p-1">
