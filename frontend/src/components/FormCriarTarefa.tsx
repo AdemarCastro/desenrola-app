@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -113,14 +113,14 @@ export function FormCriarTarefa({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg">
+    <Card className="shadow-lg rounded-md border">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Criar Nova Tarefa</CardTitle>
+        {/* Apenas legenda interna, o <h1> fica na page.tsx */}
         <p className="text-sm text-muted-foreground">
-          Preencha as informações abaixo para criar uma nova tarefa no projeto.
+          Preencha as informações abaixo para criar uma nova tarefa.
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start gap-3">
             <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
