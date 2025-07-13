@@ -88,7 +88,7 @@ export function FormCriarTarefa({
 
   const onSubmit = async (data: ExtendedFormData) => {
     setError(null);
-    
+
     startTransition(async () => {
       try {
         const formData = new FormData();
@@ -103,10 +103,12 @@ export function FormCriarTarefa({
         formData.append("dataFim", data.dataFim.toISOString());
         
         await action(formData);
-        
-        // Reset do formulário após sucesso
         form.reset();
       } catch (err) {
+        // Ignorar o erro de redirect interno do Next ("NEXT_REDIRECT")
+        if (err instanceof Error && err.message === "NEXT_REDIRECT") {
+          return;
+        }
         setError(err instanceof Error ? err.message : "Erro inesperado ao criar tarefa");
       }
     });
