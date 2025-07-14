@@ -66,14 +66,14 @@ export function ProjectChartFilter({ projetos, tarefas, config }: ProjectChartFi
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-start mb-4">
         <div className="flex items-center space-x-2">
           <label htmlFor="project-select" className="text-sm font-medium text-gray-700">Projeto:</label>
           <Select value={selectedProject} onValueChange={(v) => setSelectedProject(v)}>
             <SelectTrigger id="project-select" className="w-48 bg-white border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
               <SelectValue placeholder="Todos Projetos" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="start">
               <SelectItem value="all">Todos Projetos</SelectItem>
               {projetos.map((p) => (
                 <SelectItem key={p.id} value={p.id.toString()}>
