@@ -1,7 +1,7 @@
-// frontend/src/app/(private)/relatorios/page.tsx
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { RelatoriosPDFExport } from "@/components/RelatoriosPDFExport";
+import { ProjectChartFilter } from "@/components/ProjectChartFilter";
 import { Projeto } from "@/types/projeto";
 import { Tarefa } from "@/types/tarefa";
 
@@ -88,6 +88,12 @@ export default async function RelatoriosPage() {
     },
   ];
 
+
+  const chartConfig = {
+    created: { label: "Criadas", color: "hsl(var(--primary))" },
+    completed: { label: "Concluídas", color: "hsl(var(--secondary-foreground))" },
+  };
+
   // 5) Render
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -163,38 +169,18 @@ export default async function RelatoriosPage() {
             </section>
           )}
 
+          {/* === Gráfico de Tarefas Criadas vs. Concluídas por Mês === */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">
-              Tarefas por mês
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Tarefas Criadas vs. Concluídas por Mês
             </h2>
-            <div className="relative h-64">
-              <svg viewBox="0 0 400 200" className="w-full h-full">
-                {[...Array(8)].map((_, i) => (
-                  <line
-                    key={i}
-                    x1={50 + i * 40}
-                    y1={20}
-                    x2={50 + i * 40}
-                    y2={160}
-                    stroke="#f3f4f6"
-                    strokeWidth={1}
-                  />
-                ))}
-
-                <text
-                  x="50"
-                  y="180"
-                  textAnchor="middle"
-                  className="text-xs fill-gray-500"
-                >
-                  Últimos 8 meses
-                </text>
-              </svg>
-            </div>
-            <div className="mt-4 text-center text-gray-600">
-              Gráfico de tarefas será implementado no próximo commit
-            </div>
+            <ProjectChartFilter
+              projetos={projetos}
+              tarefas={tarefas}
+              config={chartConfig}
+            />
           </div>
+          {/* ================================================ */}
         </RelatoriosPDFExport>
       </div>
     </div>
