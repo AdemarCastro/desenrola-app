@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Projeto } from '@/types/projeto';
 import type { Tarefa, Responsavel } from '@/types/tarefa';
-import { TimelineChart } from './TimelineChart';
-import { TimelineSkeleton } from './TimelineSkeleton';
+import { TimelineChart } from '@/components/TimelineChart';
+import { TimelineSkeleton } from '@/components/TimelineSkeleton';
 
 interface TimelineProps {
   projeto?: Projeto | null;

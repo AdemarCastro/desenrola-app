@@ -45,7 +45,6 @@ src/components/ui/accordion.tsx
 src/components/ui/alert-dialog.tsx
 src/components/ui/alert.tsx
 src/components/ui/aspect-ratio.tsx
-src/components/ui/avatar.tsx
 src/components/ui/badge.tsx
 src/components/ui/breadcrumb.tsx
 src/components/ui/checkbox.tsx
@@ -74,6 +73,5 @@ src/components/ui/toast.tsx
 src/components/ui/toaster.tsx
 src/components/ui/toggle-group.tsx
 src/components/ui/toggle.tsx
-src/components/ui/tooltip.tsx
 src/components/ui/use-mobile.tsx
 src/components/ui/use-toast.ts

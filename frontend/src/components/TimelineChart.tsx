@@ -3,9 +3,9 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import type { Projeto } from '@/types/projeto';
 import type { Tarefa, Responsavel } from '@/types/tarefa';
-import { TimelineHeader } from './TimelineHeader';
-import { TimelineTaskBar } from './TimelineTaskBar';
-import { TaskEditDialog } from './TaskEditDialog';
+import { TimelineHeader } from '@/components/TimelineHeader';
+import { TimelineTaskBar } from '@/components/TimelineTaskBar';
+import { TaskEditDialog } from '@/components/TaskEditDialog';
 
 const parseDateAsLocal = (dateStr?: string | null): Date | null => {
     if (!dateStr) return null;
