@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Projeto, UsuarioProjeto } from "@/types/projeto";
+import { Projeto, UsuarioProjeto, UsuarioComNivel } from "@/types/projeto";
 import { Tarefa } from "@/types/tarefa";
 import { ProjetosClientUI } from "@/components/ProjetosClientUI";
 
@@ -47,16 +47,16 @@ async function fetchProjetosComProgresso(
           ? tarefasJson
           : tarefasJson.data || [];
 
-        const usuariosRaw = (await resUsuarios.json()) || [];
+        const usuariosRaw: UsuarioComNivel[] = await resUsuarios.json();
 
         const progresso =
           tarefas.length === 0
             ? 0
             : Math.round(
                 (tarefas.reduce((acc, tarefa) => {
-                  if (tarefa.status_id === 3) return acc + 1; // done = 100%
-                  if (tarefa.status_id === 2) return acc + 0.5; // doing = 50%
-                  return acc; // planned
+                  if (tarefa.status_id === 3) return acc + 1; // concluído = 100%
+                  if (tarefa.status_id === 2) return acc + 0.5; // em andamento = 50%
+                  return acc; // planejado = 0%
                 }, 0) /
                   tarefas.length) *
                   100
@@ -70,10 +70,8 @@ async function fetchProjetosComProgresso(
         });
 
         const usuariosOrdenados = usuariosRaw
-          .filter(
-            (u: any) => u.nivel_acesso_id === 2 || u.nivel_acesso_id === 3
-          )
-          .map((u: any) => ({
+          .filter((u) => u.nivel_acesso_id === 2 || u.nivel_acesso_id === 3)
+          .map((u) => ({
             id: u.usuario.id,
             primeiro_nome: u.usuario.primeiro_nome,
             sobrenome: u.usuario.sobrenome,
@@ -92,7 +90,6 @@ async function fetchProjetosComProgresso(
         };
       })
     );
-
 
     return projetosComTarefasEUsuarios;
   } catch (e) {

@@ -1,10 +1,20 @@
-// frontend/src/types/projeto.ts
 export type UsuarioProjeto = {
   id: number;
   primeiro_nome: string;
   sobrenome: string;
   avatar_url: string;
   nivel_acesso_id: number;
+};
+
+export type UsuarioComNivel = {
+  usuario_id: number;
+  nivel_acesso_id: number;
+  usuario: {
+    id: number;
+    primeiro_nome: string;
+    sobrenome: string;
+    avatar_url?: string;
+  };
 };
 
 export type Projeto = {
@@ -17,6 +27,5 @@ export type Projeto = {
   atualizado_em: string;
   apagado_em?: string | null;
 
-  // Novo campo adicionado
   usuariosOrdenados?: UsuarioProjeto[];
 };
