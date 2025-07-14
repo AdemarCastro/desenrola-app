@@ -84,4 +84,4 @@ src/components/ui/toggle-group.tsx
 src/components/ui/toggle.tsx
 src/components/ui/tooltip.tsx
 src/components/ui/use-mobile.tsx
-src/components/ui/use-toast.ts
+src/components/ui/use-toast.tsx
