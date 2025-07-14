@@ -56,7 +56,7 @@ async function fetchProjetosComProgresso(
                 (tarefas.reduce((acc, tarefa) => {
                   if (tarefa.status_id === 3) return acc + 1; // done = 100%
                   if (tarefa.status_id === 2) return acc + 0.5; // doing = 50%
-                  return acc; // planned or others = 0%
+                  return acc; // planned
                 }, 0) /
                   tarefas.length) *
                   100
