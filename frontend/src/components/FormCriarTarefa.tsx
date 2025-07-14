@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useTransition, useState, useEffect } from "react";
+import { useTransition, useState, useEffect, useCallback } from "react";
 import type { Projeto } from "@/types/projeto";
 import {
   type CriarTarefaFormData,
@@ -38,6 +38,16 @@ interface Props {
   action: (formData: FormData) => Promise<void>;
 }
 
+interface ProjectUser {
+  id: string;
+  nome: string;
+}
+
+interface TagOption {
+  id: string;
+  nome: string;
+}
+
 const prioridades: Prioridade[] = [
   { id: "1", nome: "Média", cor: "text-blue-600" },
   { id: "2", nome: "Alta", cor: "text-red-600" },
@@ -69,9 +79,10 @@ export function FormCriarTarefa({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  // opções vindas da API
-  const [projectUsers, setProjectUsers] = useState<{ id: string; nome: string }[]>([]);
-  const [tagOptions, setTagOptions] = useState<{ id: string; nome: string }[]>([]);
+  // Estados para dados da API
+  const [projectUsers, setProjectUsers] = useState<ProjectUser[]>([]);
+  const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   const form = useForm<ExtendedFormData>({
     defaultValues: {
@@ -85,36 +96,111 @@ export function FormCriarTarefa({
       dataInicio: new Date(),
       dataFim: new Date(),
     },
-    mode: "onChange", // Validação em tempo real
+    mode: "onChange",
   });
+  
   const projetoId = form.watch("projetoId");
 
-  // 1) carrega todas as tags
-  useEffect(() => {
-    fetch("/api/tags", { cache: "no-store" })
-      .then(res => res.json())
-      .then(json => setTagOptions(json.data ?? json))
-      .catch(() => setTagOptions([]));
-  }, []);
-
-  // 2) carrega usuários do projeto selecionado
-  useEffect(() => {
-    if (!projetoId) {
+  // Função para buscar usuários do projeto
+  const fetchProjectUsers = useCallback(async (projectId: string) => {
+    if (!projectId) {
       setProjectUsers([]);
       return;
     }
-    fetch(`/api/projetos/${projetoId}/usuarios`, { cache: "no-store" })
-      .then(res => {
-        if (!res.ok) throw new Error("Falha ao buscar usuários");
-        return res.json();
-      })
-      .then((list: { id: string; nome: string }[]) => {
-        setProjectUsers(list);
-      })
-      .catch(() => {
-        setProjectUsers([]);
+
+    setLoadingUsers(true);
+    try {
+      const response = await fetch(`/api/projetos/${projectId}/usuarios`, { 
+        cache: "no-store" 
       });
-  }, [projetoId]);
+      
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Garantir que sempre temos um array válido
+      let users: ProjectUser[] = [];
+      
+      if (Array.isArray(data)) {
+        users = data.map(user => ({
+          id: String(user.id || user.usuario?.id || ''),
+          nome: user.nome || user.usuario?.primeiro_nome || user.usuario?.nome || 'Usuário sem nome'
+        }));
+      } else if (data.data && Array.isArray(data.data)) {
+        interface ApiUser {
+          id?: string | number;
+          nome?: string;
+          usuario?: {
+            id?: string | number;
+            primeiro_nome?: string;
+            nome?: string;
+          };
+        }
+
+        interface ApiResponse {
+          data: ApiUser[];
+        }
+
+        const apiData: ApiResponse = data;
+        users = apiData.data.map((user: ApiUser): ProjectUser => ({
+          id: String(user.id || user.usuario?.id || ''),
+          nome: user.nome || user.usuario?.primeiro_nome || user.usuario?.nome || 'Usuário sem nome'
+        }));
+      }
+      
+      // Filtrar usuários inválidos
+      users = users.filter(user => user.id && user.id !== '' && user.nome);
+      
+      setProjectUsers(users);
+      
+      // Limpar responsáveis selecionados se não existem mais no projeto
+      const currentResponsaveis = form.getValues("responsavelIds");
+      const validResponsaveis = currentResponsaveis.filter(id => 
+        users.some(user => user.id === id)
+      );
+      
+      if (validResponsaveis.length !== currentResponsaveis.length) {
+        form.setValue("responsavelIds", validResponsaveis);
+      }
+      
+    } catch (error) {
+      console.error("Erro ao buscar usuários do projeto:", error);
+      setProjectUsers([]);
+      setError(`Erro ao carregar usuários: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+    } finally {
+      setLoadingUsers(false);
+    }
+  }, [form]);
+
+  // Buscar tags (uma vez)
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch("/api/tags", { cache: "no-store" });
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        const tags = Array.isArray(data) ? data : (data.data || []);
+        
+        setTagOptions(tags.map((tag: { id: string | number; nome?: string }) => ({
+          id: String(tag.id),
+          nome: tag.nome || 'Tag sem nome'
+        })));
+      } catch (error) {
+        console.error("Erro ao buscar tags:", error);
+        setTagOptions([]);
+      }
+    };
+
+    fetchTags();
+  }, []);
+
+  // Buscar usuários quando projeto muda
+  useEffect(() => {
+    fetchProjectUsers(projetoId);
+  }, [projetoId, fetchProjectUsers]);
 
   const onSubmit = async (data: ExtendedFormData) => {
     setError(null);
@@ -135,7 +221,6 @@ export function FormCriarTarefa({
         await action(formData);
         form.reset();
       } catch (err) {
-        // Ignorar o erro de redirect interno do Next ("NEXT_REDIRECT")
         if (err instanceof Error && err.message === "NEXT_REDIRECT") {
           return;
         }
@@ -214,6 +299,7 @@ export function FormCriarTarefa({
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="prioridadeId"
@@ -303,8 +389,17 @@ export function FormCriarTarefa({
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <div className="w-full border border-gray-200 rounded-md p-2 flex flex-wrap gap-2 cursor-pointer whitespace-normal overflow-wrap break-words">
-                          {field.value.length > 0 ? (
+                        <div className="w-full border border-gray-200 rounded-md p-2 flex flex-wrap gap-2 cursor-pointer whitespace-normal overflow-wrap break-words min-h-[40px]">
+                          {loadingUsers ? (
+                            <div className="flex items-center gap-2 text-gray-500">
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span className="text-sm">Carregando usuários...</span>
+                            </div>
+                          ) : !projetoId ? (
+                            <span className="text-gray-500">Selecione um projeto primeiro</span>
+                          ) : projectUsers.length === 0 ? (
+                            <span className="text-gray-500">Nenhum usuário encontrado</span>
+                          ) : field.value.length > 0 ? (
                             projectUsers
                               .filter(u => field.value.includes(u.id))
                               .map(u => (
@@ -319,21 +414,44 @@ export function FormCriarTarefa({
                       </PopoverTrigger>
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
                         <div className="max-h-60 overflow-auto p-1">
-                          {projectUsers.map(user => {
-                            const isSel = field.value.includes(user.id);
-                            return (
-                              <div key={user.id} className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
-                                onClick={() => {
-                                  field.onChange(isSel
-                                    ? field.value.filter(id => id !== user.id)
-                                    : [...field.value, user.id]);
-                                }}
-                              >
-                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
-                                <span className="text-sm flex-1">{user.nome}</span>
-                              </div>
-                            );
-                          })}
+                          {loadingUsers ? (
+                            <div className="flex items-center justify-center p-4">
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              <span className="text-sm text-gray-500">Carregando...</span>
+                            </div>
+                          ) : !projetoId ? (
+                            <div className="p-4 text-center text-gray-500 text-sm">
+                              Selecione um projeto primeiro
+                            </div>
+                          ) : projectUsers.length === 0 ? (
+                            <div className="p-4 text-center text-gray-500 text-sm">
+                              Nenhum usuário encontrado neste projeto
+                            </div>
+                          ) : (
+                            projectUsers.map(user => {
+                              const isSel = field.value.includes(user.id);
+                              return (
+                                <div
+                                  key={`user-${user.id}`}
+                                  className={`
+                                    flex items-center gap-3 px-3 py-2
+                                    cursor-pointer rounded-sm transition-colors
+                                    ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}
+                                  `}
+                                  onClick={() => {
+                                    field.onChange(
+                                      isSel
+                                        ? field.value.filter(id => id !== user.id)
+                                        : [...field.value, user.id]
+                                    );
+                                  }}
+                                >
+                                  <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
+                                  <span className="text-sm flex-1">{user.nome}</span>
+                                </div>
+                              );
+                            })
+                          )}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -356,7 +474,7 @@ export function FormCriarTarefa({
                         <div
                           className="
                             w-full border border-gray-200 rounded-md p-2
-                            flex gap-2 cursor-pointer whitespace-nowrap overflow-x-auto
+                            flex gap-2 cursor-pointer whitespace-nowrap overflow-x-auto min-h-[40px]
                           "
                         >
                           {field.value.length > 0
@@ -375,21 +493,29 @@ export function FormCriarTarefa({
                       </PopoverTrigger>
                       <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
                         <div className="max-h-60 overflow-auto p-1">
-                          {tagOptions.map(tag => {
-                            const isSel = field.value.includes(tag.id);
-                            return (
-                              <div key={tag.id} className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
-                                onClick={() => {
-                                  field.onChange(isSel
-                                    ? field.value.filter(id => id !== tag.id)
-                                    : [...field.value, tag.id]);
-                                }}
-                              >
-                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
-                                <span className="text-sm flex-1">{tag.nome}</span>
-                              </div>
-                            );
-                          })}
+                          {tagOptions.length === 0 ? (
+                            <div className="p-4 text-center text-gray-500 text-sm">
+                              Nenhuma tag disponível
+                            </div>
+                          ) : (
+                            tagOptions.map(tag => {
+                              const isSel = field.value.includes(tag.id);
+                              return (
+                                <div 
+                                  key={`tag-${tag.id}`} 
+                                  className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                                  onClick={() => {
+                                    field.onChange(isSel
+                                      ? field.value.filter(id => id !== tag.id)
+                                      : [...field.value, tag.id]);
+                                  }}
+                                >
+                                  <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
+                                  <span className="text-sm flex-1">{tag.nome}</span>
+                                </div>
+                              );
+                            })
+                          )}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -413,7 +539,7 @@ export function FormCriarTarefa({
                           <div
                             className="
                               w-full border border-gray-200 rounded-md p-2
-                              flex items-center gap-2 cursor-pointer whitespace-normal
+                              flex items-center gap-2 cursor-pointer whitespace-normal min-h-[40px]
                             "
                           >
                             {field.value
@@ -429,7 +555,7 @@ export function FormCriarTarefa({
                               const isSel = s.id === field.value;
                               return (
                                 <div
-                                  key={s.id}
+                                  key={`status-${s.id}`}
                                   className={`
                                     flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
                                     ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}
@@ -508,7 +634,7 @@ export function FormCriarTarefa({
               <Button
                 type="submit"
                 className="h-11 px-6 shadow-none ring-0 focus:ring-0"
-                disabled={isPending}
+                disabled={isPending || loadingUsers}
                 size="lg"
               >
                 {isPending ? (
