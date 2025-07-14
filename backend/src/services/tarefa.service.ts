@@ -4,26 +4,59 @@ import { CreateTarefaInputDto, UpdateTarefaInputDto } from "../dtos/tarefa/Taref
 import { TarefaOutputDto } from "../dtos/tarefa/TarefaOutput.dto";
 import { CreateAnexoInputDto } from "../dtos/anexo/AnexoInput.dto";
 import { plainToInstance } from "class-transformer";
+import { Tarefa } from "@prisma/client";
+
+type ResponsavelPayload = {
+  usuario: {
+    id: number;
+    primeiro_nome: string;
+    sobrenome: string;
+    email: string;
+  };
+};
+
+type TarefaFromRepo = Omit<Tarefa, 'responsaveis'> & {
+  responsaveis: ResponsavelPayload[];
+};
+
+function formatarTarefa(tarefa: TarefaFromRepo | null): TarefaOutputDto | null {
+    if (!tarefa) return null;
+
+    const responsaveisFormatados = (tarefa.responsaveis || []).map(
+      (relacao) => relacao.usuario
+    );
+
+    const tarefaCompleta = {
+        ...tarefa,
+        responsaveis: responsaveisFormatados,
+    };
+    
+    return plainToInstance(TarefaOutputDto, tarefaCompleta, { excludeExtraneousValues: true });
+}
+
 
 export class TarefaService {
+  
   static async findAll(): Promise<TarefaOutputDto[]> {
     const tarefas = await TarefaRepository.findAll();
-    return plainToInstance(TarefaOutputDto, tarefas, { excludeExtraneousValues: true });
+    return tarefas.map(tarefa => formatarTarefa(tarefa as unknown as TarefaFromRepo)).filter(t => t !== null) as TarefaOutputDto[];
   }
 
   static async findById(id: number): Promise<TarefaOutputDto | null> {
     const tarefa = await TarefaRepository.findById(id);
-    return tarefa ? plainToInstance(TarefaOutputDto, tarefa, { excludeExtraneousValues: true }) : null;
+    return formatarTarefa(tarefa as unknown as TarefaFromRepo);
   }
 
   static async create(data: CreateTarefaInputDto): Promise<TarefaOutputDto> {
     const tarefa = await TarefaRepository.create(data);
-    return plainToInstance(TarefaOutputDto, tarefa, { excludeExtraneousValues: true });
+    const tarefaCompleta = await TarefaRepository.findById(tarefa.id);
+    return formatarTarefa(tarefaCompleta as unknown as TarefaFromRepo) as TarefaOutputDto;
   }
 
   static async update(id: number, data: UpdateTarefaInputDto): Promise<TarefaOutputDto> {
     const tarefa = await TarefaRepository.update(id, data);
-    return plainToInstance(TarefaOutputDto, tarefa, { excludeExtraneousValues: true });
+    const tarefaCompleta = await TarefaRepository.findById(tarefa.id);
+    return formatarTarefa(tarefaCompleta as unknown as TarefaFromRepo) as TarefaOutputDto;
   }
 
   static async delete(id: number): Promise<void> {

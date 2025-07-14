@@ -70,6 +70,26 @@ export class ProjetoRepository {
   static async listTarefas(projetoId: number) {
     return prisma.tarefa.findMany({
       where: { id_projeto: projetoId, apagado_em: null },
+      include: {
+        comentarios: {
+          where: { apagado_em: null },
+          orderBy: { criado_em: 'asc' }
+        },
+        anexos: true,
+        responsaveis: {
+          select: {
+            usuario: {
+              select: {
+                id: true,
+                primeiro_nome: true,
+                sobrenome: true,
+                email: true
+              }
+            }
+          }
+        },
+        tags: true
+      },
     });
   }
 }
