@@ -42,7 +42,6 @@ async function fetchProjetosComProgresso(
           ),
         ]);
 
-        // ✅ CORREÇÃO APLICADA AQUI
         const tarefasJson = await resTarefas.json();
         const tarefas: Tarefa[] = Array.isArray(tarefasJson)
           ? tarefasJson
@@ -54,13 +53,15 @@ async function fetchProjetosComProgresso(
           tarefas.length === 0
             ? 0
             : Math.round(
-                (tarefas.filter((t) => t.status_id === 2 || t.status_id === 3)
-                  .length /
+                (tarefas.reduce((acc, tarefa) => {
+                  if (tarefa.status_id === 3) return acc + 1; // done = 100%
+                  if (tarefa.status_id === 2) return acc + 0.5; // doing = 50%
+                  return acc; // planned or others = 0%
+                }, 0) /
                   tarefas.length) *
                   100
               );
 
-        // ✅ Log para confirmar que está tudo certo
         console.log({
           projeto: projeto.nome,
           tarefasTotal: tarefas.length,
@@ -69,6 +70,9 @@ async function fetchProjetosComProgresso(
         });
 
         const usuariosOrdenados = usuariosRaw
+          .filter(
+            (u: any) => u.nivel_acesso_id === 2 || u.nivel_acesso_id === 3
+          )
           .map((u: any) => ({
             id: u.usuario.id,
             primeiro_nome: u.usuario.primeiro_nome,

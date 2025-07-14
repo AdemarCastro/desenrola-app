@@ -76,25 +76,33 @@ export function ProjetoCard({
         <CardFooter className="pt-4">
           <TooltipProvider delayDuration={300}>
             <div className="flex -space-x-2">
-              {projeto.usuariosOrdenados.slice(0, 4).map((usuario, index) => (
-                <Tooltip key={index}>
-                  <TooltipTrigger asChild>
-                    <Avatar className="w-8 h-8 border-2 border-white">
-                      <AvatarImage
-                        src={usuario.avatar_url}
-                        alt={usuario.primeiro_nome}
-                      />
-                      <AvatarFallback className="bg-gray-400 text-white text-sm">
-                        {usuario.primeiro_nome.charAt(0)}
-                        {usuario.sobrenome.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {usuario.primeiro_nome} {usuario.sobrenome}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
+              {projeto.usuariosOrdenados.slice(0, 4).map((usuario, index) => {
+                const isProprietario = usuario.nivel_acesso_id === 2;
+                return (
+                  <Tooltip key={index}>
+                    <TooltipTrigger asChild>
+                      <Avatar
+                        className={`w-8 h-8 border-2 ${
+                          isProprietario ? "border-yellow-500" : "border-white"
+                        }`}
+                      >
+                        <AvatarImage
+                          src={usuario.avatar_url}
+                          alt={usuario.primeiro_nome}
+                        />
+                        <AvatarFallback className="bg-gray-400 text-white text-sm">
+                          {usuario.primeiro_nome.charAt(0)}
+                          {usuario.sobrenome.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {isProprietario && "👑 "}
+                      {usuario.primeiro_nome} {usuario.sobrenome}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
 
               {projeto.usuariosOrdenados.length > 4 && (
                 <Avatar className="w-8 h-8 bg-gray-300 text-xs flex items-center justify-center border-2 border-white">
