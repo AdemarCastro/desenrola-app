@@ -30,7 +30,6 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Loader2, AlertCircle } from "lucide-react";
 
-
 interface Props {
   projetos: Projeto[];
   usuarios?: { id: number; nome: string }[];
