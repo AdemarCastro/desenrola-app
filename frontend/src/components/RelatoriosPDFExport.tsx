@@ -32,6 +32,7 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
           color: #222 !important;
           background: #fff !important;
           border-color: #ccc !important;
+          /* força quebra de linha em todo texto */
           white-space: normal !important;
           word-break: break-word !important;
         }
@@ -40,6 +41,7 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
           table-layout: auto !important;
         }
         th, td {
+          word-wrap: break-word !important;
           max-width: 300px !important;
         }
       `;
@@ -59,21 +61,20 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
       iframeDoc.body.appendChild(clone);
       
       // Aguardar carregamento de recursos
-      await new Promise(resolve => setTimeout(resolve, 500)); // Aumentado para 500ms
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const canvas = await html2canvas(iframeDoc.body, {
-        scale: 3, // Aumentada a escala para melhor qualidade
+        scale: 3,
         backgroundColor: "#ffffff",
         logging: false,
         useCORS: true,
-        ignoreElements: (element) => element.tagName === 'BUTTON' // Ignorar botões
+        ignoreElements: (element) => element.tagName === 'BUTTON'
       });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "pt", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       
-      // Adicionar margem
       const margin = 10;
       const contentWidth = pdfWidth - margin * 2;
       const contentHeight = (canvas.height * contentWidth) / canvas.width;
