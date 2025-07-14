@@ -44,6 +44,13 @@ export class ProjetoService {
   }
 
   static async listTarefas(projetoId: number) {
-    return ProjetoRepository.listTarefas(projetoId);
+    const tarefasDoRepo = await ProjetoRepository.listTarefas(projetoId);
+
+    const tarefasFormatadas = tarefasDoRepo.map(tarefa => ({
+      ...tarefa,
+      responsaveis: tarefa.responsaveis.map(relacao => relacao.usuario)
+    }));
+
+    return tarefasFormatadas;
   }
 }
