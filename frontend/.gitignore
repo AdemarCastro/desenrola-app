@@ -57,7 +57,6 @@ src/components/ui/input-otp.tsx
 src/components/ui/menubar.tsx
 src/components/ui/navigation-menu.tsx
 src/components/ui/pagination.tsx
-src/components/ui/progress.tsx
 src/components/ui/radio-group.tsx
 src/components/ui/resizable.tsx
 src/components/ui/scroll-area.tsx
