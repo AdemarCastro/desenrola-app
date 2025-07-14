@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "ID da tarefa inválido" }, { status: 400 });
   }
 
-  const token = request.cookies.get("token")?.value;
+  const token = (await cookies()).get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }

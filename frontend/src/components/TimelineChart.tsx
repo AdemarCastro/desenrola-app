@@ -131,7 +131,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({ tarefas, projeto, 
               onUpdateTarefa(updatedTask);
               setEditingTask(null);
           }}
-          onTaskDelete={(taskId) => {
+          onTaskDelete={(_taskId) => {
             if (projeto) {
               onRefresh(projeto.id.toString());
             }
