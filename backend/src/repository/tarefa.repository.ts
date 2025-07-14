@@ -1,21 +1,66 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export class TarefaRepository {
   static async findAll() {
-    return prisma.tarefa.findMany({ where: { apagado_em: null }, orderBy: { criado_em: "desc" } });
+    return prisma.tarefa.findMany({
+      where: { apagado_em: null },
+      orderBy: { criado_em: "desc" },
+      include: {
+        comentarios: {
+          where: { apagado_em: null },
+          orderBy: { criado_em: 'asc' }
+        },
+        anexos: true,
+        responsaveis: {
+          select: {
+            usuario: {
+              select: {
+                id: true,
+                primeiro_nome: true,
+                sobrenome: true,
+                email: true
+              }
+            }
+          }
+        },
+        tags: true
+      },
+    });
   }
 
   static async findById(id: number) {
-    return prisma.tarefa.findFirst({ where: { id, apagado_em: null } });
+    return prisma.tarefa.findFirst({
+      where: { id, apagado_em: null },
+      orderBy: { criado_em: "desc" },
+      include: {
+        comentarios: {
+          where: { apagado_em: null },
+          orderBy: { criado_em: 'asc' }
+        },
+        anexos: true,
+        responsaveis: {
+          select: {
+            usuario: {
+              select: {
+                id: true,
+                primeiro_nome: true,
+                sobrenome: true,
+                email: true
+              }
+            }
+          }
+        },
+        tags: true
+      }
+    });
   }
-
   static async create(data: { descricao: string; status_id: number; prioridade_id: number; id_projeto: number }) {
     return prisma.tarefa.create({ data });
   }
 
-  static async update(id: number, data: Partial<{ descricao: string; status_id: number; prioridade_id: number }>) {
+  static async update(id: number, data: Prisma.TarefaUpdateInput) {
     return prisma.tarefa.update({ where: { id }, data });
   }
 
