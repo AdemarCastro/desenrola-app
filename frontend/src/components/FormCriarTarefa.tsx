@@ -14,20 +14,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/ui/form"; // Corrigido
+import { Input } from "@/components/ui/input"; // Corrigido
+import { Textarea } from "@/components/ui/textarea"; // Corrigido
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+} from "@/components/ui/select"; // Corrigido
+import { Button } from "@/components/ui/button"; // Corrigido
+import { Card, CardContent } from "@/components/ui/card"; // Corrigido
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"; // Corrigido
+import { Calendar } from "@/components/ui/calendar"; // Corrigido
 import { Loader2, AlertCircle } from "lucide-react";
 
 interface Props {
@@ -46,9 +46,9 @@ const prioridades: Prioridade[] = [
 
 const getPrioridadeIcon = (prioridadeId: string) => {
   switch (prioridadeId) {
-    case "1": return "🔵"; // Normal
-    case "2": return "🔴"; // Alta
-    case "3": return "⚪"; // Baixa
+    case "1": return "🔵";
+    case "2": return "🔴";
+    case "3": return "⚪";
     default: return "";
   }
 };
@@ -68,8 +68,6 @@ export function FormCriarTarefa({
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-
-  // opções vindas da API
   const [projectUsers, setProjectUsers] = useState<{ id: string; nome: string }[]>([]);
   const [tagOptions, setTagOptions] = useState<{ id: string; nome: string }[]>([]);
 
@@ -85,11 +83,11 @@ export function FormCriarTarefa({
       dataInicio: new Date(),
       dataFim: new Date(),
     },
-    mode: "onChange", // Validação em tempo real
+    mode: "onChange",
   });
+  
   const projetoId = form.watch("projetoId");
 
-  // 1) carrega todas as tags
   useEffect(() => {
     fetch("/api/tags", { cache: "no-store" })
       .then(res => res.json())
@@ -97,7 +95,6 @@ export function FormCriarTarefa({
       .catch(() => setTagOptions([]));
   }, []);
 
-  // 2) carrega usuários do projeto selecionado
   useEffect(() => {
     if (!projetoId) {
       setProjectUsers([]);
@@ -135,10 +132,7 @@ export function FormCriarTarefa({
         await action(formData);
         form.reset();
       } catch (err) {
-        // Ignorar o erro de redirect interno do Next ("NEXT_REDIRECT")
-        if (err instanceof Error && err.message === "NEXT_REDIRECT") {
-          return;
-        }
+        if (err instanceof Error && err.message === "NEXT_REDIRECT") return;
         setError(err instanceof Error ? err.message : "Erro inesperado ao criar tarefa");
       }
     });
@@ -160,7 +154,7 @@ export function FormCriarTarefa({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-            {/* Projeto e Prioridade lado a lado */}
+            {/* Projeto */}
             <FormField
               control={form.control}
               name="projetoId"
@@ -168,52 +162,29 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Projeto *</FormLabel>
                   <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                          className="
-                            w-full border border-gray-200 rounded-md p-2
-                            flex items-center justify-between cursor-pointer whitespace-normal break-words
-                          "
-                        >
-                          {field.value
-                            ? projetos.find(p => p.id.toString() === field.value)?.nome
-                            : "Selecione um projeto"}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="
-                          w-[300px] p-0 bg-white border border-gray-200
-                          rounded-md z-50 max-h-[200px] overflow-y-auto
-                          shadow-none ring-0
-                        "
-                      >
-                        <div className="p-1">
-                          {projetos.map(proj => {
-                            const isSel = proj.id.toString() === field.value;
-                            return (
-                              <div
-                                key={proj.id}
-                                className={`
-                                  flex items-center gap-3 px-3 py-2
-                                  cursor-pointer rounded-sm transition-colors
-                                  ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}
-                                `}
-                                onClick={() => field.onChange(proj.id.toString())}
-                              >
-                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
-                                <span className="text-sm flex-1">{proj.nome}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um projeto" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {projetos.map(proj => (
+                          <SelectItem key={proj.id} value={proj.id.toString()}>
+                            {proj.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Prioridade */}
             <FormField
               control={form.control}
               name="prioridadeId"
@@ -226,20 +197,14 @@ export function FormCriarTarefa({
                       onValueChange={field.onChange}
                       disabled={isPending}
                     >
-                      <SelectTrigger className="shadow-none ring-0 focus:ring-0">
+                      <SelectTrigger>
                         <SelectValue placeholder="Selecione a prioridade" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50 max-h-[200px] overflow-y-auto">
+                      <SelectContent>
                         {prioridades.map((prioridade) => (
                           <SelectItem
                             key={prioridade.id}
                             value={prioridade.id}
-                            className="
-                              cursor-pointer
-                              data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900
-                              data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
-                              focus:bg-gray-100 focus:text-gray-900
-                            "
                           >
                             <div className="flex items-center gap-2">
                               <span>{getPrioridadeIcon(prioridade.id)}</span>
@@ -255,7 +220,7 @@ export function FormCriarTarefa({
               )}
             />
 
-            {/* Título em full-width */}
+            {/* Título */}
             <div className="sm:col-span-2">
               <FormField
                 control={form.control}
@@ -264,7 +229,7 @@ export function FormCriarTarefa({
                   <FormItem>
                     <FormLabel>Título *</FormLabel>
                     <FormControl>
-                      <Input {...field} className="w-full shadow-none ring-0 focus:ring-0" disabled={isPending} />
+                      <Input {...field} disabled={isPending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -272,7 +237,7 @@ export function FormCriarTarefa({
               />
             </div>
 
-            {/* Descrição em full-width */}
+            {/* Descrição */}
             <div className="sm:col-span-2">
               <FormField
                 control={form.control}
@@ -283,7 +248,7 @@ export function FormCriarTarefa({
                     <FormControl>
                       <Textarea
                         {...field}
-                        className="min-h-[100px] w-full shadow-none ring-0 focus:ring-0"
+                        className="min-h-[100px]"
                         disabled={isPending}
                       />
                     </FormControl>
@@ -301,42 +266,23 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Responsáveis</FormLabel>
                   <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div className="w-full border border-gray-200 rounded-md p-2 flex flex-wrap gap-2 cursor-pointer whitespace-normal overflow-wrap break-words">
-                          {field.value.length > 0 ? (
-                            projectUsers
-                              .filter(u => field.value.includes(u.id))
-                              .map(u => (
-                                <span key={u.id} className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm">
-                                  {u.nome}
-                                </span>
-                              ))
-                          ) : (
-                            <span className="text-gray-500">Selecione responsáveis</span>
-                          )}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
-                        <div className="max-h-60 overflow-auto p-1">
-                          {projectUsers.map(user => {
-                            const isSel = field.value.includes(user.id);
-                            return (
-                              <div key={user.id} className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
-                                onClick={() => {
-                                  field.onChange(isSel
-                                    ? field.value.filter(id => id !== user.id)
-                                    : [...field.value, user.id]);
-                                }}
-                              >
-                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
-                                <span className="text-sm flex-1">{user.nome}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                      multiple
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione responsáveis" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {projectUsers.map(user => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {user.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -351,55 +297,30 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
                   <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                          className="
-                            w-full border border-gray-200 rounded-md p-2
-                            flex gap-2 cursor-pointer whitespace-nowrap overflow-x-auto
-                          "
-                        >
-                          {field.value.length > 0
-                            ? tagOptions
-                                .filter(t => field.value.includes(t.id))
-                                .map(t => (
-                                  <span
-                                    key={t.id}
-                                    className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm whitespace-nowrap"
-                                  >
-                                    {t.nome}
-                                  </span>
-                                ))
-                            : <span className="text-gray-500">Selecione tags</span>}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
-                        <div className="max-h-60 overflow-auto p-1">
-                          {tagOptions.map(tag => {
-                            const isSel = field.value.includes(tag.id);
-                            return (
-                              <div key={tag.id} className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}`}
-                                onClick={() => {
-                                  field.onChange(isSel
-                                    ? field.value.filter(id => id !== tag.id)
-                                    : [...field.value, tag.id]);
-                                }}
-                              >
-                                <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
-                                <span className="text-sm flex-1">{tag.nome}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                      multiple
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione tags" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tagOptions.map(tag => (
+                          <SelectItem key={tag.id} value={tag.id}>
+                            {tag.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Status - versão padronizada */}
+            {/* Status */}
             <div className="sm:col-span-2">
               <FormField
                 control={form.control}
@@ -408,50 +329,30 @@ export function FormCriarTarefa({
                   <FormItem>
                     <FormLabel>Status Inicial *</FormLabel>
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <div
-                            className="
-                              w-full border border-gray-200 rounded-md p-2
-                              flex items-center gap-2 cursor-pointer whitespace-normal
-                            "
-                          >
-                            {field.value
-                              ? <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm">
-                                  {statuses.find(s => s.id === field.value)?.label}
-                                </span>
-                              : <span className="text-gray-500">Selecione status</span>}
-                          </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0 bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50">
-                          <div className="p-1">
-                            {statuses.map(s => {
-                              const isSel = s.id === field.value;
-                              return (
-                                <div
-                                  key={s.id}
-                                  className={`
-                                    flex items-center gap-3 px-3 py-2 cursor-pointer rounded-sm transition-colors
-                                    ${isSel ? "bg-gray-100" : "hover:bg-gray-50"}
-                                  `}
-                                  onClick={() => field.onChange(s.id)}
-                                >
-                                  <div className="w-4 h-4">{isSel && <span>✓</span>}</div>
-                                  <span className="text-sm flex-1">{s.label}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                     </FormControl>
-                     <FormMessage />
-                   </FormItem>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isPending}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {statuses.map(s => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </div>
 
-            {/* Datas lado a lado */}
+            {/* Datas */}
             <FormField
               control={form.control}
               name="dataInicio"
@@ -459,24 +360,18 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Data Início *</FormLabel>
                   <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start shadow-none ring-0 focus:ring-0" disabled={isPending}>
-                          {field.value ? field.value.toLocaleDateString("pt-BR") : "Selecione uma data"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 shadow-none ring-0">
-                        <Calendar
-                          onSelectDate={field.onChange}
-                          initialDate={field.value}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input
+                      type="date"
+                      value={field.value.toISOString().split('T')[0]}
+                      onChange={e => field.onChange(new Date(e.target.value))}
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="dataFim"
@@ -484,30 +379,22 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Data Fim *</FormLabel>
                   <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start shadow-none ring-0 focus:ring-0" disabled={isPending}>
-                          {field.value ? field.value.toLocaleDateString("pt-BR") : "Selecione uma data"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 shadow-none ring-0">
-                        <Calendar
-                          onSelectDate={field.onChange}
-                          initialDate={field.value}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input
+                      type="date"
+                      value={field.value.toISOString().split('T')[0]}
+                      onChange={e => field.onChange(new Date(e.target.value))}
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Botão em full-width, alinhado à direita */}
+            {/* Botão */}
             <div className="sm:col-span-2 flex justify-end">
               <Button
                 type="submit"
-                className="h-11 px-6 shadow-none ring-0 focus:ring-0"
                 disabled={isPending}
                 size="lg"
               >
