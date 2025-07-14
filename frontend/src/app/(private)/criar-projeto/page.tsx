@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FormCriarProjetoWrapper } from "@/components/FormCriarProjetoWrapper";
+import { Usuario } from "@/types/Usuario";
 
 async function criarProjeto(formData: FormData) {
   "use server";
@@ -12,6 +13,10 @@ async function criarProjeto(formData: FormData) {
   const nome = formData.get("nome")?.toString();
   const descricao = formData.get("descricao")?.toString();
   const dataEntrega = formData.get("data_entrega")?.toString();
+  const proprietarioId = formData.get("proprietario_id")?.toString();
+  const membrosIds = formData
+    .getAll("membros_ids[]")
+    .map((id) => parseInt(id as string));
 
   if (!nome) {
     throw new Error("O nome do projeto é obrigatório.");
@@ -27,6 +32,8 @@ async function criarProjeto(formData: FormData) {
       nome,
       descricao,
       data_entrega: dataEntrega,
+      proprietario_id: proprietarioId,
+      membros_ids: membrosIds,
     }),
   });
 
@@ -38,10 +45,26 @@ export default async function CriarProjetoPage() {
   const token = cookieStore.get("token")?.value;
   if (!token) redirect("/login");
 
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  const usuarios: Usuario[] = await res.json();
+
+  const gerentes = usuarios.filter((u) => u.nivel_acesso_id === 2);
+  const membros = usuarios.filter((u) => u.nivel_acesso_id === 3);
+
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-6 max-w-2xl mx-auto relative overflow-visible z-0">
       <h1 className="text-2xl font-bold mb-6">Criar Novo Projeto</h1>
-      <FormCriarProjetoWrapper action={criarProjeto} />
+      <FormCriarProjetoWrapper
+        action={criarProjeto}
+        proprietarios={gerentes}
+        membros={membros}
+      />
     </div>
   );
 }
