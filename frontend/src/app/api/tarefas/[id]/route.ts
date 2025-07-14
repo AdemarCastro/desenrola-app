@@ -1,14 +1,54 @@
-// src/app/api/tarefas/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import type { Tarefa } from "@/types/tarefa";
 
-// Função utilitária para extrair o id da URL
 function getIdFromRequest(request: NextRequest): string | null {
   const match = request.nextUrl.pathname.match(/\/tarefas\/([^\/]+)$/);
   return match ? match[1] : null;
 }
 
-// Atualiza tarefa
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const id = getIdFromRequest(request);
+  if (!id) {
+    return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+  }
+
+  const token = request.cookies.get("token")?.value;
+  if (!token) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+
+  try {
+    const apiResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/tarefas/${id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: 'no-store',
+      }
+    );
+
+    const data = await apiResponse.json();
+
+    if (!apiResponse.ok) {
+      return NextResponse.json(
+        { error: data.error || "Falha ao buscar a tarefa no backend" },
+        { status: apiResponse.status }
+      );
+    }
+    
+    return NextResponse.json(data, { status: 200 });
+
+  } catch(e) {
+    const message = e instanceof Error ? e.message : 'Erro inesperado no servidor.';
+    return NextResponse.json(
+      { error: 'Erro interno do servidor.', details: message },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(request: NextRequest): Promise<NextResponse> {
   const id = getIdFromRequest(request);
   if (!id) {
@@ -52,7 +92,6 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   return NextResponse.json(data, { status: 200 });
 }
 
-// Exclui tarefa
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   const id = getIdFromRequest(request);
   if (!id) {

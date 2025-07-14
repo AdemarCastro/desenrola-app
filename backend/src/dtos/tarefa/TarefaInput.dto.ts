@@ -1,4 +1,4 @@
-import { IsDate, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTarefaInputDto {
   @IsString()
@@ -17,11 +17,11 @@ export class CreateTarefaInputDto {
   @IsNotEmpty()
   id_projeto: number;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   data_inicio?: Date;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   data_fim?: Date;
 
@@ -51,11 +51,11 @@ export class UpdateTarefaInputDto {
   @IsOptional()
   prioridade_id?: number;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   data_inicio?: Date;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   data_fim?: Date;
 
