@@ -140,13 +140,13 @@ type CustomTooltipProps = {
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const ChartTooltipContent = React.forwardRef<HTMLDivElement, CustomTooltipProps>(
-  ({ active, payload, hideLabel, labelKey, labelClassName, customLabelFormatter, formatter, className, ...rest }, ref) => {
+  ({ active, payload, hideLabel, labelKey, labelClassName, customLabelFormatter, formatter, className }, ref) => {
     if (!active || !payload?.length) return null;
     const [first] = payload;
     const labelValue = (labelKey || first.name || first.dataKey || "value") as string;
 
     return (
-      <div ref={ref} className={cn("rounded-md border bg-white p-2 text-xs shadow", className)} {...rest}>
+      <div ref={ref} className={cn("rounded-md border bg-white p-2 text-xs shadow", className)}>
         {customLabelFormatter ? (
           <div className={labelClassName}>
             {customLabelFormatter(labelValue, payload)}

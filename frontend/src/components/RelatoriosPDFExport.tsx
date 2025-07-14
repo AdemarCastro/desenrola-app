@@ -14,8 +14,8 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
     const iframe = document.createElement("iframe");
     iframe.style.position = "absolute";
     iframe.style.left = "-9999px";
-    iframe.style.width = "800px";
-    iframe.style.height = "1200px";
+    iframe.style.width = "1200px"; // Aumentado para 1200px
+    iframe.style.height = "1600px"; // Altura aumentada
     document.body.appendChild(iframe);
 
     try {
@@ -32,6 +32,15 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
           color: #222 !important;
           background: #fff !important;
           border-color: #ccc !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+        table {
+          width: 100% !important;
+          table-layout: auto !important;
+        }
+        th, td {
+          max-width: 300px !important;
         }
       `;
       
@@ -50,21 +59,26 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
       iframeDoc.body.appendChild(clone);
       
       // Aguardar carregamento de recursos
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 500)); // Aumentado para 500ms
 
       const canvas = await html2canvas(iframeDoc.body, {
-        scale: 2,
+        scale: 3, // Aumentada a escala para melhor qualidade
         backgroundColor: "#ffffff",
         logging: false,
-        useCORS: true
+        useCORS: true,
+        ignoreElements: (element) => element.tagName === 'BUTTON' // Ignorar botões
       });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "pt", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // Adicionar margem
+      const margin = 10;
+      const contentWidth = pdfWidth - margin * 2;
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+      
+      pdf.addImage(imgData, "PNG", margin, margin, contentWidth, contentHeight);
       pdf.save("relatorio.pdf");
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
