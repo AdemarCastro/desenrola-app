@@ -18,21 +18,24 @@ export async function GET(
   }
 
   try {
-    const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}/usuarios`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: 'no-store',
-    });
+    const apiRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/projetos/${projectId}/usuarios`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      }
+    );
 
     const data = await apiRes.json();
-    
+
     if (!apiRes.ok) {
       console.error(`Erro na API backend para /projetos/${projectId}/usuarios:`, data);
       return NextResponse.json(data, { status: apiRes.status });
     }
 
-    return NextResponse.json(data);
+    // Garante que retornamos sempre um array
+    const users = Array.isArray(data) ? data : data.data ?? [];
+    return NextResponse.json(users);
 
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Erro inesperado no servidor.';
