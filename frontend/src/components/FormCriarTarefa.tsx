@@ -1,11 +1,11 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useEffect, useState, useTransition } from "react";
+import { useTransition, useState, useEffect } from "react";
 import type { Projeto } from "@/types/projeto";
-import { 
+import {
   type CriarTarefaFormData,
-  type Prioridade 
+  type Prioridade
 } from "@/schemas/tarefa.schema";
 import {
   Form,
@@ -14,20 +14,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "./ui/form";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+} from "./ui/select";
+import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
+import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+import { Calendar } from "./ui/calendar";
 import { Loader2, AlertCircle } from "lucide-react";
 
 interface Props {
@@ -61,10 +61,10 @@ type ExtendedFormData = CriarTarefaFormData & {
   dataFim: Date;
 };
 
-export function FormCriarTarefa({ 
-  projetos, 
-  statuses = [], 
-  action 
+export function FormCriarTarefa({
+  projetos,
+  statuses = [],
+  action
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -131,7 +131,7 @@ export function FormCriarTarefa({
         formData.append("statusId", data.statusId);
         formData.append("dataInicio", data.dataInicio.toISOString());
         formData.append("dataFim", data.dataFim.toISOString());
-        
+
         await action(formData);
         form.reset();
       } catch (err) {
@@ -156,10 +156,10 @@ export function FormCriarTarefa({
             </div>
           </div>
         )}
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            
+
             {/* Projeto e Prioridade lado a lado */}
             <FormField
               control={form.control}
@@ -221,7 +221,7 @@ export function FormCriarTarefa({
                 <FormItem>
                   <FormLabel>Prioridade *</FormLabel>
                   <FormControl>
-                    <Select 
+                    <Select
                       value={field.value}
                       onValueChange={field.onChange}
                       disabled={isPending}
@@ -231,8 +231,8 @@ export function FormCriarTarefa({
                       </SelectTrigger>
                       <SelectContent className="bg-white border border-gray-200 shadow-none ring-0 rounded-md z-50 max-h-[200px] overflow-y-auto">
                         {prioridades.map((prioridade) => (
-                          <SelectItem 
-                            key={prioridade.id} 
+                          <SelectItem
+                            key={prioridade.id}
                             value={prioridade.id}
                             className="
                               cursor-pointer
