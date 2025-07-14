@@ -9,6 +9,13 @@ import {
   ChartLegendContent,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface ProjectChartFilterProps {
   projetos: Projeto[];
@@ -60,18 +67,19 @@ export function ProjectChartFilter({ projetos, tarefas, config }: ProjectChartFi
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <select
-          value={selectedProject}
-          onChange={(e) => setSelectedProject(e.target.value)}
-          className="border-gray-300 rounded-md border p-2 text-sm"
-        >
-          <option value="all">Todos Projetos</option>
-          {projetos.map((p) => (
-            <option key={p.id} value={p.id.toString()}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
+        <Select value={selectedProject} onValueChange={(v) => setSelectedProject(v)}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Todos Projetos" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos Projetos</SelectItem>
+            {projetos.map((p) => (
+              <SelectItem key={p.id} value={p.id.toString()}>
+                {p.nome}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <ChartContainer config={config} className="w-full h-64">
         <Chart.BarChart data={dataByMonth} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
