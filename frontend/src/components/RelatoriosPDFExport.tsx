@@ -32,17 +32,17 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
           color: #222 !important;
           background: #fff !important;
           border-color: #ccc !important;
-          /* força quebra de linha em todo texto */
+        }
+        body {
           white-space: normal !important;
-          word-break: break-word !important;
+          word-break: normal !important;
         }
         table {
           width: 100% !important;
           table-layout: auto !important;
         }
         th, td {
-          word-wrap: break-word !important;
-          max-width: 300px !important;
+          word-break: normal !important;
         }
       `;
       
