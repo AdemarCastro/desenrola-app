@@ -15,27 +15,55 @@ async function criarProjeto(formData: FormData) {
   const dataEntrega = formData.get("data_entrega")?.toString();
   const proprietarioId = formData.get("proprietario_id")?.toString();
   const membrosIds = formData
-    .getAll("membros_ids[]")
+    .getAll("membros_ids")
     .map((id) => parseInt(id as string));
 
-  if (!nome) {
-    throw new Error("O nome do projeto é obrigatório.");
+  if (!nome || !dataEntrega || !proprietarioId) {
+    throw new Error("Campos obrigatórios não preenchidos.");
   }
 
-  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projetos`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      nome,
-      descricao,
-      data_entrega: dataEntrega,
-      proprietario_id: proprietarioId,
-      membros_ids: membrosIds,
-    }),
-  });
+  // 1. Cria o projeto
+  const projetoRes = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/projetos`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        nome,
+        descricao,
+        data_entrega: dataEntrega,
+        proprietario_id: parseInt(proprietarioId),
+      }),
+    }
+  );
+
+  if (!projetoRes.ok) {
+    throw new Error("Erro ao criar projeto.");
+  }
+
+  const projetoCriado = await projetoRes.json();
+  const projetoId = projetoCriado.id;
+
+  // 2. Associa os membros
+  for (const id_usuario of membrosIds) {
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/projetos/${projetoId}/usuarios`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id_usuario,
+          nivel_acesso_id: 3, // membros
+        }),
+      }
+    );
+  }
 
   redirect("/criar-projeto?sucesso=1");
 }
@@ -58,7 +86,7 @@ export default async function CriarProjetoPage() {
   const membros = usuarios.filter((u) => u.nivel_acesso_id === 3);
 
   return (
-    <div className="p-6 max-w-2xl mx-auto relative overflow-visible z-0">
+    <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Criar Novo Projeto</h1>
       <FormCriarProjetoWrapper
         action={criarProjeto}
