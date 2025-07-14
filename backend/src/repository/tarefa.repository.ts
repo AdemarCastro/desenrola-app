@@ -4,7 +4,30 @@ const prisma = new PrismaClient();
 
 export class TarefaRepository {
   static async findAll() {
-    return prisma.tarefa.findMany({ where: { apagado_em: null }, orderBy: { criado_em: "desc" } });
+    return prisma.tarefa.findMany({
+      where: { apagado_em: null },
+      orderBy: { criado_em: "desc" },
+      include: {
+        comentarios: {
+          where: { apagado_em: null },
+          orderBy: { criado_em: 'asc' }
+        },
+        anexos: true,
+        responsaveis: {
+          select: {
+            usuario: {
+              select: {
+                id: true,
+                primeiro_nome: true,
+                sobrenome: true,
+                email: true
+              }
+            }
+          }
+        },
+        tags: true
+      },
+    });
   }
 
   static async findById(id: number) {
