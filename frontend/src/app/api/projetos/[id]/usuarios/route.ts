@@ -1,21 +1,38 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 
+interface BackendUser {
+  usuario: {
+    id: number;
+    primeiro_nome: string;
+    sobrenome: string;
+  };
+  nivelAcesso: {
+    id: number;
+    nome: string;
+  };
+  projeto: {
+    id: number;
+    nome: string;
+  };
+}
+
 interface UsuariosResponse {
-  data: { id: string; nome: string }[];
   error?: string;
 }
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  // aguarda a resolução de params para extrair id
+  const { id: projectId } = await params;
+
   const token = (await cookies()).get('token')?.value;
   if (!token) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
-  const projectId = params.id;
   if (!projectId) {
     return NextResponse.json({ error: 'ID do projeto é obrigatório' }, { status: 400 });
   }
@@ -28,16 +45,24 @@ export async function GET(
         cache: 'no-store',
       }
     );
-    const result = (await apiRes.json()) as UsuariosResponse;
-
+    
     if (!apiRes.ok) {
+      const result = (await apiRes.json()) as UsuariosResponse;
       return NextResponse.json(
         { error: result.error || 'Falha ao buscar usuários' },
         { status: apiRes.status }
       );
     }
 
-    return NextResponse.json(result.data);
+    const backendUsers = (await apiRes.json()) as BackendUser[];
+    
+    // Mapeia para o formato esperado pelo frontend
+    const users = backendUsers.map(item => ({
+      id: item.usuario.id.toString(),
+      nome: `${item.usuario.primeiro_nome} ${item.usuario.sobrenome}`
+    }));
+
+    return NextResponse.json(users);
 
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Erro inesperado no servidor.';
