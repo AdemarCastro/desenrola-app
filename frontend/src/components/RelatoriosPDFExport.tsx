@@ -32,6 +32,16 @@ export function RelatoriosPDFExport({ children }: { children: ReactNode }) {
           color: #222 !important;
           background: #fff !important;
           border-color: #ccc !important;
+          white-space: normal !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+        
+        table, td, th {
+          white-space: normal !important;
+          word-break: break-word !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
         }
       `;
       
